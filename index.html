@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Helpdesk System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Main container for centering the content -->
+  <div class="main-container">
+    <!-- Oracle Image -->
+    <div class="oracle-image-container">
+      <img src="Images/Oracle.png" alt="Oracle Logo" class="oracle-image">
+    </div>
+
+    <!-- Text Between the Logo and Search Bar -->
+    <h2 class="help-text">What can we help you with?</h2>
+
+    <!-- Search Bar -->
+    <input type="text" placeholder="Search..." class="form-input">
+
+    <!-- Dropdowns Container -->
+    <div id="dropdowns-container">
+      <button class="dropdown-btn">
+        <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
+        Working Instructions <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-container">
+        <button>Receivables</button>
+        <button>Payables</button>
+        <button>General Ledger</button>
+        <button>Purchasing</button>
+        <button>Oracle Guides</button>
+      </div>
+
+      <button class="dropdown-btn">
+        <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
+        SOP <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-container">
+        <button>PDF Files</button>
+      </div>
+
+      <button class="dropdown-btn">
+        <img src="Icons/design-resources.png" alt="Design Icon" class="topic-icon">
+        Functional Specifications <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-container">
+        <button>PDF Files</button>
+      </div>
+
+      <button class="dropdown-btn">
+        <img src="Icons/workflow.png" alt="Workflow Icon" class="topic-icon">
+        Process Flow <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-container">
+        <button>PDF Files</button>
+      </div>
+    </div>
+
+    <!-- File Upload Form (initially hidden) -->
+    <div id="file-upload-form" style="display: none;">
+      <div class="file-upload-inner">
+        <!-- Custom File Upload UI -->
+        <div class="custom-file-upload">
+          <label for="fileInput" class="choose-file-btn">Choose File</label>
+          <span id="selected-file-name" class="file-name">No file chosen</span>
+        </div>
+        <!-- Hidden file input -->
+        <input type="file" id="fileInput" accept="application/pdf" style="display: none;">
+        <!-- File Title Input -->
+        <input type="text" id="fileTitle" placeholder="File Title" class="form-input small-input">
+        <!-- Dropdown for Main Topic >> Subtopic -->
+        <select id="module-dropdown" class="form-select small-select">
+          <optgroup label="Working Instructions">
+            <option value="Receivables">Receivables</option>
+            <option value="Payables">Payables</option>
+            <option value="General Ledger">General Ledger</option>
+            <option value="Purchasing">Purchasing</option>
+            <option value="Oracle Guides">Oracle Guides</option>
+          </optgroup>
+          <optgroup label="SOP">
+            <option value="PDF Files">PDF Files</option>
+          </optgroup>
+          <optgroup label="Functional Specifications">
+            <option value="PDF Files">PDF Files</option>
+          </optgroup>
+          <optgroup label="Process Flow">
+            <option value="PDF Files">PDF Files</option>
+          </optgroup>
+        </select>
+        <!-- Upload Button -->
+        <button onclick="uploadFile()" class="upload-btn">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authentication Container for Password (bottom left) -->
+  <div id="auth-container" class="auth-container">
+    <input type="password" id="auth-password" placeholder="Enter password" class="auth-input">
+    <button id="auth-btn" class="auth-btn">Enter</button>
+  </div>
+
+  <!-- Add File Button (bottom left), initially hidden -->
+  <button id="add-file-btn" class="add-file-btn" style="display: none;">Add File</button>
+
+  <!-- Firebase and App Scripts using Compatibility Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-storage-compat.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

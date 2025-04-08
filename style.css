@@ -1,0 +1,225 @@
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically */
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  
+  /* Main container for centering the content */
+  .main-container {
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Oracle Image Styling */
+  .oracle-image-container {
+    margin-bottom: 20px;
+  }
+  .oracle-image {
+    width: 150px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  /* Text Between the Logo and Search Bar */
+  .help-text {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  /* Form Input Fields */
+  .form-input, .form-select {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  /* Search Bar: wider input on top */
+  .form-input {
+    width: 450px;
+    margin-bottom: 20px;
+  }
+  
+  /* Dropdown Container for Topic Buttons */
+  #dropdowns-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Dropdown Button Styles */
+  .dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    margin: 8px 0;
+    width: 500px;
+    max-width: 900px;
+    text-align: left;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .dropdown-btn:focus {
+    outline: none;
+  }
+  .arrow {
+    font-size: 18px;
+  }
+  /* Icon styles for topic buttons */
+  .topic-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  
+  /* Dropdown Content (Subtopics) */
+  .dropdown-container {
+    display: none;
+    padding-left: 20px;
+    margin-top: 10px;
+  }
+  .dropdown-container button {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* File Upload Form */
+  #file-upload-form {
+    margin-top: 20px;
+  }
+  /* Align elements horizontally in the file upload form */
+  .file-upload-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* vertical alignment */
+    gap: 10px;          /* horizontal spacing between elements */
+    flex-wrap: nowrap;  /* keep everything on one row */
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  /* Force consistent height and vertical alignment for file upload elements */
+  .file-upload-inner input[type="file"],
+  .file-upload-inner input[type="text"],
+  .file-upload-inner select,
+  .file-upload-inner button {
+    height: 44px;
+    line-height: 44px;
+    vertical-align: middle;
+  }
+  /* Adjust width for file upload form inputs/selects: increased from 250px to 250px (adjust as desired) */
+  .small-input, .small-select {
+    width: 250px;
+    margin: 0;
+  }
+  
+  /* Upload Button Styling */
+  .upload-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 0 20px; /* horizontal padding only */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .upload-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Custom File Upload UI */
+  .custom-file-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .choose-file-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-block;
+    border: none;
+    text-align: center;
+  }
+  .choose-file-btn:hover {
+    background-color: #0056b3;
+  }
+  .file-name {
+    font-size: 14px;
+    color: #555;
+    font-style: italic;
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Authentication Container for Password (bottom left) */
+  .auth-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .auth-input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .auth-btn {
+    padding: 12px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .auth-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Add File Button (bottom left) */
+  .add-file-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .add-file-btn:hover {
+    background-color: #0056b3;
+  }
+  
