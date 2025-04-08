@@ -1,88 +1,98 @@
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    databaseURL: "YOUR_DATABASE_URL", // Make sure this points to your Firebase Realtime Database
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
+    apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
+    authDomain: "helpdeskrpharmacy.firebaseapp.com",
+    databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+    projectId: "helpdeskrpharmacy",
+    storageBucket: "helpdeskrpharmacy.firebasestorage.app",
+    messagingSenderId: "776189919696",
+    appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
+    measurementId: "G-TL0ZQ9L17Q"
 };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// -- Authentication for "Add File" functionality --
-const authContainer = document.getElementById("auth-container");
-const authBtn = document.getElementById("auth-btn");
-const authPassword = document.getElementById("auth-password");
-const addFileBtn = document.getElementById("add-file-btn");
+// Google API Client configuration
+const CLIENT_ID = "1059066470727-1tgtdmv41p4584japq7hte1t5euuh7gt.apps.googleusercontent.com"; // Replace with your Client ID
+const API_KEY = 'AIzaSyAam6YiJoJJ5e00vt-8PGSeGocJ_OLzgZw'; // Replace with your API Key
+const SCOPES = 'https://www.googleapis.com/auth/drive.file'; // Google Drive API scope
 
-// When the user clicks "Enter" in the auth container:
-authBtn.addEventListener("click", function() {
-    // Example: correct password is "secret" (case-sensitive)
-    if (authPassword.value === "secret") {
-        // Hide the authentication container
-        authContainer.style.display = "none";
-        // Show the "Add File" button
-        addFileBtn.style.display = "block";
-        // Optionally clear the password input
-        authPassword.value = "";
+let gapiInited = false;
+let gisInited = false;
+
+// Load Google API and initialize OAuth client
+function loadGapi() {
+    gapi.load('client:auth2', initClient);
+}
+
+function initClient() {
+    gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        scope: SCOPES
+    }).then(() => {
+        gapiInited = true;
+        checkAuth();
+    });
+}
+
+// Check if the user is authorized
+function checkAuth() {
+    gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+}
+
+// Update UI based on sign-in status
+function updateSigninStatus(isSignedIn) {
+    if (isSignedIn) {
+        console.log("User is signed in");
+        // Enable the upload button
+        document.getElementById("add-file-btn").style.display = "block";
     } else {
-        alert("Incorrect password. Please try again.");
+        console.log("User is not signed in");
+        // Trigger sign-in process
+        gapi.auth2.getAuthInstance().signIn();
     }
-});
+}
 
-// -- Toggle the file upload form when "Add File" is clicked --
-addFileBtn.addEventListener("click", function() {
-    const fileUploadForm = document.getElementById("file-upload-form");
-    // Toggle the visibility of the file upload form
-    if (fileUploadForm.style.display === "none") {
-        fileUploadForm.style.display = "block";
-    } else {
-        fileUploadForm.style.display = "none";
-    }
-});
-
-// -- Update the custom file upload UI with the selected filename --
-const fileInputElement = document.getElementById('fileInput');
-const fileNameSpan = document.getElementById('selected-file-name');
-fileInputElement.addEventListener('change', function() {
-    if (fileInputElement.files && fileInputElement.files.length > 0) {
-        fileNameSpan.textContent = fileInputElement.files[0].name;
-    } else {
-        fileNameSpan.textContent = "No file chosen";
-    }
-});
-
-// -- Handle the file upload process and store metadata in Realtime Database --
-function uploadFile() {
+// Handle file upload to Google Drive
+function uploadFileToDrive() {
     const fileInput = document.getElementById("fileInput");
-    const fileTitle = document.getElementById("fileTitle").value;
     const file = fileInput.files[0];
 
-    // Check for file and title
-    if (!file || fileTitle === "") {
-        alert("Please choose a file and provide a title.");
+    if (!file) {
+        alert("Please choose a file to upload.");
         return;
     }
 
-    // Example: Store file on a different server and get its URL
-    const fileUrl = "https://your-external-host.com/path/to/your/file.pdf"; // URL of the hosted file
+    const fileMetadata = {
+        'name': file.name,
+        'mimeType': file.type
+    };
 
-    // Store metadata in Firebase Realtime Database
-    const dbRef = firebase.database().ref('uploads'); // Reference to the uploads node
-    const newFileRef = dbRef.push(); // Create a new unique ID for the file
-    newFileRef.set({
-        title: fileTitle,
-        fileName: file.name,
-        fileUrl: fileUrl,  // Store the file URL (this is hosted elsewhere)
-        timestamp: Date.now()
-    }).then(() => {
-        alert("File metadata uploaded successfully!");
-    }).catch((error) => {
-        console.error("Error uploading metadata:", error);
-        alert("Error uploading file metadata. Please try again.");
+    const media = {
+        mimeType: file.type,
+        body: file
+    };
+
+    const request = gapi.client.drive.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: 'id'
+    });
+
+    request.execute(function(response) {
+        if (response.id) {
+            alert('File uploaded successfully!');
+            // You can add further functionality to store file metadata in Firebase Realtime Database.
+        } else {
+            alert('Error uploading file.');
+        }
     });
 }
+
+// Call the Google API to initialize and sign in
+loadGapi();
+
+
