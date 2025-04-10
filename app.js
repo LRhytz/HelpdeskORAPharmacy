@@ -13,86 +13,119 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Google API Client configuration
-const CLIENT_ID = "1059066470727-1tgtdmv41p4584japq7hte1t5euuh7gt.apps.googleusercontent.com"; // Replace with your Client ID
-const API_KEY = 'AIzaSyAam6YiJoJJ5e00vt-8PGSeGocJ_OLzgZw'; // Replace with your API Key
-const SCOPES = 'https://www.googleapis.com/auth/drive.file'; // Google Drive API scope
+// Cloudinary configuration (replace these with your actual values)
+const CLOUD_NAME = "dkwkdsnk7";  
+const UPLOAD_PRESET = "Helpdesk_Rpharmacy";
 
-let gapiInited = false;
-let gisInited = false;
+// -- Authentication for "Add File" functionality --
+const authContainer = document.getElementById("auth-container");
+const authBtn = document.getElementById("auth-btn");
+const authPassword = document.getElementById("auth-password");
+const addFileBtn = document.getElementById("add-file-btn");
 
-// Load Google API and initialize OAuth client
-function loadGapi() {
-    gapi.load('client:auth2', initClient);
-}
+authBtn.addEventListener("click", function() {
+    // Example: correct password is "secret"
+    if (authPassword.value === "secret") {
+        authContainer.style.display = "none";
+        addFileBtn.style.display = "block";
+        authPassword.value = "";
+    } else {
+        alert("Incorrect password. Please try again.");
+    }
+});
 
-function initClient() {
-    gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        scope: SCOPES
-    }).then(() => {
-        gapiInited = true;
-        checkAuth();
+// -- Toggle the file upload form when "Add File" is clicked --
+addFileBtn.addEventListener("click", function() {
+    const fileUploadForm = document.getElementById("file-upload-form");
+    if (fileUploadForm.style.display === "none") {
+        fileUploadForm.style.display = "block";
+    } else {
+        fileUploadForm.style.display = "none";
+    }
+});
+
+// -- Update the custom file upload UI with the selected filename --
+const fileInputElement = document.getElementById('fileInput');
+const fileNameSpan = document.getElementById('selected-file-name');
+fileInputElement.addEventListener('change', function() {
+    if (fileInputElement.files && fileInputElement.files.length > 0) {
+        fileNameSpan.textContent = fileInputElement.files[0].name;
+    } else {
+        fileNameSpan.textContent = "No file chosen";
+    }
+});
+
+/**
+ * Uploads the file to Cloudinary and returns a Promise that resolves with the secure URL.
+ */
+function uploadFileToCloudinary(file) {
+    console.log("Starting upload to Cloudinary for file:", file.name);
+    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    return fetch(url, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        console.log("Cloudinary response status:", response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Parsed Cloudinary response:", data);
+        if (data.secure_url) {
+            return data.secure_url;
+        } else {
+            throw new Error(data.error ? data.error.message : "Unknown error from Cloudinary");
+        }
+    })
+    .catch(error => {
+        console.error("Error uploading to Cloudinary:", error);
+        throw error;
     });
 }
 
-// Check if the user is authorized
-function checkAuth() {
-    gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-}
-
-// Update UI based on sign-in status
-function updateSigninStatus(isSignedIn) {
-    if (isSignedIn) {
-        console.log("User is signed in");
-        // Enable the upload button
-        document.getElementById("add-file-btn").style.display = "block";
-    } else {
-        console.log("User is not signed in");
-        // Trigger sign-in process
-        gapi.auth2.getAuthInstance().signIn();
-    }
-}
-
-// Handle file upload to Google Drive
-function uploadFileToDrive() {
+/**
+ * Main upload function.
+ * It uploads the file to Cloudinary, then stores the file metadata (including the Cloudinary URL) in Firebase Realtime Database.
+ */
+function uploadFile() {
     const fileInput = document.getElementById("fileInput");
+    const fileTitle = document.getElementById("fileTitle").value;
     const file = fileInput.files[0];
 
-    if (!file) {
-        alert("Please choose a file to upload.");
+    if (!file || fileTitle === "") {
+        alert("Please choose a file and provide a title.");
         return;
     }
 
-    const fileMetadata = {
-        'name': file.name,
-        'mimeType': file.type
-    };
-
-    const media = {
-        mimeType: file.type,
-        body: file
-    };
-
-    const request = gapi.client.drive.files.create({
-        resource: fileMetadata,
-        media: media,
-        fields: 'id'
-    });
-
-    request.execute(function(response) {
-        if (response.id) {
-            alert('File uploaded successfully!');
-            // You can add further functionality to store file metadata in Firebase Realtime Database.
-        } else {
-            alert('Error uploading file.');
-        }
-    });
+    console.log("Uploading file:", file.name);
+    
+    // Upload file to Cloudinary first
+    uploadFileToCloudinary(file)
+        .then(fileUrl => {
+            console.log("File uploaded to Cloudinary, secure URL:", fileUrl);
+            // Store metadata in Firebase Realtime Database
+            const dbRef = firebase.database().ref("uploads");
+            const newFileRef = dbRef.push();
+            newFileRef.set({
+                title: fileTitle,
+                fileName: file.name,
+                fileUrl: fileUrl,
+                timestamp: Date.now(),
+                approved: false
+            })
+            .then(() => {
+                alert("File metadata uploaded successfully! Awaiting approval.");
+            })
+            .catch(error => {
+                console.error("Error uploading metadata:", error);
+                alert("Error uploading file metadata. Please try again.");
+            });
+        })
+        .catch(error => {
+            alert("Error uploading file. Please try again.");
+        });
 }
-
-// Call the Google API to initialize and sign in
-loadGapi();
-
-
