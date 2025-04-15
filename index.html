@@ -161,11 +161,11 @@
       <span id="arrow-sop" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="sop-card-body" style="display: none;">
-      <div class="subtopic-btn" onclick="toggleSubTopics('treasury-body','arrow-treasury')">
+      <div class="subtopic-btn" onclick="toggleSubTopics('sop_treasury-body','arrow-sop_treasury')">
         <span>Treasury</span>
-        <span id="arrow-oracle_guides" class="arrow">▼</span>
+        <span id="arrow-sop_treasury" class="arrow">▼</span>
       </div>
-      <div class="subtopic-body" id="treasury-body" style="display: none;">
+      <div class="subtopic-body" id="sop_treasury-body" style="display: none;">
         <ul class="pdf-list">
           <!-- Static PDF Links -->
           <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
@@ -247,29 +247,42 @@
       <span id="arrow-fs" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="fs-card-body" style="display: none;">
-      <div class="subtopic-btn" onclick="toggleSubTopics('oracle_enhancement-body','arrow-oracle_enhancement')">
+      <div class="subtopic-btn" onclick="toggleSubTopics('fs_oracle_enhancement-body','arrow-fs_oracle_enhancement')">
         <span>Oracle Enhancements</span>
-        <span id="arrow-oracle_enhancement" class="arrow">▼</span>
+        <span id="arrow-fs_oracle_enhancement" class="arrow">▼</span>
       </div>
-      <div class="subtopic-body" id="oracle_enhancement-body" style="display: none;">
+      <div class="subtopic-body" id="fs_oracle_enhancement-body" style="display: none;">
         <ul class="pdf-list">
           <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AP Invoice Interface from MMS.pdf" target="_blank">AP Invoice Interface from MMS</a></li>
+          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AR Customer Interface from MMS.pdf" target="_blank">AR Customer Interface from MMS</a></li>
+          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AR Invoice Interface from MMS.pdf" target="_blank">AR Invoice Interface from MMS</a></li>
+          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AP Vendor Interface from MMS.pdf" target="_blank">AP Vendor Interface from MMS</a></li>
+          <li><a href="pdfs/functional_specifications/Oracle Enhancements/AP Vendor Interface Enhancement.pdf" target="_blank">AP Vendor Interface Enhancement</a></li>
         </ul>
         <!-- Approved dynamic items -->
-        <ul id="approved_oracle_enhancement" class="pdf-list"></ul>
+        <ul id="approved_fs_oracle_enhancement" class="pdf-list"></ul>
       </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('sharepoint_pa-body','arrow-sharepoint_pa')">
+      <div class="subtopic-btn" onclick="toggleSubTopics('fs_sharepoint_pa-body','arrow-fs_sharepoint_pa')">
         <span>Sharepoint/PowerAutomate</span>
-        <span id="arrow-sharepoint_pa" class="arrow">▼</span>
+        <span id="arrow-fs_sharepoint_pa" class="arrow">▼</span>
       </div>
-      <div class="subtopic-body" id="sharepoint_pa-body" style="display: none;">
+      <div class="subtopic-body" id="fs_sharepoint_pa-body" style="display: none;">
         <ul class="pdf-list">
           <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Collection Receipt Form.pdf" target="_blank">Collection Receipt Form</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Credit Memo Form.pdf" target="_blank">Credit Memo Form</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Debit Memo Form.pdf" target="_blank">Debit Memo Form</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Disbursement Summary Report.pdf" target="_blank">Disbursement Summary Report</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 E-Billing Statement.pdf" target="_blank">E-Billing Statement</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/Budget Monitoring Workflow.pdf" target="_blank">Budget Monitoring Workflow</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/HSBC Pesonet Enhancement.pdf" target="_blank">HSBC Pesonet Enhancement</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/Metrobank Online Solution Bank File.pdf" target="_blank">Metrobank Online Solution Bank File</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/Service Invoice.pdf" target="_blank">Service Invoice</a></li>
+          <li><a href="pdfs/functional_specifications/Sharepoint/Auto-Email_PA_2307_NP.pdf" target="_blank">Auto-Email_PA_2307_NP</a></li>
         </ul>
         <!-- Approved dynamic items -->
-        <ul id="approved_sharepoint_pa" class="pdf-list"></ul>
+        <ul id="approved_fs_sharepoint_pa" class="pdf-list"></ul>
       </div>  
     </div>
   </div>
@@ -312,10 +325,16 @@
             <option value="Oracle Guides">Oracle Guides</option>
         </optgroup>
         <optgroup label="SOP">
-            <option value="SOP-PDF">PDF Files</option>
+            <option value="sop_treasury">Treasury</option>
+            <option value="sop_payables">Payables</option>
+            <option value="sop_receivables">Receivables</option>
+            <option value="sop_store_audit">Store Audit</option>
+            <option value="sop_taxation">Taxation</option>
+            <option value="sop_general_ledger">General Ledger</option>
         </optgroup>
         <optgroup label="Functional Specifications">
-            <option value="fs-PDF">PDF Files</option> <!-- Correctly named option for Functional Specifications -->
+            <option value="fs_oracle_enhancement">Oracle Enhancements</option>
+            <option value="fs_sharepoint_pa">Sharepoint/PowerAutomate</option> <!-- Correctly named option for Functional Specifications -->
         </optgroup>
         <optgroup label="Process Flow">
             <option value="pf-PDF">PDF Files</option> <!-- Correctly named option for Process Flow -->

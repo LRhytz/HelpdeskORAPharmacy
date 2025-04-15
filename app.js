@@ -149,8 +149,7 @@ var firebaseConfig = {
       });
   }
   
-  
-  // --- Display Approved Uploads ---
+
   // --- Display Approved Uploads ---
 function displayApprovedUploads() {
   var uploadsRef = firebase.database().ref("uploads");
@@ -164,8 +163,14 @@ function displayApprovedUploads() {
           "approved_wi_purchasing",
           "approved_wi_general_ledger",
           "approved_wi_oracle_guides",
-          "approved_sop_pdf",
-          "approved_fs_pdf",  // Add fs-PDF
+          "approved_sop_treasury",
+          "approved_sop_payables",
+          "approved_sop_receivables",
+          "approved_sop_store_audit",
+          "approved_sop_taxation",
+          "approved_sop_general_ledger",
+          "approved_fs_oracle_enhancement", 
+          "approved_fs_sharepoint_pa", // Add fs-PDF
           "approved_pf_pdf"   // Add pf-PDF
       ];
       for (var i = 0; i < containerIds.length; i++) {
@@ -218,15 +223,57 @@ function displayApprovedUploads() {
                           li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
                           container.appendChild(li);
                       }
-                  } else if (mod === "SOP-PDF") {
-                      var container = document.getElementById("approved_sop_pdf");
+                  } else if (mod === "sop_treasury") {
+                      var container = document.getElementById("approved_sop_treasury");
                       if (container) {
                           var li = document.createElement("li");
                           li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
                           container.appendChild(li);
                       }
-                  } else if (mod === "fs-PDF") {  // Check for fs-PDF
-                      var container = document.getElementById("approved_fs_pdf");
+                    } else if (mod === "sop_payables") {
+                      var container = document.getElementById("approved_sop_payables");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                    } else if (mod === "sop_receivables") {
+                      var container = document.getElementById("approved_sop_receivables");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                    } else if (mod === "sop_store_audit") {
+                      var container = document.getElementById("approved_sop_store_audit");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                    } else if (mod === "sop_taxation") {
+                      var container = document.getElementById("approved_sop_taxation");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                    } else if (mod === "sop_general_ledger") {
+                      var container = document.getElementById("approved_sop_general_ledger");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "fs_oracle_enhancement") {  // Check for fs-PDF
+                      var container = document.getElementById("approved_fs_oracle_enhancement");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                    } else if (mod === "fs_sharepoint_pa") {  // Check for fs-PDF
+                      var container = document.getElementById("approved_fs_sharepoint_pa");
                       if (container) {
                           var li = document.createElement("li");
                           li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
