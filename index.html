@@ -2,115 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Internet Explorer Compatibility -->
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Helpdesk System</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Load the Google API Client Library (if required for other integrations) -->
-  <script src="https://apis.google.com/js/api.js"></script>
+
+  <!-- Fetch Polyfill for IE -->
+  <script src="https://unpkg.com/whatwg-fetch@3.6.2/dist/fetch.umd.js"></script>
 </head>
 <body>
-  <!-- Main container for centering the content -->
-  <div class="main-container">
-    <!-- Oracle Image -->
-    <div class="oracle-image-container">
-      <img src="Images/Oracle.png" alt="Oracle Logo" class="oracle-image">
+  <!-- Oracle Logo -->
+  <div class="oracle-image-container">
+    <img src="Images/Oracle.png" alt="Oracle Logo" class="oracle-image">
+  </div>
+
+  <!-- Heading & Search (only added id & onkeyup for search) -->
+  <h2 class="help-text">What can we help you with?</h2>
+  <input type="text" id="searchInput" placeholder="Search..." class="form-input" onkeyup="searchContent()" />
+
+  <!-- MAIN CARD: Working Instructions -->
+  <div class="dropdown-card">
+    <div class="dropdown-btn" onclick="toggleDropdown('wi-card-body','arrow-wi')">
+      <div class="card-title">
+        <img src="Icons/information-pamphlet.png" alt="Working Instructions Icon" class="topic-icon">
+        <span>Working Instructions</span>
+      </div>
+      <span id="arrow-wi" class="arrow">▼</span>
     </div>
-
-    <!-- Text Between the Logo and Search Bar -->
-    <h2 class="help-text">What can we help you with?</h2>
-
-    <!-- Search Bar -->
-    <input type="text" placeholder="Search..." class="form-input">
-
-    <!-- Dropdowns Container -->
-    <div id="dropdowns-container">
-      <button class="dropdown-btn">
-        <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
-        Working Instructions <span class="arrow">▼</span>
-      </button>
-      <div class="dropdown-container">
-        <button>Receivables</button>
-        <button>Payables</button>
-        <button>General Ledger</button>
-        <button>Purchasing</button>
-        <button>Oracle Guides</button>
-      </div>
-
-      <button class="dropdown-btn">
-        <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
-        SOP <span class="arrow">▼</span>
-      </button>
-      <div class="dropdown-container">
-        <button>PDF Files</button>
-      </div>
-
-      <button class="dropdown-btn">
-        <img src="Icons/design-resources.png" alt="Design Icon" class="topic-icon">
-        Functional Specifications <span class="arrow">▼</span>
-      </button>
-      <div class="dropdown-container">
-        <button>PDF Files</button>
-      </div>
-
-      <button class="dropdown-btn">
-        <img src="Icons/workflow.png" alt="Workflow Icon" class="topic-icon">
-        Process Flow <span class="arrow">▼</span>
-      </button>
-      <div class="dropdown-container">
-        <button>PDF Files</button>
-      </div>
-    </div>
-
-    <!-- File Upload Form (initially hidden) -->
-    <div id="file-upload-form" style="display: none;">
-      <div class="file-upload-inner">
-        <!-- Custom File Upload UI -->
-        <div class="custom-file-upload">
-          <label for="fileInput" class="choose-file-btn">Choose File</label>
-          <span id="selected-file-name" class="file-name">No file chosen</span>
+    <div class="dropdown-body" id="wi-card-body" style="display: none;">
+      <!-- Subtopic-Card: Receivables -->
+      <div class="subtopic-card">
+        <div class="subtopic-btn" onclick="toggleSubTopics('receivables-body','arrow-receivables')">
+          <span>Receivables</span>
+          <span id="arrow-receivables" class="arrow">▼</span>
         </div>
-        <!-- Hidden file input -->
-        <input type="file" id="fileInput" accept="application/pdf" style="display: none;">
-        <!-- File Title Input -->
-        <input type="text" id="fileTitle" placeholder="File Title" class="form-input small-input">
-        <!-- Dropdown for Main Topic >> Subtopic -->
-        <select id="module-dropdown" class="form-select small-select">
-          <optgroup label="Working Instructions">
-            <option value="Receivables">Receivables</option>
-            <option value="Payables">Payables</option>
-            <option value="General Ledger">General Ledger</option>
-            <option value="Purchasing">Purchasing</option>
-            <option value="Oracle Guides">Oracle Guides</option>
-          </optgroup>
-          <optgroup label="SOP">
-            <option value="PDF Files">PDF Files</option>
-          </optgroup>
-          <optgroup label="Functional Specifications">
-            <option value="PDF Files">PDF Files</option>
-          </optgroup>
-          <optgroup label="Process Flow">
-            <option value="PDF Files">PDF Files</option>
-          </optgroup>
-        </select>
-        <!-- Upload Button -->
-        <button onclick="uploadFile()" class="upload-btn">Upload</button>
+        <div class="subtopic-body" id="receivables-body" style="display: none;">
+          <ul class="pdf-list">
+            <!-- Static PDF Links -->
+            <li>
+              <a href="pdfs/working_instructions/receivables/How to Approve AR Adjustments.pdf" target="_blank">
+                How to Approve AR Adjustments
+              </a>
+            </li>
+            <li>
+              <a href="pdfs/working_instructions/receivables/How to Create AR Transaction Type.pdf" target="_blank">
+                How to Create AR Transaction Type
+              </a>
+            </li>
+            <!-- Approved dynamic items -->
+            <ul id="approved_wi_receivables" class="pdf-list"></ul>
+          </ul>
+        </div>
+      </div>
+      <!-- Subtopic-Card: Payables -->
+      <div class="subtopic-card">
+        <div class="subtopic-btn" onclick="toggleSubTopics('payables-body','arrow-payables')">
+          <span>Payables</span>
+          <span id="arrow-payables" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="payables-body" style="display: none;">
+          <ul class="pdf-list">
+            <!-- Static PDF Links -->
+            <li>
+              <a href="pdfs/working_instructions/payables/SomePayablesDoc.pdf" target="_blank">
+                Some Payables Doc
+              </a>
+            </li>
+            <!-- Approved dynamic items -->
+            <ul id="approved_wi_payables" class="pdf-list"></ul>
+          </ul>
+        </div>
+      </div>
+      <!-- Additional subtopic cards as needed -->
+    </div>
+  </div>
+
+  <!-- MAIN CARD: SOP -->
+  <div class="dropdown-card">
+    <div class="dropdown-btn" onclick="toggleDropdown('sop-card-body','arrow-sop')">
+      <div class="card-title">
+        <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
+        <span>SOP</span>
+      </div>
+      <span id="arrow-sop" class="arrow">▼</span>
+    </div>
+    <div class="dropdown-body" id="sop-card-body" style="display: none;">
+      <div class="subtopic-card">
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop-pdfs','arrow-sop-pdfs')">
+          <span>PDF Files</span>
+          <span id="arrow-sop-pdfs" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop-pdfs" style="display: none;">
+          <ul id="approved_sop_pdf" class="pdf-list"></ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Authentication Container for Password (bottom left) -->
+  <!-- MAIN CARD: Functional Specifications -->
+  <div class="dropdown-card">
+    <div class="dropdown-btn" onclick="toggleDropdown('fs-card-body','arrow-fs')">
+      <div class="card-title">
+        <img src="Icons/design-resources.png" alt="Functional Specs Icon" class="topic-icon">
+        <span>Functional Specifications</span>
+      </div>
+      <span id="arrow-fs" class="arrow">▼</span>
+    </div>
+    <div class="dropdown-body" id="fs-card-body" style="display: none;">
+      <p>PDF Files</p>
+    </div>
+  </div>
+
+  <!-- MAIN CARD: Process Flow -->
+  <div class="dropdown-card">
+    <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
+      <div class="card-title">
+        <img src="Icons/workflow.png" alt="Process Flow Icon" class="topic-icon">
+        <span>Process Flow</span>
+      </div>
+      <span id="arrow-pf" class="arrow">▼</span>
+    </div>
+    <div class="dropdown-body" id="pf-card-body" style="display: none;">
+      <p>PDF Files</p>
+    </div>
+  </div>
+
+  <!-- FILE UPLOAD FORM -->
+  <div id="file-upload-form" style="display: none;">
+    <div class="file-upload-inner">
+      <div class="custom-file-upload">
+        <label for="fileInput" class="choose-file-btn">Choose File</label>
+        <span id="selected-file-name" class="file-name">No file chosen</span>
+      </div>
+      <input type="file" id="fileInput" accept="application/pdf" style="display: none;">
+      <input type="text" id="fileTitle" placeholder="File Title" class="form-input small-input">
+      <select id="module-dropdown" class="form-select small-select">
+        <optgroup label="Working Instructions">
+          <option value="Receivables">Receivables</option>
+          <option value="Payables">Payables</option>
+        </optgroup>
+        <optgroup label="SOP">
+          <option value="SOP-PDF">PDF Files</option>
+        </optgroup>
+      </select>
+      <button onclick="uploadFile()" class="upload-btn">Upload</button>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION (bottom-left) -->
   <div id="auth-container" class="auth-container">
     <input type="password" id="auth-password" placeholder="Enter password" class="auth-input">
     <button id="auth-btn" class="auth-btn">Enter</button>
   </div>
 
-  <!-- Add File Button (bottom left), initially hidden -->
+  <!-- Add File Button (bottom-left), hidden initially -->
   <button id="add-file-btn" class="add-file-btn" style="display: none;">Add File</button>
 
-  <!-- Firebase and App Scripts using Compatibility Libraries -->
+  <!-- Admin Login Button (bottom-right) -->
+  <button id="admin-login-btn" class="admin-login-btn">Admin Login</button>
+
+  <!-- Firebase & Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
   <script src="app.js"></script>
+  
+  <!-- Admin Login Logic -->
+  <script>
+    const ADMIN_PASSWORD = "Shek123"; // Change this to your desired admin password
+
+    document.getElementById("admin-login-btn").addEventListener("click", function() {
+      var enteredPassword = prompt("Enter admin password:");
+      if (enteredPassword === ADMIN_PASSWORD) {
+        // Redirect to the admin page (ensure admin.html exists in your project)
+        window.location.href = "admin.html";
+      } else {
+        alert("Incorrect admin password. Please try again.");
+      }
+    });
+  </script>
 </body>
 </html>

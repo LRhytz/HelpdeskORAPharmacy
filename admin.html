@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Admin Approval</title>
+
+  <!-- Firebase libraries -->
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
+
+  <!-- Link to external CSS for the admin page -->
+  <link rel="stylesheet" href="Admin.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Pending File Approvals</h2>
+    <div id="pending-approvals">
+      <!-- Cards will be rendered here -->
+    </div>
+  </div>
+
+  <script>
+    // 1. Update these with your actual Firebase project configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
+      authDomain: "helpdeskrpharmacy.firebaseapp.com",
+      databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+      projectId: "helpdeskrpharmacy",
+      storageBucket: "helpdeskrpharmacy.firebasestorage.app",
+      messagingSenderId: "776189919696",
+      appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
+      measurementId: "G-TL0ZQ9L17Q"
+    };
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized.");
+
+    // 2. Function to load pending approvals
+    // This query retrieves records where the "approved" field is false
+    function loadApprovals() {
+      var pendingRef = firebase.database().ref("uploads")
+                           .orderByChild("approved")
+                           .equalTo(false);
+
+      pendingRef.on("value", function(snapshot) {
+        var data = snapshot.val();
+        console.log("Data retrieved from DB:", data);
+        var container = document.getElementById("pending-approvals");
+        container.innerHTML = ""; // Clear previous records
+
+        if (data) {
+          for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+              var item = data[key];
+              // Create card container
+              var card = document.createElement("div");
+              card.className = "approval-card";
+
+              // Create title element
+              var titleEl = document.createElement("div");
+              titleEl.className = "approval-title";
+              titleEl.textContent = item.title;
+
+              // Create module element
+              var moduleEl = document.createElement("div");
+              moduleEl.className = "approval-module";
+              moduleEl.textContent = "Module: " + item.module;
+
+              // Create file link element
+              var fileLink = document.createElement("a");
+              fileLink.className = "approval-file-link";
+              fileLink.href = item.fileUrl;
+              fileLink.target = "_blank";
+              fileLink.textContent = "View File";
+
+              // Create Approve button element
+              var approveBtn = document.createElement("button");
+              approveBtn.className = "approve-btn";
+              approveBtn.textContent = "Approve";
+              approveBtn.onclick = (function(uploadKey) {
+                return function() {
+                  approveFile(uploadKey);
+                };
+              })(key);
+
+              // Create Reject button element
+              var rejectBtn = document.createElement("button");
+              rejectBtn.className = "reject-btn";
+              rejectBtn.textContent = "Reject";
+              rejectBtn.onclick = (function(uploadKey) {
+                return function() {
+                  rejectFile(uploadKey);
+                };
+              })(key);
+
+              // Append elements to the card
+              card.appendChild(titleEl);
+              card.appendChild(moduleEl);
+              card.appendChild(fileLink);
+              card.appendChild(approveBtn);
+              card.appendChild(rejectBtn);
+
+              container.appendChild(card);
+              console.log("Rendered card for upload:", key);
+            }
+          }
+        } else {
+          container.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
+          console.log("No pending approvals found.");
+        }
+      }, function (error) {
+        console.error("Error fetching data:", error);
+      });
+    }
+
+    // 3. Function to approve a file (updates approved to true)
+    function approveFile(uploadId) {
+      firebase.database().ref("uploads/" + uploadId)
+        .update({ approved: true })
+        .then(function() {
+          alert("File approved successfully!");
+          console.log("Approved file with ID:", uploadId);
+        })
+        .catch(function(error) {
+          console.error("Error approving file:", error);
+          alert("Error approving file. See console for details.");
+        });
+    }
+
+    // 4. Function to reject a file (updates approved to "rejected" so it no longer appears)
+    function rejectFile(uploadId) {
+      firebase.database().ref("uploads/" + uploadId)
+        .update({ approved: "rejected" })
+        .then(function() {
+          alert("File rejected successfully!");
+          console.log("Rejected file with ID:", uploadId);
+        })
+        .catch(function(error) {
+          console.error("Error rejecting file:", error);
+          alert("Error rejecting file. See console for details.");
+        });
+    }
+
+    // 5. Load pending approvals when the page loads
+    window.onload = loadApprovals;
+  </script>
+</body>
+</html>

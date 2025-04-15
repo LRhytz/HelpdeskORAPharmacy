@@ -1,0 +1,117 @@
+/* Admin.css */
+
+/* Basic reset and body styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Open Sans", Arial, sans-serif;
+  background: #f7f9fb;
+  color: #333;
+  padding: 20px;
+}
+
+/* Container styling */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Heading styling */
+h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Layout for approvals */
+#pending-approvals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Each approval card styling */
+.approval-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  flex: 1 1 260px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Title styling */
+.approval-title {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+/* Module styling */
+.approval-module {
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+/* File link styling */
+.approval-file-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.approval-file-link:hover {
+  text-decoration: underline;
+}
+
+/* Approve button styling */
+.approve-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  align-self: flex-start;
+}
+.approve-btn:hover {
+  background: #0056b3;
+}
+
+/* Reject button styling */
+.reject-btn {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  align-self: flex-start;
+  margin-top: 8px;
+}
+.reject-btn:hover {
+  background: #c82333;
+}
+
+/* No pending approvals message styling */
+.no-pending {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+  margin-top: 40px;
+}

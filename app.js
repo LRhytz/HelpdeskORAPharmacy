@@ -1,5 +1,5 @@
 // Firebase configuration
-const firebaseConfig = {
+var firebaseConfig = {
     apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
     authDomain: "helpdeskrpharmacy.firebaseapp.com",
     databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
@@ -8,124 +8,227 @@ const firebaseConfig = {
     messagingSenderId: "776189919696",
     appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
     measurementId: "G-TL0ZQ9L17Q"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Cloudinary configuration (replace these with your actual values)
-const CLOUD_NAME = "dkwkdsnk7";  
-const UPLOAD_PRESET = "Helpdesk_Rpharmacy";
-
-// -- Authentication for "Add File" functionality --
-const authContainer = document.getElementById("auth-container");
-const authBtn = document.getElementById("auth-btn");
-const authPassword = document.getElementById("auth-password");
-const addFileBtn = document.getElementById("add-file-btn");
-
-authBtn.addEventListener("click", function() {
-    // Example: correct password is "secret"
-    if (authPassword.value === "secret") {
-        authContainer.style.display = "none";
-        addFileBtn.style.display = "block";
-        authPassword.value = "";
+  };
+  
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  
+  // Cloudinary configuration
+  var CLOUD_NAME = "dkwkdsnk7";
+  var UPLOAD_PRESET = "Helpdesk_Rpharmacy";
+  
+  // --- Authentication ---
+  var authContainer = document.getElementById("auth-container");
+  var authBtn = document.getElementById("auth-btn");
+  var authPassword = document.getElementById("auth-password");
+  var addFileBtn = document.getElementById("add-file-btn");
+  
+  authBtn.addEventListener("click", function () {
+    if (authPassword.value === "@Helpd3sk") {
+      authContainer.style.display = "none";
+      addFileBtn.style.display = "block";
+      authPassword.value = "";
     } else {
-        alert("Incorrect password. Please try again.");
+      alert("Incorrect password. Please try again.");
     }
-});
-
-// -- Toggle the file upload form when "Add File" is clicked --
-addFileBtn.addEventListener("click", function() {
-    const fileUploadForm = document.getElementById("file-upload-form");
-    if (fileUploadForm.style.display === "none") {
-        fileUploadForm.style.display = "block";
-    } else {
-        fileUploadForm.style.display = "none";
-    }
-});
-
-// -- Update the custom file upload UI with the selected filename --
-const fileInputElement = document.getElementById('fileInput');
-const fileNameSpan = document.getElementById('selected-file-name');
-fileInputElement.addEventListener('change', function() {
+  });
+  
+  addFileBtn.addEventListener("click", function () {
+    var fileUploadForm = document.getElementById("file-upload-form");
+    fileUploadForm.style.display =
+      fileUploadForm.style.display === "none" ? "block" : "none";
+  });
+  
+  // --- Update Custom File Upload UI ---
+  var fileInputElement = document.getElementById("fileInput");
+  var fileNameSpan = document.getElementById("selected-file-name");
+  fileInputElement.addEventListener("change", function () {
     if (fileInputElement.files && fileInputElement.files.length > 0) {
-        fileNameSpan.textContent = fileInputElement.files[0].name;
+      fileNameSpan.textContent = fileInputElement.files[0].name;
     } else {
-        fileNameSpan.textContent = "No file chosen";
+      fileNameSpan.textContent = "No file chosen";
     }
-});
-
-/**
- * Uploads the file to Cloudinary and returns a Promise that resolves with the secure URL.
- */
-function uploadFileToCloudinary(file) {
+  });
+  
+  // --- Toggle Functions ---
+  function toggleDropdown(bodyId, arrowId) {
+    var body = document.getElementById(bodyId);
+    var arrow = document.getElementById(arrowId);
+    if (!body) return;
+    if (body.style.display === "" || body.style.display === "none") {
+      body.style.display = "block";
+      if (arrow) arrow.textContent = "▲";
+    } else {
+      body.style.display = "none";
+      if (arrow) arrow.textContent = "▼";
+    }
+  }
+  
+  function toggleSubTopics(containerId, arrowId) {
+    var container = document.getElementById(containerId);
+    var arrow = document.getElementById(arrowId);
+    if (!container) return;
+    if (container.style.display === "" || container.style.display === "none") {
+      container.style.display = "block";
+      if (arrow) arrow.textContent = "▲";
+    } else {
+      container.style.display = "none";
+      if (arrow) arrow.textContent = "▼";
+    }
+  }
+  
+  // --- File Upload to Cloudinary & Save Metadata to Firebase ---
+  function uploadFileToCloudinary(file) {
     console.log("Starting upload to Cloudinary for file:", file.name);
-    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
-    const formData = new FormData();
+    // Use raw/upload endpoint for PDFs
+    var url = "https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/raw/upload";
+    var formData = new FormData();
     formData.append("file", file);
+    // Set resource type explicitly for a raw file upload (PDF)
+    formData.append("resource_type", "raw");
+    
+    // Custom Public ID: sanitize filename and remove its extension.
+    var sanitizedName = file.name.replace(/\s+/g, "_").replace(/\.[^/.]+$/, "");
+    // Append a timestamp (do not force '.pdf' so that Cloudinary handles it)
+    var publicId = sanitizedName + "_" + Date.now();
+    formData.append("public_id", publicId);
+    
     formData.append("upload_preset", UPLOAD_PRESET);
-
-    return fetch(url, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => {
+  
+    return fetch(url, { method: "POST", body: formData })
+      .then(function (response) {
         console.log("Cloudinary response status:", response.status);
         return response.json();
-    })
-    .then(data => {
+      })
+      .then(function (data) {
         console.log("Parsed Cloudinary response:", data);
         if (data.secure_url) {
-            return data.secure_url;
+          return data.secure_url;
         } else {
-            throw new Error(data.error ? data.error.message : "Unknown error from Cloudinary");
+          throw new Error(data.error ? data.error.message : "Unknown error from Cloudinary");
         }
-    })
-    .catch(error => {
+      })
+      .catch(function (error) {
         console.error("Error uploading to Cloudinary:", error);
         throw error;
-    });
-}
-
-/**
- * Main upload function.
- * It uploads the file to Cloudinary, then stores the file metadata (including the Cloudinary URL) in Firebase Realtime Database.
- */
-function uploadFile() {
-    const fileInput = document.getElementById("fileInput");
-    const fileTitle = document.getElementById("fileTitle").value;
-    const file = fileInput.files[0];
-
+      });
+  }
+  
+  function uploadFile() {
+    var fileInput = document.getElementById("fileInput");
+    var fileTitle = document.getElementById("fileTitle").value;
+    var file = fileInput.files[0];
+    var moduleSelection = document.getElementById("module-dropdown").value;
+  
     if (!file || fileTitle === "") {
-        alert("Please choose a file and provide a title.");
-        return;
+      alert("Please choose a file and provide a title.");
+      return;
     }
-
+  
     console.log("Uploading file:", file.name);
-    
-    // Upload file to Cloudinary first
     uploadFileToCloudinary(file)
-        .then(fileUrl => {
-            console.log("File uploaded to Cloudinary, secure URL:", fileUrl);
-            // Store metadata in Firebase Realtime Database
-            const dbRef = firebase.database().ref("uploads");
-            const newFileRef = dbRef.push();
-            newFileRef.set({
-                title: fileTitle,
-                fileName: file.name,
-                fileUrl: fileUrl,
-                timestamp: Date.now(),
-                approved: false
-            })
-            .then(() => {
-                alert("File metadata uploaded successfully! Awaiting approval.");
-            })
-            .catch(error => {
-                console.error("Error uploading metadata:", error);
-                alert("Error uploading file metadata. Please try again.");
-            });
-        })
-        .catch(error => {
-            alert("Error uploading file. Please try again.");
+      .then(function (fileUrl) {
+        console.log("File uploaded to Cloudinary. Secure URL:", fileUrl);
+        var dbRef = firebase.database().ref("uploads");
+        var newFileRef = dbRef.push();
+        return newFileRef.set({
+          title: fileTitle,
+          fileName: file.name,
+          fileUrl: fileUrl,
+          module: moduleSelection, // e.g., "Receivables", "Payables", "SOP-PDF"
+          timestamp: Date.now(),
+          approved: false
         });
-}
+      })
+      .then(function () {
+        alert("File metadata uploaded successfully! Awaiting approval.");
+      })
+      .catch(function (error) {
+        console.error("Error in the upload process:", error);
+        alert("Error uploading file. Please try again.");
+      });
+  }
+  
+  // --- Display Approved Uploads ---
+  function displayApprovedUploads() {
+    var uploadsRef = firebase.database().ref("uploads");
+    uploadsRef.orderByChild("approved").equalTo(true).on("value", function (snapshot) {
+      var data = snapshot.val();
+  
+      // Clear existing approved items
+      var containerIds = [
+        "approved_wi_receivables",
+        "approved_wi_payables",
+        "approved_wi_general_ledger",
+        "approved_sop_pdf"
+      ];
+      for (var i = 0; i < containerIds.length; i++) {
+        var el = document.getElementById(containerIds[i]);
+        if (el) {
+          el.innerHTML = "";
+        }
+      }
+  
+      if (data) {
+        for (var key in data) {
+          if (data.hasOwnProperty(key)) {
+            var item = data[key];
+            var mod = item.module;
+            if (!mod) continue;
+            if (mod === "Receivables") {
+              var container = document.getElementById("approved_wi_receivables");
+              if (container) {
+                var li = document.createElement("li");
+                li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                container.appendChild(li);
+              }
+            } else if (mod === "Payables") {
+              var container = document.getElementById("approved_wi_payables");
+              if (container) {
+                var li = document.createElement("li");
+                li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                container.appendChild(li);
+              }
+            } else if (mod === "SOP-PDF") {
+              var container = document.getElementById("approved_sop_pdf");
+              if (container) {
+                var li = document.createElement("li");
+                li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                container.appendChild(li);
+              }
+            }
+            // Extend for additional modules if needed.
+          }
+        }
+      }
+    });
+  }
+  
+  // Initialize the display of approved uploads on page load.
+  displayApprovedUploads();
+  
+  // --- Search Functionality ---
+  // This function filters approved file links based on the search term.
+  // If a link matches, it automatically opens all parent containers so that the link is visible.
+  function searchContent() {
+    var term = document.getElementById("searchInput").value.toLowerCase();
+    var approvedLinks = document.querySelectorAll(".pdf-list li a");
+    for (var i = 0; i < approvedLinks.length; i++) {
+      var link = approvedLinks[i];
+      var text = link.textContent.toLowerCase();
+      if (text.indexOf(term) > -1) {
+        // Open all parent dropdown/subtopic containers
+        var current = link.parentElement;
+        while (current && current !== document.body) {
+          if (current.className && (current.className.indexOf("subtopic-body") !== -1 || current.className.indexOf("dropdown-body") !== -1)) {
+            current.style.display = "block";
+          }
+          current = current.parentNode;
+        }
+        link.parentElement.style.display = "";
+      } else {
+        link.parentElement.style.display = "none";
+      }
+    }
+  }
+  
