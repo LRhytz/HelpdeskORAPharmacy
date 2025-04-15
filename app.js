@@ -300,45 +300,61 @@ function displayApprovedUploads() {
   // This function filters approved file links based on the search term.
   // If a link matches, it automatically opens all parent containers so that the link is visible.
   function searchContent() {
-    var term = document.getElementById("searchInput").value.toLowerCase();
-    var approvedLinks = document.querySelectorAll(".pdf-list li a");
+    var term = document.getElementById("searchInput").value.toLowerCase(); // Get the search term
+    var approvedLinks = document.querySelectorAll(".pdf-list li a"); // Get all links
   
-    var results = []; // Array to hold matching results
-    var noMatch = []; // Array to hold non-matching results
+    // Track if we found any matches
+    var foundMatch = false;
   
-    // Loop through each link and check if the text matches the search term
+    // Loop through each link to check if the text matches the search term
     for (var i = 0; i < approvedLinks.length; i++) {
       var link = approvedLinks[i];
-      var text = link.textContent.toLowerCase();
+      var text = link.textContent.toLowerCase(); // Convert text to lowercase for case-insensitive search
   
       if (text.indexOf(term) > -1) {
-        results.push(link.parentElement); // If match, add to results array
+        // Match found: Show the parent list item (li)
+        var listItem = link.parentElement;
+        listItem.style.display = ""; // Show the matched file item
+  
+        // Open the parent subtopic and dropdown if it's not already open
+        var parentSubtopic = link.closest(".subtopic-body");
+        var parentDropdown = link.closest(".dropdown-body");
+  
+        // Ensure subtopics and dropdowns are open only if there's a match
+        if (parentSubtopic && parentDropdown) {
+          parentSubtopic.style.display = "block"; // Ensure subtopic is open
+          parentDropdown.style.display = "block"; // Ensure dropdown is open
+        }
+  
+        foundMatch = true; // Flag indicating that a match has been found
       } else {
-        noMatch.push(link.parentElement); // If no match, add to noMatch array
+        // Hide non-matching items
+        var listItem = link.parentElement;
+        listItem.style.display = "none"; // Hide this item
       }
     }
   
-    // Clear the parent containers for both matched and non-matched items
-    var allLinks = document.querySelectorAll(".pdf-list li");
-    for (var i = 0; i < allLinks.length; i++) {
-      allLinks[i].style.display = "none"; // Hide all items initially
-    }
+    // If no matches are found, hide everything (keep dropdowns from expanding unnecessarily)
+    if (!foundMatch) {
+      var allLinks = document.querySelectorAll(".pdf-list li");
+      allLinks.forEach(function (item) {
+        item.style.display = "none"; // Hide all items if no match
+      });
   
-    // Show matched results first
-    for (var i = 0; i < results.length; i++) {
-      results[i].style.display = ""; // Show matched results
-    }
+      var allSubtopics = document.querySelectorAll(".subtopic-body");
+      allSubtopics.forEach(function (subtopic) {
+        subtopic.style.display = "none"; // Hide all subtopics if no match
+      });
   
-    // Show non-matched results (optional)
-    for (var i = 0; i < noMatch.length; i++) {
-      noMatch[i].style.display = ""; // Show non-matched results if needed
-    }
-  
-    // Now we reorder the parent containers
-    var container = document.getElementById("approved_" + mod.toLowerCase());
-    // Insert the results at the top
-    for (var i = 0; i < results.length; i++) {
-      container.insertBefore(results[i], container.firstChild); // Move matching items to the top
+      var allDropdowns = document.querySelectorAll(".dropdown-body");
+      allDropdowns.forEach(function (dropdown) {
+        dropdown.style.display = "none"; // Hide all dropdowns if no match
+      });
     }
   }
+  
+  
+  
+  
+  
   
