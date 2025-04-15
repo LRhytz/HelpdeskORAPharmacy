@@ -32,7 +32,6 @@
     </div>
     <div class="dropdown-body" id="wi-card-body" style="display: none;">
       <!-- Subtopic-Card: Receivables -->
-      <div class="subtopic-card">
         <div class="subtopic-btn" onclick="toggleSubTopics('receivables-body','arrow-receivables')">
           <span>Receivables</span>
           <span id="arrow-receivables" class="arrow">▼</span>
@@ -52,10 +51,7 @@
           <!-- Approved dynamic items -->
           <ul id="approved_wi_receivables" class="pdf-list"></ul>
         </div>
-      </div>
-
       <!-- Subtopic-Card: Payables -->
-      <div class="subtopic-card">
         <div class="subtopic-btn" onclick="toggleSubTopics('payables-body','arrow-payables')">
           <span>Payables</span>
           <span id="arrow-payables" class="arrow">▼</span>
@@ -85,8 +81,6 @@
           <!-- Approved dynamic items -->
           <ul id="approved_wi_payables" class="pdf-list"></ul>
         </div>
-      </div>
-      <div class="subtopic-card">
         <div class="subtopic-btn" onclick="toggleSubTopics('purchasing-body','arrow-purchasing')">
           <span>Purchasing</span>
           <span id="arrow-purchasing" class="arrow">▼</span>
@@ -114,8 +108,6 @@
           <!-- Approved dynamic items -->
           <ul id="approved_wi_purchasing" class="pdf-list"></ul>
         </div>
-      </div>
-      <div class="subtopic-card">
         <div class="subtopic-btn" onclick="toggleSubTopics('general_ledger-body','arrow-general_ledger')">
           <span>General Ledger</span>
           <span id="arrow-general_ledger" class="arrow">▼</span>
@@ -133,8 +125,6 @@
           <!-- Approved dynamic items -->
           <ul id="approved_wi_general_ledger" class="pdf-list"></ul>
         </div>
-      </div>
-      <div class="subtopic-card">
         <div class="subtopic-btn" onclick="toggleSubTopics('oracle_guides-body','arrow-oracle_guides')">
           <span>Oracle Guides</span>
           <span id="arrow-oracle_guides" class="arrow">▼</span>
@@ -158,7 +148,6 @@
           <!-- Approved dynamic items -->
           <ul id="approved_wi_oracle_guides" class="pdf-list"></ul>
         </div>
-      </div>
     </div>
   </div>  
 
@@ -167,19 +156,82 @@
     <div class="dropdown-btn" onclick="toggleDropdown('sop-card-body','arrow-sop')">
       <div class="card-title">
         <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
-        <span>SOP</span>
+        <span>Standard Operating Procedures</span>
       </div>
       <span id="arrow-sop" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="sop-card-body" style="display: none;">
-      <div class="subtopic-card">
-        <div class="subtopic-btn" onclick="toggleSubTopics('sop-pdfs','arrow-sop-pdfs')">
-          <span>PDF Files</span>
-          <span id="arrow-sop-pdfs" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sop-pdfs" style="display: none;">
-          <ul id="approved_sop_pdf" class="pdf-list"></ul>
-        </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('treasury-body','arrow-treasury')">
+        <span>Treasury</span>
+        <span id="arrow-oracle_guides" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="treasury-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sop_treasury" class="pdf-list"></ul>
+      </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('sop_payables-body','arrow-sop_payables')">
+        <span>Payables</span>
+        <span id="arrow-sop_payables" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="sop_payables-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sop_payables" class="pdf-list"></ul>
+      </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('sop_receivables-body','arrow-sop_receivables')">
+        <span>Receivables</span>
+        <span id="arrow-sop_receivables" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="sop_receivables-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sop_receivables" class="pdf-list"></ul>
+      </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('sop_store_audit-body','arrow-sop_store_audit')">
+        <span>Store Audit</span>
+        <span id="arrow-sop_store_audit" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="sop_store_audit-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sop_store_audit" class="pdf-list"></ul>
+      </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('sop_taxation-body','arrow-sop_taxation')">
+        <span>Taxation</span>
+        <span id="arrow-sop_taxation" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="sop_taxation-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sop_taxation" class="pdf-list"></ul>
+      </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('sop_general_ledger-body','arrow-sop_general_ledger')">
+        <span>General Ledger</span>
+        <span id="arrow-sop_general_ledger" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="sop_general_ledger-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sop_general_ledger" class="pdf-list"></ul>
       </div>
     </div>
   </div>
@@ -195,15 +247,30 @@
       <span id="arrow-fs" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="fs-card-body" style="display: none;">
-      <div class="subtopic-card">
-        <div class="subtopic-btn" onclick="toggleSubTopics('fs-pdfs','arrow-fs-pdfs')">
-          <span>PDF Files</span>
-          <span id="arrow-fs-pdfs" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fs-pdfs" style="display: none;">
-          <ul id="approved_fs_pdf" class="pdf-list"></ul>
-        </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('oracle_enhancement-body','arrow-oracle_enhancement')">
+        <span>Oracle Enhancements</span>
+        <span id="arrow-oracle_enhancement" class="arrow">▼</span>
       </div>
+      <div class="subtopic-body" id="oracle_enhancement-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_oracle_enhancement" class="pdf-list"></ul>
+      </div>
+      <div class="subtopic-btn" onclick="toggleSubTopics('sharepoint_pa-body','arrow-sharepoint_pa')">
+        <span>Sharepoint/PowerAutomate</span>
+        <span id="arrow-sharepoint_pa" class="arrow">▼</span>
+      </div>
+      <div class="subtopic-body" id="sharepoint_pa-body" style="display: none;">
+        <ul class="pdf-list">
+          <!-- Static PDF Links -->
+          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
+        </ul>
+        <!-- Approved dynamic items -->
+        <ul id="approved_sharepoint_pa" class="pdf-list"></ul>
+      </div>  
     </div>
   </div>
 
@@ -212,12 +279,11 @@
     <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
       <div class="card-title">
         <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
-        <span>Process Flow</span>
+        <span>Process/System Flow</span>
       </div>
       <span id="arrow-pf" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="pf-card-body" style="display: none;">
-      <div class="subtopic-card">
         <div class="subtopic-btn" onclick="toggleSubTopics('pf-pdfs','arrow-pf-pdfs')">
           <span>PDF Files</span>
           <span id="arrow-pf-pdfs" class="arrow">▼</span>
@@ -225,7 +291,6 @@
         <div class="subtopic-body" id="pf-pdfs" style="display: none;">
           <ul id="approved_pf_pdf" class="pdf-list"></ul>
         </div>
-      </div>
     </div>
   </div>
 
@@ -277,7 +342,7 @@
 
   <!-- Admin Login Button with New Design -->
 <button id="admin-login-btn" class="admin-login-btn">
-  Login as Admin
+   Admin
 </button>
 
   <!-- Admin Login Logic -->
