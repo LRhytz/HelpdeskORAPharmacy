@@ -255,22 +255,40 @@ function displayApprovedUploads() {
   function searchContent() {
     var term = document.getElementById("searchInput").value.toLowerCase();
     var approvedLinks = document.querySelectorAll(".pdf-list li a");
+    
+    var results = []; // Array to hold matching results
+    var noMatch = []; // Array to hold non-matching results
+
+    // Loop through each link and check if the text matches the search term
     for (var i = 0; i < approvedLinks.length; i++) {
-      var link = approvedLinks[i];
-      var text = link.textContent.toLowerCase();
-      if (text.indexOf(term) > -1) {
-        // Open all parent dropdown/subtopic containers
-        var current = link.parentElement;
-        while (current && current !== document.body) {
-          if (current.className && (current.className.indexOf("subtopic-body") !== -1 || current.className.indexOf("dropdown-body") !== -1)) {
-            current.style.display = "block";
-          }
-          current = current.parentNode;
+        var link = approvedLinks[i];
+        var text = link.textContent.toLowerCase();
+        
+        if (text.indexOf(term) > -1) {
+            results.push(link.parentElement); // If match, add to results array
+        } else {
+            noMatch.push(link.parentElement); // If no match, add to noMatch array
         }
-        link.parentElement.style.display = "";
-      } else {
-        link.parentElement.style.display = "none";
-      }
     }
-  }
-  
+
+    // Clear the parent containers for both matched and non-matched items
+    var allLinks = document.querySelectorAll(".pdf-list li");
+    for (var i = 0; i < allLinks.length; i++) {
+        allLinks[i].style.display = "none"; // Hide all items initially
+    }
+
+    // Show matched results first, then non-matching ones
+    for (var i = 0; i < results.length; i++) {
+        results[i].style.display = ""; // Show matched results
+    }
+    for (var i = 0; i < noMatch.length; i++) {
+        noMatch[i].style.display = ""; // Show non-matched results
+    }
+
+    // Now we reorder the parent containers
+    var container = document.getElementById('pdf-list');
+    // Insert the results at the top
+    results.forEach(function(item) {
+        container.insertBefore(item, container.firstChild); // Move matching items to the top
+    });
+}
