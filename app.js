@@ -22,16 +22,24 @@ var firebaseConfig = {
   var authBtn = document.getElementById("auth-btn");
   var authPassword = document.getElementById("auth-password");
   var addFileBtn = document.getElementById("add-file-btn");
-  
-  authBtn.addEventListener("click", function () {
-    if (authPassword.value === "@Helpd3sk") {
-      authContainer.style.display = "none";
-      addFileBtn.style.display = "block";
-      authPassword.value = "";
-    } else {
-      alert("Incorrect password. Please try again.");
-    }
-  });
+
+  authBtn.addEventListener("click", authenticate);
+  // Event listener for pressing Enter key on the password input field
+authPassword.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") { // Check if Enter key is pressed
+    authenticate(); // Trigger the authentication function
+  }
+});
+
+function authenticate() {
+  if (authPassword.value === "@Helpd3sk") {
+    authContainer.style.display = "none";
+    addFileBtn.style.display = "block";
+    authPassword.value = ""; // Clear the password field
+  } else {
+    alert("Incorrect password. Please try again.");
+  }
+} 
   
   addFileBtn.addEventListener("click", function () {
     var fileUploadForm = document.getElementById("file-upload-form");
@@ -302,11 +310,32 @@ function displayApprovedUploads() {
   function searchContent() {
     var term = document.getElementById("searchInput").value.toLowerCase(); // Get the search term
     var approvedLinks = document.querySelectorAll(".pdf-list li a"); // Get all links
+    
+    // If the search term is empty, close all dropdowns and hide all results
+    if (term === "") {
+      var allLinks = document.querySelectorAll(".pdf-list li");
+      allLinks.forEach(function (item) {
+        item.style.display = "none"; // Hide all items when the search is empty
+      });
+  
+      // Hide all subtopics and dropdowns
+      var allSubtopics = document.querySelectorAll(".subtopic-body");
+      allSubtopics.forEach(function (subtopic) {
+        subtopic.style.display = "none"; // Hide all subtopics
+      });
+  
+      var allDropdowns = document.querySelectorAll(".dropdown-body");
+      allDropdowns.forEach(function (dropdown) {
+        dropdown.style.display = "none"; // Hide all dropdowns
+      });
+  
+      return; // Exit the function early to prevent further processing
+    }
   
     // Track if we found any matches
     var foundMatch = false;
   
-    // Loop through each link to check if the text matches the search term
+    // Loop through each link and check if the text matches the search term
     for (var i = 0; i < approvedLinks.length; i++) {
       var link = approvedLinks[i];
       var text = link.textContent.toLowerCase(); // Convert text to lowercase for case-insensitive search
@@ -352,6 +381,7 @@ function displayApprovedUploads() {
       });
     }
   }
+  
   
   
   
