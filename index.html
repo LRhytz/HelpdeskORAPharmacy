@@ -183,18 +183,27 @@
       </div>
     </div>
   </div>
+  
 
   <!-- MAIN CARD: Functional Specifications -->
   <div class="dropdown-card">
-    <div class="dropdown-btn" onclick="toggleDropdown('fs-card-body','arrow-fs')">
+    <div class="dropdown-btn" onclick="toggleDropdown('fs-card-body','arrow-sop')">
       <div class="card-title">
-        <img src="Icons/design-resources.png" alt="Functional Specs Icon" class="topic-icon">
+        <img src="Icons/design-resources.png" alt="FS Icon" class="topic-icon">
         <span>Functional Specifications</span>
       </div>
       <span id="arrow-fs" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="fs-card-body" style="display: none;">
-      <p>PDF Files</p>
+      <div class="subtopic-card">
+        <div class="subtopic-btn" onclick="toggleSubTopics('fs-pdfs','arrow-fs-pdfs')">
+          <span>PDF Files</span>
+          <span id="arrow-fs-pdfs" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="fs-pdfs" style="display: none;">
+          <ul id="approved_fs_pdf" class="pdf-list"></ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -202,13 +211,21 @@
   <div class="dropdown-card">
     <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
       <div class="card-title">
-        <img src="Icons/workflow.png" alt="Process Flow Icon" class="topic-icon">
+        <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
         <span>Process Flow</span>
       </div>
       <span id="arrow-pf" class="arrow">▼</span>
     </div>
     <div class="dropdown-body" id="pf-card-body" style="display: none;">
-      <p>PDF Files</p>
+      <div class="subtopic-card">
+        <div class="subtopic-btn" onclick="toggleSubTopics('pf-pdfs','arrow-pf-pdfs')">
+          <span>PDF Files</span>
+          <span id="arrow-pf-pdfs" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="pf-pdfs" style="display: none;">
+          <ul id="approved_pf_pdf" class="pdf-list"></ul>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -223,13 +240,22 @@
       <input type="text" id="fileTitle" placeholder="File Title" class="form-input small-input">
       <select id="module-dropdown" class="form-select small-select">
         <optgroup label="Working Instructions">
-          <option value="Receivables">Receivables</option>
-          <option value="Payables">Payables</option>
+            <option value="Receivables">Receivables</option>
+            <option value="Payables">Payables</option>
+            <option value="Purchasing">Purchasing</option>
+            <option value="General Ledger">General Ledger</option>
+            <option value="Oracle Guides">Oracle Guides</option>
         </optgroup>
         <optgroup label="SOP">
-          <option value="SOP-PDF">PDF Files</option>
+            <option value="SOP-PDF">PDF Files</option>
         </optgroup>
-      </select>
+        <optgroup label="Functional Specifications">
+            <option value="fs-PDF">PDF Files</option> <!-- Correctly named option for Functional Specifications -->
+        </optgroup>
+        <optgroup label="Process Flow">
+            <option value="pf-PDF">PDF Files</option> <!-- Correctly named option for Process Flow -->
+        </optgroup>
+    </select>    
       <button onclick="uploadFile()" class="upload-btn">Upload</button>
     </div>
   </div>
@@ -249,7 +275,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
   <script src="app.js"></script>
 
-  <button id="admin-login-btn" style="position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background-color: #48494B; color: white; border: none; cursor: pointer; font-size: 16px;">Login as Admin</button>
+  <!-- Admin Login Button with New Design -->
+<button id="admin-login-btn" class="admin-login-btn">
+  Login as Admin
+</button>
+
   <!-- Admin Login Logic -->
   <script>
     const ADMIN_PASSWORD = "Shek123"; // Change this to your desired admin password

@@ -118,7 +118,7 @@ var firebaseConfig = {
     var fileInput = document.getElementById("fileInput");
     var fileTitle = document.getElementById("fileTitle").value;
     var file = fileInput.files[0];
-    var moduleSelection = document.getElementById("module-dropdown").value;
+    var moduleSelection = document.getElementById("module-dropdown").value; // Get the selected module
   
     if (!file || fileTitle === "") {
       alert("Please choose a file and provide a title.");
@@ -135,7 +135,7 @@ var firebaseConfig = {
           title: fileTitle,
           fileName: file.name,
           fileUrl: fileUrl,
-          module: moduleSelection, // e.g., "Receivables", "Payables", "SOP-PDF"
+          module: moduleSelection, // Store the selected module (e.g., fs-PDF, pf-PDF)
           timestamp: Date.now(),
           approved: false
         });
@@ -149,61 +149,103 @@ var firebaseConfig = {
       });
   }
   
-  // --- Display Approved Uploads ---
-  function displayApprovedUploads() {
-    var uploadsRef = firebase.database().ref("uploads");
-    uploadsRef.orderByChild("approved").equalTo(true).on("value", function (snapshot) {
-      var data = snapshot.val();
   
+  // --- Display Approved Uploads ---
+  // --- Display Approved Uploads ---
+function displayApprovedUploads() {
+  var uploadsRef = firebase.database().ref("uploads");
+  uploadsRef.orderByChild("approved").equalTo(true).on("value", function (snapshot) {
+      var data = snapshot.val();
+
       // Clear existing approved items
       var containerIds = [
-        "approved_wi_receivables",
-        "approved_wi_payables",
-        "approved_wi_general_ledger",
-        "approved_sop_pdf"
+          "approved_wi_receivables",
+          "approved_wi_payables",
+          "approved_wi_purchasing",
+          "approved_wi_general_ledger",
+          "approved_wi_oracle_guides",
+          "approved_sop_pdf",
+          "approved_fs_pdf",  // Add fs-PDF
+          "approved_pf_pdf"   // Add pf-PDF
       ];
       for (var i = 0; i < containerIds.length; i++) {
-        var el = document.getElementById(containerIds[i]);
-        if (el) {
-          el.innerHTML = "";
-        }
-      }
-  
-      if (data) {
-        for (var key in data) {
-          if (data.hasOwnProperty(key)) {
-            var item = data[key];
-            var mod = item.module;
-            if (!mod) continue;
-            if (mod === "Receivables") {
-              var container = document.getElementById("approved_wi_receivables");
-              if (container) {
-                var li = document.createElement("li");
-                li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                container.appendChild(li);
-              }
-            } else if (mod === "Payables") {
-              var container = document.getElementById("approved_wi_payables");
-              if (container) {
-                var li = document.createElement("li");
-                li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                container.appendChild(li);
-              }
-            } else if (mod === "SOP-PDF") {
-              var container = document.getElementById("approved_sop_pdf");
-              if (container) {
-                var li = document.createElement("li");
-                li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                container.appendChild(li);
-              }
-            }
-            // Extend for additional modules if needed.
+          var el = document.getElementById(containerIds[i]);
+          if (el) {
+              el.innerHTML = "";
           }
-        }
       }
-    });
-  }
-  
+
+      if (data) {
+          for (var key in data) {
+              if (data.hasOwnProperty(key)) {
+                  var item = data[key];
+                  var mod = item.module;
+                  if (!mod) continue;
+
+                  // Check for different modules and add files accordingly
+                  if (mod === "Receivables") {
+                      var container = document.getElementById("approved_wi_receivables");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "Payables") {
+                      var container = document.getElementById("approved_wi_payables");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "Purchasing") {
+                      var container = document.getElementById("approved_wi_purchasing");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "General Ledger") {
+                      var container = document.getElementById("approved_wi_general_ledger");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "Oracle Guides") {
+                      var container = document.getElementById("approved_wi_oracle_guides");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "SOP-PDF") {
+                      var container = document.getElementById("approved_sop_pdf");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "fs-PDF") {  // Check for fs-PDF
+                      var container = document.getElementById("approved_fs_pdf");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  } else if (mod === "pf-PDF") {  // Check for pf-PDF
+                      var container = document.getElementById("approved_pf_pdf");
+                      if (container) {
+                          var li = document.createElement("li");
+                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
+                          container.appendChild(li);
+                      }
+                  }
+                  // Extend for additional modules if needed.
+              }
+          }
+      }
+  });
+} 
   // Initialize the display of approved uploads on page load.
   displayApprovedUploads();
   

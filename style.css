@@ -46,7 +46,7 @@ body {
 /* Main Topic Cards */
 /* ===================== */
 .dropdown-card {
-  width: 500px;
+  width: 600px;
   max-width: 90%;
   margin: 0 auto 10px;
   background-color: #fff;
@@ -129,20 +129,21 @@ body {
 /* PDF List Styling inside Subtopics */
 /* ===================== */
 .pdf-list {
-  list-style: none;
-  padding-left: 0;
-  margin: 8px 0;
+  list-style: disc;
+  padding-left: 20px;
+  margin-left: 20px;
 }
 .pdf-list li {
-  margin: 6px 0;
+  margin-bottom: 10px; /* Adjust this value to your preferred spacing */
+  line-height: 1.6; /* Optional: Add line-height for better spacing between lines */
 }
-.pdf-list li a {
-  color: #333;
-  text-decoration: none;
-  transition: color 0.2s ease;
+.pdf-list a {
+  color: #000; /* Link color */
+  text-decoration: none; /* Remove underline */
+  font-size: 16px; /* Adjust font size */
 }
-.pdf-list li a:hover {
-  color: #007BFF;
+.pdf-list a:hover {
+  color: #007BFF; /* Change color on hover */
 }
 
 /* ===================== */
@@ -273,19 +274,23 @@ body {
 /* Admin Login Button Styling */
 /* ===================== */
 .admin-login-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #343a40;
-  color: #fff;
+  padding: 15px 20px;
   border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
+  outline: none;
+  background-color: #48494B; /* Matching your background color */
+  color: white;
+  border-radius: 7px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
-  z-index: 1000;
+  transition: all 0.25s ease-out;
+  
+  /* Positioning the button at the bottom-right */
+  position: fixed;
+  bottom: 20px;  /* Adjust as needed */
+  right: 20px;   /* Adjust as needed */
 }
+
 .admin-login-btn:hover {
-  background-color: #23272b;
+  transform: translateY(-3px);
 }
+
