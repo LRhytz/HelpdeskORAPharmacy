@@ -1,6 +1,6 @@
 /* ===================================================
    app.js – full, self‑contained source
-   (2025‑04‑22 consolidated version with deduplication fix + complete mapping)
+   (with “peek” toggle for auth password)
    =================================================== */
 
 /* ---------- Firebase configuration ---------- */
@@ -26,20 +26,34 @@ const authContainer = document.getElementById("auth-container");
 const authBtn       = document.getElementById("auth-btn");
 const authPassword  = document.getElementById("auth-password");
 const addFileBtn    = document.getElementById("add-file-btn");
+// peek toggle icon (needs <i id="toggle-password" class="fas fa-eye"></i> next to password input)
+const togglePwd     = document.getElementById("toggle-password");
 
 const fileModal     = document.getElementById("file-upload-modal");
 const modalClose    = document.querySelector("#file-upload-modal .modal-close");
 
+/* ---------- “peek” password toggle ---------- */
+if (togglePwd && authPassword) {
+  togglePwd.addEventListener("click", () => {
+    const isHidden = authPassword.type === "password";
+    authPassword.type = isHidden ? "text" : "password";
+    togglePwd.classList.toggle("fa-eye");
+    togglePwd.classList.toggle("fa-eye-slash");
+  });
+}
+
 /* ---------- Authentication ---------- */
 authBtn.addEventListener("click", authenticate);
-authPassword.addEventListener("keydown", e => { if (e.key === "Enter") authenticate(); });
+authPassword.addEventListener("keydown", e => {
+  if (e.key === "Enter") authenticate();
+});
 
 function authenticate() {
   if (authPassword.value === "@Helpd3sk") {
     authContainer.style.display = "none";
     addFileBtn.style.display    = "block";
     authPassword.value          = "";
-    isAuthenticated            = true;
+    isAuthenticated             = true;
     displayApprovedUploads();   // show Archive buttons
   } else {
     alert("Incorrect password. Please try again.");
@@ -49,15 +63,17 @@ function authenticate() {
 /* ---------- Modal open / close ---------- */
 addFileBtn.addEventListener("click",     () => fileModal.hidden = false);
 modalClose .addEventListener("click",    () => fileModal.hidden = true);
-fileModal  .addEventListener("click", e => { if (e.target === fileModal) fileModal.hidden = true; });
+fileModal  .addEventListener("click", e => {
+  if (e.target === fileModal) fileModal.hidden = true;
+});
 
 /* ---------- File‑input UI ---------- */
 const fileInputElement = document.getElementById("fileInput");
 const fileNameSpan     = document.getElementById("selected-file-name");
 fileInputElement.addEventListener("change", () => {
   fileNameSpan.textContent = fileInputElement.files.length
-      ? fileInputElement.files[0].name
-      : "No file chosen";
+    ? fileInputElement.files[0].name
+    : "No file chosen";
 });
 
 /* ---------- Accordion helpers ---------- */
@@ -101,21 +117,22 @@ function uploadFile() {
   const file      = fileInputElement.files[0];
   const title     = document.getElementById("fileTitle").value.trim();
   const moduleSel = document.getElementById("module-dropdown").value;
-  if (!file || !title) return alert("Choose a file and enter a title.");
+  if (!file || !title) {
+    alert("Choose a file and enter a title.");
+    return;
+  }
 
   uploadFileToCloudinary(file)
-    .then(url =>
-      firebase.database().ref("uploads").push({
-        title,
-        fileName: file.name,
-        fileUrl: url,
-        module: moduleSel,
-        timestamp: Date.now(),
-        approved: false,
-        archiveRequested: false,
-        archived: false
-      })
-    )
+    .then(url => firebase.database().ref("uploads").push({
+      title,
+      fileName:         file.name,
+      fileUrl:          url,
+      module:           moduleSel,
+      timestamp:        Date.now(),
+      approved:         false,
+      archiveRequested: false,
+      archived:         false
+    }))
     .then(() => {
       alert("File uploaded! Awaiting approval.");
       fileModal.hidden = true;
@@ -133,56 +150,67 @@ function uploadFile() {
    ARCHIVE REQUEST WORKFLOW
    ========================================================= */
 function requestArchive(key, title) {
-  if (!isAuthenticated) return alert("Please log‑in first.");
-  if (!confirm(`Are you sure to archive “${title}”?`)) return;
+  if (!isAuthenticated) {
+    alert("Please log‑in first.");
+    return;
+  }
+  if (!confirm(`Are you sure you want to archive “${title}”?`)) return;
 
   firebase.database().ref("uploads/" + key)
     .update({ archiveRequested: true })
     .then(() => alert("Archive request sent to admin."))
-    .catch(e => { console.error(e); alert("Error requesting archive."); });
+    .catch(e => {
+      console.error(e);
+      alert("Error requesting archive.");
+    });
 }
 
 /* =========================================================
    Render approved uploads  (+ Archive button)
    ========================================================= */
 function displayApprovedUploads() {
-  // ←——— complete mapping to your <ul> IDs ———→
   const map = {
     /* Working Instructions */
-    "WorkingInstructions_Receivables":   "approved_wi_receivables",
-    "WorkingInstructions_Payables":      "approved_wi_payables",
-    "WorkingInstructions_Purchasing":    "approved_wi_purchasing",
-    "WorkingInstructions_GeneralLedger": "approved_wi_general_ledger",
-    "WorkingInstructions_OracleGuides":  "approved_wi_oracle_guides",
+    "Receivables":           "approved_wi_receivables",
+    "Payables":              "approved_wi_payables",
+    "Purchasing":            "approved_wi_purchasing",
+    "General Ledger":        "approved_wi_general_ledger",
+    "Oracle Guides":         "approved_wi_oracle_guides",
+    "Fixed Asset":           "approved_wi_fixed_asset",  
+    "Inventory":             "approved_wi_inventory",  
+    "HRMS Global":           "approved_wi_hrms_global", 
 
-    /* Standard Operating Procedures */
-    "StandardOperatingProcedures_Treasury":      "approved_sop_treasury",
-    "StandardOperatingProcedures_Payables":      "approved_sop_payables",
-    "StandardOperatingProcedures_Receivables":   "approved_sop_receivables",
-    "StandardOperatingProcedures_StoreAudit":    "approved_sop_store_audit",
-    "StandardOperatingProcedures_Taxation":      "approved_sop_taxation",
-    "StandardOperatingProcedures_GeneralLedger": "approved_sop_general_ledger",
 
-    /* Functional Specifications */
-    "FunctionalSpecifications_OracleEnhancements": "approved_fs_oracle_enhancement",
-    "FunctionalSpecifications_SharepointPA":       "approved_fs_sharepoint_pa",
+    /* SOP */
+    "sop_treasury":          "approved_sop_treasury",
+    "sop_payables":          "approved_sop_payables",
+    "sop_receivables":       "approved_sop_receivables",
+    "sop_store_audit":       "approved_sop_store_audit",
+    "sop_taxation":          "approved_sop_taxation",
+    "sop_general_ledger":    "approved_sop_general_ledger",
 
-    /* Process/System Flow */
-    "ProcessFlow_PDF": "approved_pf_pdf"
+    /* Functional Specs */
+    "fs_oracle_enhancement": "approved_fs_oracle_enhancement",
+    "fs_sharepoint_pa":      "approved_fs_sharepoint_pa",
+
+    /* Process Flow */
+    "pf-PDF":                "approved_pf_pdf"
   };
 
   firebase.database().ref("uploads").on("value", snap => {
     const data = snap.val();
     if (!data) return;
 
-    // clear all lists first
+    // Clear all target lists first
     Object.values(map).forEach(ulId => {
       const ul = document.getElementById(ulId);
       if (ul) ul.innerHTML = "";
     });
 
-    Object.entries(data).forEach(([key,it]) => {
-      if (it.approved !== true || it.archived === true) return;
+    Object.entries(data).forEach(([key, it]) => {
+      if (it.approved !== true) return;
+      if (it.archived  === true) return;
+
       const ulId = map[it.module];
       if (!ulId) {
         console.warn("No UL mapping for module:", it.module, "key:", key);
@@ -201,7 +229,7 @@ function displayApprovedUploads() {
           const btn = document.createElement("button");
           btn.textContent = "Archive";
           btn.className   = "archive-btn";
-          btn.onclick     = () => requestArchive(key,it.title);
+          btn.onclick     = () => requestArchive(key, it.title);
           li.appendChild(btn);
         }
       }
@@ -238,13 +266,13 @@ function searchContent() {
   });
   subs.forEach(sb => {
     sb.style.display = Array.from(sb.querySelectorAll("li"))
-                           .some(li => li.style.display !== "none")
-                     ? "block" : "none";
+                          .some(li => li.style.display !== "none")
+                       ? "block" : "none";
   });
   dds.forEach(dd => {
     dd.style.display = Array.from(dd.querySelectorAll("li"))
-                           .some(li => li.style.display !== "none")
-                     ? "block" : "none";
+                          .some(li => li.style.display !== "none")
+                       ? "block" : "none";
   });
   banner.hidden = found;
 }

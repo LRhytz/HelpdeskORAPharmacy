@@ -142,6 +142,34 @@
           </ul> -->
           <ul id="approved_wi_purchasing" class="pdf-list"></ul>
         </div>
+            <!-- … after your existing “Oracle Guides” block … -->
+
+    <!-- Subtopic-Card: Fixed Asset -->
+    <div class="subtopic-btn" onclick="toggleSubTopics('fixed_asset-body','arrow-fixed_asset')">
+      <span>Fixed Asset</span>
+      <span id="arrow-fixed_asset" class="arrow">▼</span>
+    </div>
+    <div class="subtopic-body" id="fixed_asset-body" style="display: none;">
+      <ul id="approved_wi_fixed_asset" class="pdf-list"></ul>
+    </div>
+
+    <!-- Subtopic-Card: Inventory -->
+    <div class="subtopic-btn" onclick="toggleSubTopics('inventory-body','arrow-inventory')">
+      <span>Inventory</span>
+      <span id="arrow-inventory" class="arrow">▼</span>
+    </div>
+    <div class="subtopic-body" id="inventory-body" style="display: none;">
+      <ul id="approved_wi_inventory" class="pdf-list"></ul>
+    </div>
+
+    <!-- Subtopic-Card: HRMS Global -->
+    <div class="subtopic-btn" onclick="toggleSubTopics('hrms_global-body','arrow-hrms_global')">
+      <span>HRMS Global</span>
+      <span id="arrow-hrms_global" class="arrow">▼</span>
+    </div>
+    <div class="subtopic-body" id="hrms_global-body" style="display: none;">
+      <ul id="approved_wi_hrms_global" class="pdf-list"></ul>
+    </div>
 
         <!-- Subtopic-Card: General Ledger -->
         <div class="subtopic-btn" onclick="toggleSubTopics('general_ledger-body','arrow-general_ledger')">
@@ -363,6 +391,9 @@
             <option value="Receivables">Receivables</option>
             <option value="Payables">Payables</option>
             <option value="Purchasing">Purchasing</option>
+            <option value="Fixed Asset">Fixed Asset</option>
+            <option value="Inventory">Inventory</option>
+            <option value="HRMS Global">HRMS Global</option>
             <option value="General Ledger">General Ledger</option>
             <option value="Oracle Guides">Oracle Guides</option>
           </optgroup>
@@ -393,7 +424,16 @@
   <!-- AUTH CONTAINER & ADD FILE -->
   <!-- ========================= -->
   <div id="auth-container" class="auth-container">
-    <input type="password" id="auth-password" placeholder="Enter password" class="auth-input">
+    <div class="password-wrapper">
+      <input
+        type="password"
+        id="auth-password"
+        placeholder="Enter password"
+        class="auth-input"
+      />
+      <!-- eye icon for toggle -->
+      <i id="toggle-password" class="fas fa-eye password-toggle"></i>
+    </div>
     <button id="auth-btn" class="auth-btn">Enter</button>
   </div>
   <button id="add-file-btn" class="add-file-btn" style="display: none;">Add File</button>
