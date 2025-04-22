@@ -1,148 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Admin Approval</title>
 
-  <!-- Firebase libraries -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
 
-  <!-- Link to external CSS for the admin page -->
-  <link rel="stylesheet" href="Admin.css" />
+  <link rel="stylesheet" href="css/Admin.css"/>
 </head>
 <body>
   <div class="container">
     <h2>Pending File Approvals</h2>
-    <div id="pending-approvals">
-      <!-- Cards will be rendered here -->
+    <div id="pending-approvals"></div>
+
+    <h2>Pending Archive Requests</h2>
+    <div id="pending-archives"></div>
+
+    <button id="toggle-archived-btn">View Archived Files</button>
+  </div>
+
+  <!-- Archived Modal -->
+  <div id="archived-modal" style="display:none">
+    <div class="modal-content">
+      <button class="modal-close" onclick="document.getElementById('archived-modal').style.display='none'">&times;</button>
+      <h2>Archived Files</h2>
+      <div id="archived-files"></div>
     </div>
   </div>
 
-  <script>
-    // 1. Update these with your actual Firebase project configuration
-    var firebaseConfig = {
-      apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
-      authDomain: "helpdeskrpharmacy.firebaseapp.com",
-      databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
-      projectId: "helpdeskrpharmacy",
-      storageBucket: "helpdeskrpharmacy.firebasestorage.app",
-      messagingSenderId: "776189919696",
-      appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
-      measurementId: "G-TL0ZQ9L17Q"
-    };
-    firebase.initializeApp(firebaseConfig);
-    console.log("Firebase initialized.");
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
+    authDomain: "helpdeskrpharmacy.firebaseapp.com",
+    databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+    projectId: "helpdeskrpharmacy",
+    storageBucket: "helpdeskrpharmacy.firebasestorage.app",
+    messagingSenderId: "776189919696",
+    appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
+    measurementId: "G-TL0ZQ9L17Q"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-    // 2. Function to load pending approvals
-    // This query retrieves records where the "approved" field is false
-    function loadApprovals() {
-      var pendingRef = firebase.database().ref("uploads")
-                           .orderByChild("approved")
-                           .equalTo(false);
-
-      pendingRef.on("value", function(snapshot) {
-        var data = snapshot.val();
-        console.log("Data retrieved from DB:", data);
-        var container = document.getElementById("pending-approvals");
-        container.innerHTML = ""; // Clear previous records
-
-        if (data) {
-          for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-              var item = data[key];
-              // Create card container
-              var card = document.createElement("div");
-              card.className = "approval-card";
-
-              // Create title element
-              var titleEl = document.createElement("div");
-              titleEl.className = "approval-title";
-              titleEl.textContent = item.title;
-
-              // Create module element
-              var moduleEl = document.createElement("div");
-              moduleEl.className = "approval-module";
-              moduleEl.textContent = "Module: " + item.module;
-
-              // Create file link element
-              var fileLink = document.createElement("a");
-              fileLink.className = "approval-file-link";
-              fileLink.href = item.fileUrl;
-              fileLink.target = "_blank";
-              fileLink.textContent = "View File";
-
-              // Create Approve button element
-              var approveBtn = document.createElement("button");
-              approveBtn.className = "approve-btn";
-              approveBtn.textContent = "Approve";
-              approveBtn.onclick = (function(uploadKey) {
-                return function() {
-                  approveFile(uploadKey);
-                };
-              })(key);
-
-              // Create Reject button element
-              var rejectBtn = document.createElement("button");
-              rejectBtn.className = "reject-btn";
-              rejectBtn.textContent = "Reject";
-              rejectBtn.onclick = (function(uploadKey) {
-                return function() {
-                  rejectFile(uploadKey);
-                };
-              })(key);
-
-              // Append elements to the card
-              card.appendChild(titleEl);
-              card.appendChild(moduleEl);
-              card.appendChild(fileLink);
-              card.appendChild(approveBtn);
-              card.appendChild(rejectBtn);
-
-              container.appendChild(card);
-              console.log("Rendered card for upload:", key);
-            }
-          }
-        } else {
-          container.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
-          console.log("No pending approvals found.");
+  function loadApprovals(){
+    firebase.database().ref("uploads").orderByChild("approved").equalTo(false)
+      .on("value", snap => {
+        const box = document.getElementById("pending-approvals");
+        box.innerHTML = "";
+        const data = snap.val();
+        if (!data) {
+          box.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
+          return;
         }
-      }, function (error) {
-        console.error("Error fetching data:", error);
+        for (let key in data) {
+          const it = data[key];
+          if (it.archiveRequested) continue;
+          const card = buildCard(it, key, "approval");
+          box.appendChild(card);
+        }
       });
-    }
+  }
 
-    // 3. Function to approve a file (updates approved to true)
-    function approveFile(uploadId) {
-      firebase.database().ref("uploads/" + uploadId)
-        .update({ approved: true })
-        .then(function() {
-          alert("File approved successfully!");
-          console.log("Approved file with ID:", uploadId);
-        })
-        .catch(function(error) {
-          console.error("Error approving file:", error);
-          alert("Error approving file. See console for details.");
-        });
-    }
+  function approveFile(key){
+    firebase.database().ref("uploads/" + key).update({ approved: true });
+  }
+  function rejectFile(key){
+    firebase.database().ref("uploads/" + key).update({ approved: "rejected" });
+  }
 
-    // 4. Function to reject a file (updates approved to "rejected" so it no longer appears)
-    function rejectFile(uploadId) {
-      firebase.database().ref("uploads/" + uploadId)
-        .update({ approved: "rejected" })
-        .then(function() {
-          alert("File rejected successfully!");
-          console.log("Rejected file with ID:", uploadId);
-        })
-        .catch(function(error) {
-          console.error("Error rejecting file:", error);
-          alert("Error rejecting file. See console for details.");
-        });
-    }
+  function loadArchives(){
+    firebase.database().ref("uploads").orderByChild("archiveRequested").equalTo(true)
+      .on("value", snap => {
+        const box = document.getElementById("pending-archives");
+        box.innerHTML = "";
+        const data = snap.val();
+        if (!data) {
+          box.innerHTML = "<div class='no-pending'>No archive requests.</div>";
+          return;
+        }
+        for (let key in data) {
+          const it = data[key];
+          const card = buildCard(it, key, "archive");
+          box.appendChild(card);
+        }
+      });
+  }
 
-    // 5. Load pending approvals when the page loads
-    window.onload = loadApprovals;
-  </script>
+  function approveArchive(key){
+    firebase.database().ref("uploads/" + key).update({
+      archived: true,
+      archiveDate: Date.now(),
+      archiveRequested: null
+    });
+  }
+
+  function rejectArchive(key){
+    firebase.database().ref("uploads/" + key).update({ archiveRequested: null });
+  }
+
+  function loadArchivedFiles(){
+    firebase.database().ref("uploads").orderByChild("archived").equalTo(true)
+      .on("value", snap => {
+        const box = document.getElementById("archived-files");
+        box.innerHTML = "";
+        const data = snap.val();
+        if (!data) {
+          box.innerHTML = "<div class='no-pending'>No archived files.</div>";
+          return;
+        }
+        for (let key in data) {
+          const it = data[key];
+          const card = document.createElement("div");
+          card.className = "approval-card fade-in";
+          card.innerHTML = `
+            <div class="approval-title">${it.title}</div>
+            <div class="approval-module">Module: ${it.module}</div>
+            <div class="approval-module">Archived on: ${new Date(it.archiveDate).toLocaleDateString()}</div>
+            <a class="approval-file-link" href="${it.fileUrl}" target="_blank">View File</a>
+          `;
+          const restore = document.createElement("button");
+          restore.textContent = "Restore";
+          restore.className = "approve-btn";
+          restore.onclick = () => restoreFile(key);
+          card.appendChild(restore);
+          box.appendChild(card);
+        }
+      });
+  }
+
+  function restoreFile(key){
+    if (!confirm("Restore this file back to its topic?")) return;
+    firebase.database().ref("uploads/" + key).update({
+      archived: false,
+      archiveDate: null
+    });
+  }
+
+  function buildCard(it, key, type){
+    const card = document.createElement("div");
+    card.className = "approval-card";
+    card.innerHTML = `
+      <div class="approval-title">${it.title}</div>
+      <div class="approval-module">Module: ${it.module}</div>
+      <a class="approval-file-link" href="${it.fileUrl}" target="_blank">View File</a>
+    `;
+    const yes = document.createElement("button");
+    const no  = document.createElement("button");
+    if (type === "approval") {
+      yes.textContent = "Approve";
+      yes.onclick     = () => approveFile(key);
+      no.textContent  = "Reject";
+      no.onclick      = () => rejectFile(key);
+    } else {
+      yes.textContent = "Archive";
+      yes.onclick     = () => approveArchive(key);
+      no.textContent  = "Reject";
+      no.onclick      = () => rejectArchive(key);
+    }
+    yes.className = "approve-btn";
+    no.className  = "reject-btn";
+    card.appendChild(yes);
+    card.appendChild(no);
+    return card;
+  }
+
+  document.getElementById("toggle-archived-btn").addEventListener("click", () => {
+    document.getElementById("archived-modal").style.display = "flex";
+    loadArchivedFiles();
+  });
+
+  window.onload = function(){
+    loadApprovals();
+    loadArchives();
+  };
+</script>
 </body>
 </html>

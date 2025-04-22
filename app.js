@@ -1,390 +1,241 @@
-// Firebase configuration
+/* ===================================================
+   app.js – full, self‑contained source
+   (2025‑04‑22 consolidated version with deduplication fix)
+   =================================================== */
+
+/* ---------- Firebase configuration ---------- */
 var firebaseConfig = {
-    apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
-    authDomain: "helpdeskrpharmacy.firebaseapp.com",
-    databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
-    projectId: "helpdeskrpharmacy",
-    storageBucket: "helpdeskrpharmacy.firebasestorage.app",
-    messagingSenderId: "776189919696",
-    appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
-    measurementId: "G-TL0ZQ9L17Q"
-  };
-  
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  
-  // Cloudinary configuration
-  var CLOUD_NAME = "dkwkdsnk7";
-  var UPLOAD_PRESET = "Helpdesk_Rpharmacy";
-  
-  // --- Authentication ---
-  var authContainer = document.getElementById("auth-container");
-  var authBtn = document.getElementById("auth-btn");
-  var authPassword = document.getElementById("auth-password");
-  var addFileBtn = document.getElementById("add-file-btn");
+  apiKey:            "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
+  authDomain:        "helpdeskrpharmacy.firebaseapp.com",
+  databaseURL:       "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+  projectId:         "helpdeskrpharmacy",
+  storageBucket:     "helpdeskrpharmacy.firebasestorage.app",
+  messagingSenderId: "776189919696",
+  appId:             "1:776189919696:web:ab3be5e265dbfff8faf9d5",
+  measurementId:     "G-TL0ZQ9L17Q"
+};
+firebase.initializeApp(firebaseConfig);
 
-  authBtn.addEventListener("click", authenticate);
-  // Event listener for pressing Enter key on the password input field
-authPassword.addEventListener("keydown", function(event) {
-  if (event.key === "Enter") { // Check if Enter key is pressed
-    authenticate(); // Trigger the authentication function
-  }
-});
+/* ---------- Cloudinary ---------- */
+const CLOUD_NAME    = "dkwkdsnk7";
+const UPLOAD_PRESET = "Helpdesk_Rpharmacy";
 
-function authenticate() {
+/* ---------- Auth / modal ---------- */
+let isAuthenticated = false;
+const authContainer = document.getElementById("auth-container");
+const authBtn       = document.getElementById("auth-btn");
+const authPassword  = document.getElementById("auth-password");
+const addFileBtn    = document.getElementById("add-file-btn");
+
+const fileModal  = document.getElementById("file-upload-modal");
+const modalClose = document.querySelector("#file-upload-modal .modal-close");
+
+/* ---------- Authentication ---------- */
+authBtn.addEventListener("click", authenticate);
+authPassword.addEventListener("keydown", e => { if (e.key === "Enter") authenticate(); });
+
+function authenticate () {
   if (authPassword.value === "@Helpd3sk") {
     authContainer.style.display = "none";
-    addFileBtn.style.display = "block";
-    authPassword.value = ""; // Clear the password field
+    addFileBtn.style.display    = "block";
+    authPassword.value = "";
+    isAuthenticated     = true;
+    displayApprovedUploads();               // show Archive buttons
   } else {
     alert("Incorrect password. Please try again.");
   }
-} 
-  
-  addFileBtn.addEventListener("click", function () {
-    var fileUploadForm = document.getElementById("file-upload-form");
-    fileUploadForm.style.display =
-      fileUploadForm.style.display === "none" ? "block" : "none";
-  });
-  
-  // --- Update Custom File Upload UI ---
-  var fileInputElement = document.getElementById("fileInput");
-  var fileNameSpan = document.getElementById("selected-file-name");
-  fileInputElement.addEventListener("change", function () {
-    if (fileInputElement.files && fileInputElement.files.length > 0) {
-      fileNameSpan.textContent = fileInputElement.files[0].name;
-    } else {
-      fileNameSpan.textContent = "No file chosen";
-    }
-  });
-  
-  // --- Toggle Functions ---
-  function toggleDropdown(bodyId, arrowId) {
-    var body = document.getElementById(bodyId);
-    var arrow = document.getElementById(arrowId);
-    if (!body) return;
-    if (body.style.display === "" || body.style.display === "none") {
-      body.style.display = "block";
-      if (arrow) arrow.textContent = "▲";
-    } else {
-      body.style.display = "none";
-      if (arrow) arrow.textContent = "▼";
-    }
-  }
-  
-  function toggleSubTopics(containerId, arrowId) {
-    var container = document.getElementById(containerId);
-    var arrow = document.getElementById(arrowId);
-    if (!container) return;
-    if (container.style.display === "" || container.style.display === "none") {
-      container.style.display = "block";
-      if (arrow) arrow.textContent = "▲";
-    } else {
-      container.style.display = "none";
-      if (arrow) arrow.textContent = "▼";
-    }
-  }
-  
-  // --- File Upload to Cloudinary & Save Metadata to Firebase ---
-  function uploadFileToCloudinary(file) {
-    console.log("Starting upload to Cloudinary for file:", file.name);
-    // Use raw/upload endpoint for PDFs
-    var url = "https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/raw/upload";
-    var formData = new FormData();
-    formData.append("file", file);
-    // Set resource type explicitly for a raw file upload (PDF)
-    formData.append("resource_type", "raw");
-    
-    // Custom Public ID: sanitize filename and remove its extension.
-    var sanitizedName = file.name.replace(/\s+/g, "_").replace(/\.[^/.]+$/, "");
-    // Append a timestamp (do not force '.pdf' so that Cloudinary handles it)
-    var publicId = sanitizedName + "_" + Date.now();
-    formData.append("public_id", publicId);
-    
-    formData.append("upload_preset", UPLOAD_PRESET);
-  
-    return fetch(url, { method: "POST", body: formData })
-      .then(function (response) {
-        console.log("Cloudinary response status:", response.status);
-        return response.json();
-      })
-      .then(function (data) {
-        console.log("Parsed Cloudinary response:", data);
-        if (data.secure_url) {
-          return data.secure_url;
-        } else {
-          throw new Error(data.error ? data.error.message : "Unknown error from Cloudinary");
-        }
-      })
-      .catch(function (error) {
-        console.error("Error uploading to Cloudinary:", error);
-        throw error;
-      });
-  }
-  
-  function uploadFile() {
-    var fileInput = document.getElementById("fileInput");
-    var fileTitle = document.getElementById("fileTitle").value;
-    var file = fileInput.files[0];
-    var moduleSelection = document.getElementById("module-dropdown").value; // Get the selected module
-  
-    if (!file || fileTitle === "") {
-      alert("Please choose a file and provide a title.");
-      return;
-    }
-  
-    console.log("Uploading file:", file.name);
-    uploadFileToCloudinary(file)
-      .then(function (fileUrl) {
-        console.log("File uploaded to Cloudinary. Secure URL:", fileUrl);
-        var dbRef = firebase.database().ref("uploads");
-        var newFileRef = dbRef.push();
-        return newFileRef.set({
-          title: fileTitle,
-          fileName: file.name,
-          fileUrl: fileUrl,
-          module: moduleSelection, // Store the selected module (e.g., fs-PDF, pf-PDF)
-          timestamp: Date.now(),
-          approved: false
-        });
-      })
-      .then(function () {
-        alert("File metadata uploaded successfully! Awaiting approval.");
-      })
-      .catch(function (error) {
-        console.error("Error in the upload process:", error);
-        alert("Error uploading file. Please try again.");
-      });
-  }
-  
+}
 
-  // --- Display Approved Uploads ---
+/* ---------- Modal open / close ---------- */
+addFileBtn.addEventListener("click", () => fileModal.hidden = false);
+modalClose .addEventListener("click", () => fileModal.hidden = true);
+fileModal  .addEventListener("click", e => { if (e.target === fileModal) fileModal.hidden = true; });
+
+/* ---------- File‑input UI ---------- */
+const fileInputElement = document.getElementById("fileInput");
+const fileNameSpan     = document.getElementById("selected-file-name");
+fileInputElement.addEventListener("change", () => {
+  fileNameSpan.textContent = fileInputElement.files.length
+      ? fileInputElement.files[0].name
+      : "No file chosen";
+});
+
+/* ---------- Accordion helpers ---------- */
+function toggleDropdown (bodyId, arrowId){
+  const body  = document.getElementById(bodyId);
+  const arrow = document.getElementById(arrowId);
+  if (!body) return;
+  const open  = body.style.display === "block";
+  body.style.display = open ? "none" : "block";
+  if (arrow) arrow.textContent = open ? "▼" : "▲";
+}
+function toggleSubTopics (containerId, arrowId){
+  const c = document.getElementById(containerId);
+  const a = document.getElementById(arrowId);
+  if (!c) return;
+  const open = c.style.display === "block";
+  c.style.display = open ? "none" : "block";
+  if (a) a.textContent = open ? "▼" : "▲";
+}
+
+/* =========================================================
+   Upload to Cloudinary  +  push metadata to Firebase
+   ========================================================= */
+function uploadFileToCloudinary (file){
+  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`;
+  const fd  = new FormData();
+  fd.append("file", file);
+  fd.append("resource_type", "raw");
+  const id  = file.name.replace(/\s+/g,"_").replace(/\.[^/.]+$/,"")+"_"+Date.now();
+  fd.append("public_id", id);
+  fd.append("upload_preset", UPLOAD_PRESET);
+
+  return fetch(url,{ method:"POST", body:fd })
+         .then(r => r.json())
+         .then(d => {
+           if (d.secure_url) return d.secure_url;
+           throw new Error(d.error?.message || "Cloudinary error");
+         });
+}
+function uploadFile (){
+  const file      = fileInputElement.files[0];
+  const title     = document.getElementById("fileTitle").value.trim();
+  const moduleSel = document.getElementById("module-dropdown").value;
+  if (!file || !title) return alert("Choose a file and enter a title.");
+
+  uploadFileToCloudinary(file)
+    .then(url => firebase.database().ref("uploads").push({
+       title, fileName:file.name, fileUrl:url,
+       module:moduleSel, timestamp:Date.now(),
+       approved:false, archiveRequested:false, archived:false
+    }))
+    .then(() => {
+       alert("File uploaded! Awaiting approval.");
+       fileModal.hidden = true;
+       fileInputElement.value = "";
+       document.getElementById("fileTitle").value = "";
+       fileNameSpan.textContent = "No file chosen";
+    })
+    .catch(err => { console.error(err); alert("Upload failed."); });
+}
+
+/* =========================================================
+   ARCHIVE REQUEST WORKFLOW
+   ========================================================= */
+function requestArchive (key,title){
+  if (!isAuthenticated) return alert("Please log‑in first.");
+  if (!confirm(`Are you sure to archive “${title}” ?`)) return;
+
+  firebase.database().ref("uploads/"+key)
+    .update({ archiveRequested:true })
+    .then(() => alert("Archive request sent to admin."))
+    .catch(e  => { console.error(e); alert("Error requesting archive."); });
+}
+
+/* =========================================================
+   Render approved uploads  (+ Archive button)
+   ========================================================= */
+let uploadsRef = null; // deduplication fix
+
 function displayApprovedUploads() {
-  var uploadsRef = firebase.database().ref("uploads");
-  uploadsRef.orderByChild("approved").equalTo(true).on("value", function (snapshot) {
-      var data = snapshot.val();
+  const map = {
+    "WorkingInstructions_Receivables": "approved_wi_receivables",
+    "WorkingInstructions_Payables": "approved_wi_payables",
+    "WorkingInstructions_Purchasing": "approved_wi_purchasing",
+    "WorkingInstructions_GeneralLedger": "approved_wi_general_ledger",
+    "WorkingInstructions_OracleGuides": "approved_wi_oracle_guides",
 
-      // Clear existing approved items
-      var containerIds = [
-          "approved_wi_receivables",
-          "approved_wi_payables",
-          "approved_wi_purchasing",
-          "approved_wi_general_ledger",
-          "approved_wi_oracle_guides",
-          "approved_sop_treasury",
-          "approved_sop_payables",
-          "approved_sop_receivables",
-          "approved_sop_store_audit",
-          "approved_sop_taxation",
-          "approved_sop_general_ledger",
-          "approved_fs_oracle_enhancement", 
-          "approved_fs_sharepoint_pa", // Add fs-PDF
-          "approved_pf_pdf"   // Add pf-PDF
-      ];
-      for (var i = 0; i < containerIds.length; i++) {
-          var el = document.getElementById(containerIds[i]);
-          if (el) {
-              el.innerHTML = "";
-          }
+    "StandardOperatingProcedures_Treasury": "approved_sop_treasury",
+    "StandardOperatingProcedures_Payables": "approved_sop_payables",
+    "StandardOperatingProcedures_Receivables": "approved_sop_receivables",
+    "StandardOperatingProcedures_StoreAudit": "approved_sop_store_audit",
+    "StandardOperatingProcedures_Taxation": "approved_sop_taxation",
+    "StandardOperatingProcedures_GeneralLedger": "approved_sop_general_ledger",
+
+    "FunctionalSpecifications_OracleEnhancements": "approved_fs_oracle_enhancement",
+    "FunctionalSpecifications_SharepointPA": "approved_fs_sharepoint_pa",
+
+    "ProcessFlow_PDF": "approved_pf_pdf"
+  };
+
+  firebase.database().ref("uploads").on("value", (snap) => {
+    const data = snap.val();
+    if (!data) return;
+
+    // Clear all lists every time to prevent duplication
+    Object.values(map).forEach((ulId) => {
+      const ul = document.getElementById(ulId);
+      if (ul) ul.innerHTML = "";
+    });
+
+    Object.entries(data).forEach(([key, it]) => {
+      if (it.approved !== true) return;
+      if (it.archived === true) return;
+
+      const ulId = map[it.module];
+      if (!ulId) {
+        console.warn("No UL target for module:", it.module);
+        return;
       }
 
-      if (data) {
-          for (var key in data) {
-              if (data.hasOwnProperty(key)) {
-                  var item = data[key];
-                  var mod = item.module;
-                  if (!mod) continue;
+      const ul = document.getElementById(ulId);
+      if (!ul) return;
 
-                  // Check for different modules and add files accordingly
-                  if (mod === "Receivables") {
-                      var container = document.getElementById("approved_wi_receivables");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "Payables") {
-                      var container = document.getElementById("approved_wi_payables");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "Purchasing") {
-                      var container = document.getElementById("approved_wi_purchasing");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "General Ledger") {
-                      var container = document.getElementById("approved_wi_general_ledger");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "Oracle Guides") {
-                      var container = document.getElementById("approved_wi_oracle_guides");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "sop_treasury") {
-                      var container = document.getElementById("approved_sop_treasury");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                    } else if (mod === "sop_payables") {
-                      var container = document.getElementById("approved_sop_payables");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                    } else if (mod === "sop_receivables") {
-                      var container = document.getElementById("approved_sop_receivables");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                    } else if (mod === "sop_store_audit") {
-                      var container = document.getElementById("approved_sop_store_audit");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                    } else if (mod === "sop_taxation") {
-                      var container = document.getElementById("approved_sop_taxation");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                    } else if (mod === "sop_general_ledger") {
-                      var container = document.getElementById("approved_sop_general_ledger");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "fs_oracle_enhancement") {  // Check for fs-PDF
-                      var container = document.getElementById("approved_fs_oracle_enhancement");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                    } else if (mod === "fs_sharepoint_pa") {  // Check for fs-PDF
-                      var container = document.getElementById("approved_fs_sharepoint_pa");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  } else if (mod === "pf-PDF") {  // Check for pf-PDF
-                      var container = document.getElementById("approved_pf_pdf");
-                      if (container) {
-                          var li = document.createElement("li");
-                          li.innerHTML = '<a href="' + item.fileUrl + '" target="_blank">' + item.title + '</a>';
-                          container.appendChild(li);
-                      }
-                  }
-                  // Extend for additional modules if needed.
-              }
-          }
-      }
-  });
-} 
-  // Initialize the display of approved uploads on page load.
-  displayApprovedUploads();
-  
-  // --- Search Functionality ---
-  // This function filters approved file links based on the search term.
-  // If a link matches, it automatically opens all parent containers so that the link is visible.
-  function searchContent() {
-    var term = document.getElementById("searchInput").value.toLowerCase(); // Get the search term
-    var approvedLinks = document.querySelectorAll(".pdf-list li a"); // Get all links
-    
-    // If the search term is empty, close all dropdowns and hide all results
-    if (term === "") {
-      var allLinks = document.querySelectorAll(".pdf-list li");
-      allLinks.forEach(function (item) {
-        item.style.display = "none"; // Hide all items when the search is empty
-      });
-  
-      // Hide all subtopics and dropdowns
-      var allSubtopics = document.querySelectorAll(".subtopic-body");
-      allSubtopics.forEach(function (subtopic) {
-        subtopic.style.display = "none"; // Hide all subtopics
-      });
-  
-      var allDropdowns = document.querySelectorAll(".dropdown-body");
-      allDropdowns.forEach(function (dropdown) {
-        dropdown.style.display = "none"; // Hide all dropdowns
-      });
-  
-      return; // Exit the function early to prevent further processing
-    }
-  
-    // Track if we found any matches
-    var foundMatch = false;
-  
-    // Loop through each link and check if the text matches the search term
-    for (var i = 0; i < approvedLinks.length; i++) {
-      var link = approvedLinks[i];
-      var text = link.textContent.toLowerCase(); // Convert text to lowercase for case-insensitive search
-  
-      if (text.indexOf(term) > -1) {
-        // Match found: Show the parent list item (li)
-        var listItem = link.parentElement;
-        listItem.style.display = ""; // Show the matched file item
-  
-        // Open the parent subtopic and dropdown if it's not already open
-        var parentSubtopic = link.closest(".subtopic-body");
-        var parentDropdown = link.closest(".dropdown-body");
-  
-        // Ensure subtopics and dropdowns are open only if there's a match
-        if (parentSubtopic && parentDropdown) {
-          parentSubtopic.style.display = "block"; // Ensure subtopic is open
-          parentDropdown.style.display = "block"; // Ensure dropdown is open
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="${it.fileUrl}" target="_blank">${it.title}</a>`;
+
+      if (isAuthenticated) {
+        if (it.archiveRequested) {
+          li.innerHTML += ' <em style="color:#888">(archive pending)</em>';
+        } else {
+          const btn = document.createElement("button");
+          btn.textContent = "Archive";
+          btn.className = "archive-btn";
+          btn.onclick = () => requestArchive(key, it.title);
+          li.appendChild(btn);
         }
-  
-        foundMatch = true; // Flag indicating that a match has been found
-      } else {
-        // Hide non-matching items
-        var listItem = link.parentElement;
-        listItem.style.display = "none"; // Hide this item
       }
-    }
-  
-    // If no matches are found, hide everything (keep dropdowns from expanding unnecessarily)
-    if (!foundMatch) {
-      var allLinks = document.querySelectorAll(".pdf-list li");
-      allLinks.forEach(function (item) {
-        item.style.display = "none"; // Hide all items if no match
-      });
-  
-      var allSubtopics = document.querySelectorAll(".subtopic-body");
-      allSubtopics.forEach(function (subtopic) {
-        subtopic.style.display = "none"; // Hide all subtopics if no match
-      });
-  
-      var allDropdowns = document.querySelectorAll(".dropdown-body");
-      allDropdowns.forEach(function (dropdown) {
-        dropdown.style.display = "none"; // Hide all dropdowns if no match
-      });
-    }
+
+      ul.appendChild(li);
+    });
+  });
+}
+
+displayApprovedUploads();
+
+/* =========================================================
+   Search
+   ========================================================= */
+function searchContent (){
+  const term   = document.getElementById("searchInput").value.toLowerCase();
+  const lis    = document.querySelectorAll(".pdf-list li");
+  const subs   = document.querySelectorAll(".subtopic-body");
+  const dds    = document.querySelectorAll(".dropdown-body");
+  const banner = document.getElementById("no-results");
+  let   found  = false;
+
+  if (!term){
+    banner.hidden = true;
+    lis .forEach(li => li.style.display = "");
+    subs.forEach(sb => sb.style.display = "none");
+    dds .forEach(dd => dd.style.display = "none");
+    return;
   }
-  
-  
-  
-  
-  
-  
-  
+
+  lis.forEach(li => {
+    const match = li.textContent.toLowerCase().includes(term);
+    li.style.display = match ? "" : "none";
+    if (match) found = true;
+  });
+  subs.forEach(sb => {
+    sb.style.display =
+      Array.from(sb.querySelectorAll("li")).some(li => li.style.display!=="none")
+      ? "block" : "none";
+  });
+  dds.forEach(dd => {
+    dd.style.display =
+      Array.from(dd.querySelectorAll("li")).some(li => li.style.display!=="none")
+      ? "block" : "none";
+  });
+  banner.hidden = found;
+}

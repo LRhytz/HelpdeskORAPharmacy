@@ -1,0 +1,175 @@
+/* =============================
+   Admin.css – Full Stylesheet
+   ============================= */
+
+/* Reset and base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Open Sans", Arial, sans-serif;
+  background: #f7f9fb;
+  color: #333;
+  padding: 20px;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Approval Layout */
+#pending-approvals,
+#pending-archives {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Cards */
+.approval-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  flex: 1 1 260px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+}
+.approval-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Card text */
+.approval-title {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #222;
+}
+.approval-module {
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #555;
+}
+.approval-file-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.approval-file-link:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+.approve-btn,
+.reject-btn,
+.admin-secondary-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 6px;
+}
+.approve-btn {
+  background: #007bff;
+  color: #fff;
+}
+.approve-btn:hover {
+  background: #0056b3;
+}
+.reject-btn {
+  background: #dc3545;
+  color: #fff;
+}
+.reject-btn:hover {
+  background: #c82333;
+}
+.admin-secondary-btn {
+  background: #f0f0f0;
+  border: 1px solid #999;
+  color: #333;
+}
+.admin-secondary-btn:hover {
+  background: #e1e1e1;
+}
+
+/* No data message */
+.no-pending {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+  margin-top: 40px;
+}
+
+/* Archived modal */
+#archived-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#archived-modal .modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+}
+#archived-modal .modal-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: #555;
+  cursor: pointer;
+}
+
+/* Toggle button */
+#toggle-archived-btn {
+  display: block;
+  margin: 40px auto 10px;
+  padding: 10px 20px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: none;
+  background-color: #343a40;
+  color: #fff;
+  cursor: pointer;
+}
+#toggle-archived-btn:hover {
+  background-color: #23272b;
+}
+
+/* Animation */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}

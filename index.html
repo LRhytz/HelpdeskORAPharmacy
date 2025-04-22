@@ -6,39 +6,75 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Helpdesk System</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Font Awesome for search icon and other icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <!-- Your existing stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
 
   <!-- Fetch Polyfill for IE -->
   <script src="https://unpkg.com/whatwg-fetch@3.6.2/dist/fetch.umd.js"></script>
 </head>
 <body>
-  <!-- Oracle Logo -->
-  <div class="oracle-image-container">
-    <img src="Images/Oracle.png" alt="Oracle Logo" class="oracle-image">
+  <!-- ========================= -->
+  <!-- STICKY HEADER -->
+  <!-- ========================= -->
+  <header class="header">
+    <div class="header-inner">
+      <!-- Oracle Logo -->
+      <div class="oracle-image-container">
+        <img src="Images/Oracle.png" alt="Oracle Logo" class="oracle-image">
+      </div>
+
+      <!-- Heading -->
+      <h2 class="help-text">What can we help you with?</h2>
+
+      <!-- Search with embedded icon -->
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search..."
+          class="form-input"
+          onkeyup="searchContent()"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- “No results” feedback -->
+  <div id="no-results" class="no-results" hidden>
+    No matching topics found.
   </div>
 
-  <!-- Heading & Search (only added id & onkeyup for search) -->
-  <h2 class="help-text">What can we help you with?</h2>
-  <input type="text" id="searchInput" placeholder="Search..." class="form-input" onkeyup="searchContent()" />
+  <!-- ========================= -->
+  <!-- MAIN CONTENT WRAPPER -->
+  <!-- ========================= -->
+  <main class="main-content">
 
-  <!-- MAIN CARD: Working Instructions -->
-  <div class="dropdown-card">
-    <div class="dropdown-btn" onclick="toggleDropdown('wi-card-body','arrow-wi')">
-      <div class="card-title">
-        <img src="Icons/information-pamphlet.png" alt="Working Instructions Icon" class="topic-icon">
-        <span>Working Instructions</span>
+    <!-- MAIN CARD: Working Instructions -->
+    <div class="dropdown-card">
+      <div class="dropdown-btn" onclick="toggleDropdown('wi-card-body','arrow-wi')">
+        <div class="card-title">
+          <img src="Icons/information-pamphlet.png" alt="Working Instructions Icon" class="topic-icon">
+          <span>Working Instructions</span>
+        </div>
+        <span id="arrow-wi" class="arrow">▼</span>
       </div>
-      <span id="arrow-wi" class="arrow">▼</span>
-    </div>
-    <div class="dropdown-body" id="wi-card-body" style="display: none;">
-      <!-- Subtopic-Card: Receivables -->
+      <div class="dropdown-body" id="wi-card-body" style="display: none;">
+
+        <!-- Subtopic-Card: Receivables -->
         <div class="subtopic-btn" onclick="toggleSubTopics('receivables-body','arrow-receivables')">
           <span>Receivables</span>
           <span id="arrow-receivables" class="arrow">▼</span>
         </div>
         <div class="subtopic-body" id="receivables-body" style="display: none;">
-          <ul class="pdf-list">
-            <!-- Static PDF Links -->
+          <!--- <ul class="pdf-list">
             <li><a href="pdfs/working_instructions/receivables/How to Approve AR Adjustments .pdf" target="_blank">How to Approve AR Adjustments</a></li>
             <li><a href="pdfs/working_instructions/receivables/How to Create AR Transation Type and Receipt Activity.pdf" target="_blank">How to Create AR Transaction Type and Receipt Activity</a></li>
             <li><a href="pdfs/working_instructions/receivables/How to Interface AR Invoices.pdf" target="_blank">How to Interface AR Invoices</a></li>
@@ -47,18 +83,17 @@
             <li><a href="pdfs/working_instructions/receivables/How to Interface MISC Receipt.pdf" target="_blank">How to Interface MISC Receipt</a></li>
             <li><a href="pdfs/working_instructions/receivables/How to Interface SCD Refund.pdf" target="_blank">How to Interface SCD Refund</a></li>
             <li><a href="pdfs/working_instructions/receivables/How to Interface Standard Receipt.pdf" target="_blank">How to Interface Standard Receipt</a></li>
-          </ul>
-          <!-- Approved dynamic items -->
+          </ul> -->
           <ul id="approved_wi_receivables" class="pdf-list"></ul>
         </div>
-      <!-- Subtopic-Card: Payables -->
+
+        <!-- Subtopic-Card: Payables -->
         <div class="subtopic-btn" onclick="toggleSubTopics('payables-body','arrow-payables')">
           <span>Payables</span>
           <span id="arrow-payables" class="arrow">▼</span>
         </div>
         <div class="subtopic-body" id="payables-body" style="display: none;">
-          <ul class="pdf-list">
-            <!-- Static PDF Links -->
+         <!----- <ul class="pdf-list">
             <li><a href="pdfs/working_instructions/payables/APPROVING AR ADJUSTMENTS.pdf" target="_blank">Approving AR Adjustments</a></li>
             <li><a href="pdfs/working_instructions/payables/Delegating PR Approval.pdf" target="_blank">Delegating PR Approval</a></li>
             <li><a href="pdfs/working_instructions/payables/How to Book a Debit Memo.pdf" target="_blank">How to Book a Debit Memo</a></li>
@@ -72,22 +107,22 @@
             <li><a href="pdfs/working_instructions/payables/How to Interface Supplier (Trade).pdf" target="_blank">How to Interface Supplier (Trade)</a></li>
             <li><a href="pdfs/working_instructions/payables/How to Prepare a Prepayment.pdf" target="_blank">How to Prepare a Prepayment</a></li>
             <li><a href="pdfs/working_instructions/payables/How to Prepare a Refund.pdf" target="_blank">How to Prepare a Refund</a></li>
-            <li><a href="pdfs/working_instructions/payables/How to Prepare an Online Payment .pdf" target="_blank">How to Prepare an Online Payment </a></li>
-            <li><a href="pdfs/working_instructions/payables/How to Setup a Supplier .pdf" target="_blank">How to Setup a Supplier </a></li>
+            <li><a href="pdfs/working_instructions/payables/How to Prepare an Online Payment .pdf" target="_blank">How to Prepare an Online Payment</a></li>
+            <li><a href="pdfs/working_instructions/payables/How to Setup a Supplier .pdf" target="_blank">How to Setup a Supplier</a></li>
             <li><a href="pdfs/working_instructions/payables/How to Upload Check.pdf" target="_blank">How to Upload Check</a></li>
             <li><a href="pdfs/working_instructions/payables/How to Upload Payment.pdf" target="_blank">How to Upload Payment</a></li>
             <li><a href="pdfs/working_instructions/payables/How to Validate an Invoice.pdf" target="_blank">How to Validate an Invoice</a></li>
-          </ul>
-          <!-- Approved dynamic items -->
+          </ul> --->
           <ul id="approved_wi_payables" class="pdf-list"></ul>
         </div>
+
+        <!-- Subtopic-Card: Purchasing -->
         <div class="subtopic-btn" onclick="toggleSubTopics('purchasing-body','arrow-purchasing')">
           <span>Purchasing</span>
           <span id="arrow-purchasing" class="arrow">▼</span>
         </div>
         <div class="subtopic-body" id="purchasing-body" style="display: none;">
-          <ul class="pdf-list">
-            <!-- Static PDF Links -->
+         <!----  <ul class="pdf-list">
             <li><a href="pdfs/working_instructions/purchasing/Creating Purchase Request.pdf" target="_blank">Creating Purchase Request</a></li>
             <li><a href="pdfs/working_instructions/purchasing/How to Approve Purchase Request V2.pdf" target="_blank">How to Approve Purchase Request V2</a></li>
             <li><a href="pdfs/working_instructions/purchasing/How to Approve Purchase Request.pdf" target="_blank">How to Approve Purchase Request</a></li>
@@ -100,203 +135,197 @@
             <li><a href="pdfs/working_instructions/purchasing/How to Delegate PR Approval V2.pdf" target="_blank">How to Delegate PR Approval V2</a></li>
             <li><a href="pdfs/working_instructions/purchasing/How to Delegate PR Approval.pdf" target="_blank">How to Delegate PR Approval</a></li>
             <li><a href="pdfs/working_instructions/purchasing/How to Generate Expenditure Request Form.pdf" target="_blank">How to Generate Expenditure Request Form</a></li>
-            <li><a href="pdfs/working_instructions/purchasing/How to Generate Purchase Request .pdf" target="_blank">How to Generate Purchase Request </a></li>
+            <li><a href="pdfs/working_instructions/purchasing/How to Generate Purchase Request .pdf" target="_blank">How to Generate Purchase Request</a></li>
             <li><a href="pdfs/working_instructions/purchasing/How to Receive Purchase Request in Oracle.pdf" target="_blank">How to Receive Purchase Request in Oracle</a></li>
             <li><a href="pdfs/working_instructions/purchasing/How to Return Received Purchase.pdf" target="_blank">How to Return Received Purchase</a></li>
             <li><a href="pdfs/working_instructions/purchasing/Receiving Purchase Request.pdf" target="_blank">Receiving Purchase Request</a></li>
-          </ul>
-          <!-- Approved dynamic items -->
+          </ul> -->
           <ul id="approved_wi_purchasing" class="pdf-list"></ul>
         </div>
+
+        <!-- Subtopic-Card: General Ledger -->
         <div class="subtopic-btn" onclick="toggleSubTopics('general_ledger-body','arrow-general_ledger')">
           <span>General Ledger</span>
           <span id="arrow-general_ledger" class="arrow">▼</span>
         </div>
         <div class="subtopic-body" id="general_ledger-body" style="display: none;">
-          <ul class="pdf-list">
-            <!-- Static PDF Links -->
+         <!----  <ul class="pdf-list">
             <li><a href="pdfs/working_instructions/general_ledger/How to Create Accounting.pdf" target="_blank">How to Create Accounting</a></li>
             <li><a href="pdfs/working_instructions/general_ledger/How to Create Chart of Account.pdf" target="_blank">How to Create Chart of Account</a></li>
             <li><a href="pdfs/working_instructions/general_ledger/How to Interface Payroll.pdf" target="_blank">How to Interface Payroll</a></li>
             <li><a href="pdfs/working_instructions/general_ledger/How to Interface Sales.pdf" target="_blank">How to Interface Sales</a></li>
             <li><a href="pdfs/working_instructions/general_ledger/How to Open or Close a Period.pdf" target="_blank">How to Open or Close a Period</a></li>
             <li><a href="pdfs/working_instructions/general_ledger/NT_Workflow_User Manual.pdf" target="_blank">NT Workflow User Manual</a></li>
-          </ul>
-          <!-- Approved dynamic items -->
+          </ul> -->
           <ul id="approved_wi_general_ledger" class="pdf-list"></ul>
         </div>
+
+        <!-- Subtopic-Card: Oracle Guides -->
         <div class="subtopic-btn" onclick="toggleSubTopics('oracle_guides-body','arrow-oracle_guides')">
           <span>Oracle Guides</span>
           <span id="arrow-oracle_guides" class="arrow">▼</span>
         </div>
         <div class="subtopic-body" id="oracle_guides-body" style="display: none;">
-          <ul class="pdf-list">
-            <!-- Static PDF Links -->
-            <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">How to Create Oracle User Account </a></li>
+         <!---  <ul class="pdf-list">
+            <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">How to Create Oracle User Account</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/HOW TO LOG-IN TO ORACLE.pdf" target="_blank">How to Login to Oracle</a></li>
-            <li><a href="pdfs/working_instructions/oracle_guides/How to Reset Oracle Password .pdf" target="_blank">How to Reset Oracle Password </a></li>
+            <li><a href="pdfs/working_instructions/oracle_guides/How to Reset Oracle Password .pdf" target="_blank">How to Reset Oracle Password</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/how-to-create-new-store-location.pdf" target="_blank">How to Create New Store Location</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/Mozilla Fix - PDF Automatically downloads when opened through the Helpdesk.pdf" target="_blank">Mozilla Fix - PDF Automatically downloads when opened through the Helpdesk</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/Oracle Interface Guide.pdf" target="_blank">Oracle Interface Guide</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/Oracle Reports Glossary.pdf" target="_blank">Oracle Reports Glossary</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/ORACLE USER INTERFACE NAVIGATION.pdf" target="_blank">Oracle User Interface Navigation</a></li>
-            <li><a href="pdfs/working_instructions/oracle_guides/oracle-bugs-and-fixes.pdf" target="_blank">Oracles Bugs and Fixes</a></li>
+            <li><a href="pdfs/working_instructions/oracle_guides/oracle-bugs-and-fixes.pdf" target="_blank">Oracle Bugs and Fixes</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/Other Guides for FBA.pdf" target="_blank">Other Guides for FBA</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/Rose Pharmacy Helpdesk Source Code Modification Manual.pdf" target="_blank">Rose Pharmacy Helpdesk Source Code Modification Manual</a></li>
             <li><a href="pdfs/working_instructions/oracle_guides/User Interface Navigation.pdf" target="_blank">User Interface Navigation</a></li>
-          </ul>
-          <!-- Approved dynamic items -->
+          </ul> -->
           <ul id="approved_wi_oracle_guides" class="pdf-list"></ul>
         </div>
-    </div>
-  </div>  
 
-  <!-- MAIN CARD: SOP -->
-  <div class="dropdown-card">
-    <div class="dropdown-btn" onclick="toggleDropdown('sop-card-body','arrow-sop')">
-      <div class="card-title">
-        <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
-        <span>Standard Operating Procedures</span>
-      </div>
-      <span id="arrow-sop" class="arrow">▼</span>
-    </div>
-    <div class="dropdown-body" id="sop-card-body" style="display: none;">
-      <div class="subtopic-btn" onclick="toggleSubTopics('sop_treasury-body','arrow-sop_treasury')">
-        <span>Treasury</span>
-        <span id="arrow-sop_treasury" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="sop_treasury-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_sop_treasury" class="pdf-list"></ul>
-      </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('sop_payables-body','arrow-sop_payables')">
-        <span>Payables</span>
-        <span id="arrow-sop_payables" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="sop_payables-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_sop_payables" class="pdf-list"></ul>
-      </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('sop_receivables-body','arrow-sop_receivables')">
-        <span>Receivables</span>
-        <span id="arrow-sop_receivables" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="sop_receivables-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_sop_receivables" class="pdf-list"></ul>
-      </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('sop_store_audit-body','arrow-sop_store_audit')">
-        <span>Store Audit</span>
-        <span id="arrow-sop_store_audit" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="sop_store_audit-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_sop_store_audit" class="pdf-list"></ul>
-      </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('sop_taxation-body','arrow-sop_taxation')">
-        <span>Taxation</span>
-        <span id="arrow-sop_taxation" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="sop_taxation-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_sop_taxation" class="pdf-list"></ul>
-      </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('sop_general_ledger-body','arrow-sop_general_ledger')">
-        <span>General Ledger</span>
-        <span id="arrow-sop_general_ledger" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="sop_general_ledger-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/working_instructions/oracle_guides/How to Create Oracle User Account .pdf" target="_blank">Blank</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_sop_general_ledger" class="pdf-list"></ul>
       </div>
     </div>
-  </div>
-  
 
-  <!-- MAIN CARD: Functional Specifications -->
-  <div class="dropdown-card">
-    <div class="dropdown-btn" onclick="toggleDropdown('fs-card-body','arrow-sop')">
-      <div class="card-title">
-        <img src="Icons/design-resources.png" alt="FS Icon" class="topic-icon">
-        <span>Functional Specifications</span>
+    <!-- MAIN CARD: Standard Operating Procedures -->
+    <div class="dropdown-card">
+      <div class="dropdown-btn" onclick="toggleDropdown('sop-card-body','arrow-sop')">
+        <div class="card-title">
+          <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
+          <span>Standard Operating Procedures</span>
+        </div>
+        <span id="arrow-sop" class="arrow">▼</span>
       </div>
-      <span id="arrow-fs" class="arrow">▼</span>
-    </div>
-    <div class="dropdown-body" id="fs-card-body" style="display: none;">
-      <div class="subtopic-btn" onclick="toggleSubTopics('fs_oracle_enhancement-body','arrow-fs_oracle_enhancement')">
-        <span>Oracle Enhancements</span>
-        <span id="arrow-fs_oracle_enhancement" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="fs_oracle_enhancement-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AP Invoice Interface from MMS.pdf" target="_blank">AP Invoice Interface from MMS</a></li>
-          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AR Customer Interface from MMS.pdf" target="_blank">AR Customer Interface from MMS</a></li>
-          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AR Invoice Interface from MMS.pdf" target="_blank">AR Invoice Interface from MMS</a></li>
-          <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AP Vendor Interface from MMS.pdf" target="_blank">AP Vendor Interface from MMS</a></li>
-          <li><a href="pdfs/functional_specifications/Oracle Enhancements/AP Vendor Interface Enhancement.pdf" target="_blank">AP Vendor Interface Enhancement</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_fs_oracle_enhancement" class="pdf-list"></ul>
-      </div>
-      <div class="subtopic-btn" onclick="toggleSubTopics('fs_sharepoint_pa-body','arrow-fs_sharepoint_pa')">
-        <span>Sharepoint/PowerAutomate</span>
-        <span id="arrow-fs_sharepoint_pa" class="arrow">▼</span>
-      </div>
-      <div class="subtopic-body" id="fs_sharepoint_pa-body" style="display: none;">
-        <ul class="pdf-list">
-          <!-- Static PDF Links -->
-          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Collection Receipt Form.pdf" target="_blank">Collection Receipt Form</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Credit Memo Form.pdf" target="_blank">Credit Memo Form</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Debit Memo Form.pdf" target="_blank">Debit Memo Form</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Disbursement Summary Report.pdf" target="_blank">Disbursement Summary Report</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/MD050 E-Billing Statement.pdf" target="_blank">E-Billing Statement</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/Budget Monitoring Workflow.pdf" target="_blank">Budget Monitoring Workflow</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/HSBC Pesonet Enhancement.pdf" target="_blank">HSBC Pesonet Enhancement</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/Metrobank Online Solution Bank File.pdf" target="_blank">Metrobank Online Solution Bank File</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/Service Invoice.pdf" target="_blank">Service Invoice</a></li>
-          <li><a href="pdfs/functional_specifications/Sharepoint/Auto-Email_PA_2307_NP.pdf" target="_blank">Auto-Email_PA_2307_NP</a></li>
-        </ul>
-        <!-- Approved dynamic items -->
-        <ul id="approved_fs_sharepoint_pa" class="pdf-list"></ul>
-      </div>  
-    </div>
-  </div>
+      <div class="dropdown-body" id="sop-card-body" style="display: none;">
 
-  <!-- MAIN CARD: Process Flow -->
-  <div class="dropdown-card">
-    <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
-      <div class="card-title">
-        <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
-        <span>Process/System Flow</span>
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop_treasury-body','arrow-sop_treasury')">
+          <span>Treasury</span>
+          <span id="arrow-sop_treasury" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop_treasury-body" style="display: none;">
+          <!--- <ul class="pdf-list">
+      
+          </ul> --->
+          <ul id="approved_sop_treasury" class="pdf-list"></ul>
+        </div>
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop_payables-body','arrow-sop_payables')">
+          <span>Payables</span>
+          <span id="arrow-sop_payables" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop_payables-body" style="display: none;">
+         <!--  <ul class="pdf-list">
+            
+          </ul> -->
+          <ul id="approved_sop_payables" class="pdf-list"></ul>
+        </div>
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop_receivables-body','arrow-sop_receivables')">
+          <span>Receivables</span>
+          <span id="arrow-sop_receivables" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop_receivables-body" style="display: none;">
+          <!---- <ul class="pdf-list">
+            
+          </ul> ---> 
+          <ul id="approved_sop_receivables" class="pdf-list"></ul>
+        </div>
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop_store_audit-body','arrow-sop_store_audit')">
+          <span>Store Audit</span>
+          <span id="arrow-sop_store_audit" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop_store_audit-body" style="display: none;">
+          <!---- <ul class="pdf-list">
+            
+          </ul> ----> 
+          <ul id="approved_sop_store_audit" class="pdf-list"></ul>
+        </div>
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop_taxation-body','arrow-sop_taxation')">
+          <span>Taxation</span>
+          <span id="arrow-sop_taxation" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop_taxation-body" style="display: none;">
+         <!----  <ul class="pdf-list">
+            
+          </ul>-->
+          <ul id="approved_sop_taxation" class="pdf-list"></ul>
+        </div>
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('sop_general_ledger-body','arrow-sop_general_ledger')">
+          <span>General Ledger</span>
+          <span id="arrow-sop_general_ledger" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="sop_general_ledger-body" style="display: none;">
+          <!---- <ul class="pdf-list">
+            
+          </ul> ---> 
+          <ul id="approved_sop_general_ledger" class="pdf-list"></ul>
+        </div>
+
       </div>
-      <span id="arrow-pf" class="arrow">▼</span>
     </div>
-    <div class="dropdown-body" id="pf-card-body" style="display: none;">
+
+    <!-- MAIN CARD: Functional Specifications -->
+    <div class="dropdown-card">
+      <div class="dropdown-btn" onclick="toggleDropdown('fs-card-body','arrow-fs')">
+        <div class="card-title">
+          <img src="Icons/design-resources.png" alt="FS Icon" class="topic-icon">
+          <span>Functional Specifications</span>
+        </div>
+        <span id="arrow-fs" class="arrow">▼</span>
+      </div>
+      <div class="dropdown-body" id="fs-card-body" style="display: none;">
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('fs_oracle_enhancement-body','arrow-fs_oracle_enhancement')">
+          <span>Oracle Enhancements</span>
+          <span id="arrow-fs_oracle_enhancement" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="fs_oracle_enhancement-body" style="display: none;">
+         <!----  <ul class="pdf-list">
+            <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AP Invoice Interface from MMS.pdf" target="_blank">AP Invoice Interface from MMS</a></li>
+            <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AR Customer Interface from MMS.pdf" target="_blank">AR Customer Interface from MMS</a></li>
+            <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AR Invoice Interface from MMS.pdf" target="_blank">AR Invoice Interface from MMS</a></li>
+            <li><a href="pdfs/functional_specifications/Oracle Enhancements/MD050 AP Vendor Interface from MMS.pdf" target="_blank">AP Vendor Interface from MMS</a></li>
+            <li><a href="pdfs/functional_specifications/Oracle Enhancements/AP Vendor Interface Enhancement.pdf" target="_blank">AP Vendor Interface Enhancement</a></li>
+          </ul> -->
+          <ul id="approved_fs_oracle_enhancement" class="pdf-list"></ul>
+        </div>
+
+        <div class="subtopic-btn" onclick="toggleSubTopics('fs_sharepoint_pa-body','arrow-fs_sharepoint_pa')">
+          <span>Sharepoint/PowerAutomate</span>
+          <span id="arrow-fs_sharepoint_pa" class="arrow">▼</span>
+        </div>
+        <div class="subtopic-body" id="fs_sharepoint_pa-body" style="display: none;">
+         <!----  <ul class="pdf-list">
+            <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Collection Receipt Form.pdf" target="_blank">Collection Receipt Form</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Credit Memo Form.pdf" target="_blank">Credit Memo Form</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Debit Memo Form.pdf" target="_blank">Debit Memo Form</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/MD050 Disbursement Summary Report.pdf" target="_blank">Disbursement Summary Report</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/MD050 E-Billing Statement.pdf" target="_blank">E-Billing Statement</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/Budget Monitoring Workflow.pdf" target="_blank">Budget Monitoring Workflow</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/HSBC Pesonet Enhancement.pdf" target="_blank">HSBC Pesonet Enhancement</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/Metrobank Online Solution Bank File.pdf" target="_blank">Metrobank Online Solution Bank File</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/Service Invoice.pdf" target="_blank">Service Invoice</a></li>
+            <li><a href="pdfs/functional_specifications/Sharepoint/Auto-Email_PA_2307_NP.pdf" target="_blank">Auto-Email_PA_2307_NP</a></li>
+          </ul> -->
+          <ul id="approved_fs_sharepoint_pa" class="pdf-list"></ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MAIN CARD: Process/System Flow -->
+    <div class="dropdown-card">
+      <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
+        <div class="card-title">
+          <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
+          <span>Process/System Flow</span>
+        </div>
+        <span id="arrow-pf" class="arrow">▼</span>
+      </div>
+      <div class="dropdown-body" id="pf-card-body" style="display: none;">
+
         <div class="subtopic-btn" onclick="toggleSubTopics('pf-pdfs','arrow-pf-pdfs')">
           <span>PDF Files</span>
           <span id="arrow-pf-pdfs" class="arrow">▼</span>
@@ -304,74 +333,88 @@
         <div class="subtopic-body" id="pf-pdfs" style="display: none;">
           <ul id="approved_pf_pdf" class="pdf-list"></ul>
         </div>
-    </div>
-  </div>
 
-  <!-- FILE UPLOAD FORM -->
-  <div id="file-upload-form" style="display: none;">
-    <div class="file-upload-inner">
-      <div class="custom-file-upload">
-        <label for="fileInput" class="choose-file-btn">Choose File</label>
-        <span id="selected-file-name" class="file-name">No file chosen</span>
       </div>
-      <input type="file" id="fileInput" accept="application/pdf" style="display: none;">
-      <input type="text" id="fileTitle" placeholder="File Title" class="form-input small-input">
-      <select id="module-dropdown" class="form-select small-select">
-        <optgroup label="Working Instructions">
+    </div>
+
+  </main>
+
+  <!-- ========================= -->
+  <!-- FILE UPLOAD FORM -->
+  <!-- ========================= -->
+  <!-- =========  ADD FILE MODAL  ========= -->
+<div id="file-upload-modal" class="modal" hidden>
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Close">&times;</button>
+
+    <!-- your existing upload UI, unchanged -->
+    <div id="file-upload-form">
+      <div class="file-upload-inner">
+        <div class="custom-file-upload">
+          <label for="fileInput" class="choose-file-btn">Choose File</label>
+          <span id="selected-file-name" class="file-name">No file chosen</span>
+        </div>
+
+        <input type="file" id="fileInput" accept="application/pdf" hidden />
+        <input type="text"  id="fileTitle" placeholder="File Title" class="form-input small-input" />
+
+        <select id="module-dropdown" class="form-select small-select">
+          <optgroup label="Working Instructions">
             <option value="Receivables">Receivables</option>
             <option value="Payables">Payables</option>
             <option value="Purchasing">Purchasing</option>
             <option value="General Ledger">General Ledger</option>
             <option value="Oracle Guides">Oracle Guides</option>
-        </optgroup>
-        <optgroup label="SOP">
+          </optgroup>
+          <optgroup label="SOP">
             <option value="sop_treasury">Treasury</option>
             <option value="sop_payables">Payables</option>
             <option value="sop_receivables">Receivables</option>
             <option value="sop_store_audit">Store Audit</option>
             <option value="sop_taxation">Taxation</option>
             <option value="sop_general_ledger">General Ledger</option>
-        </optgroup>
-        <optgroup label="Functional Specifications">
+          </optgroup>
+          <optgroup label="Functional Specifications">
             <option value="fs_oracle_enhancement">Oracle Enhancements</option>
-            <option value="fs_sharepoint_pa">Sharepoint/PowerAutomate</option> <!-- Correctly named option for Functional Specifications -->
-        </optgroup>
-        <optgroup label="Process Flow">
-            <option value="pf-PDF">PDF Files</option> <!-- Correctly named option for Process Flow -->
-        </optgroup>
-    </select>    
-      <button onclick="uploadFile()" class="upload-btn">Upload</button>
+            <option value="fs_sharepoint_pa">Sharepoint/PowerAutomate</option>
+          </optgroup>
+          <optgroup label="Process Flow">
+            <option value="pf-PDF">PDF Files</option>
+          </optgroup>
+        </select>
+        <button onclick="uploadFile()" class="upload-btn">Upload</button>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Authentication and other buttons -->
+
+  <!-- ========================= -->
+  <!-- AUTH CONTAINER & ADD FILE -->
+  <!-- ========================= -->
   <div id="auth-container" class="auth-container">
     <input type="password" id="auth-password" placeholder="Enter password" class="auth-input">
     <button id="auth-btn" class="auth-btn">Enter</button>
   </div>
-
-  <!-- Add File Button (bottom-left), hidden initially -->
   <button id="add-file-btn" class="add-file-btn" style="display: none;">Add File</button>
 
-  <!-- Firebase & Scripts -->
+  <!-- ========================= -->
+  <!-- ADMIN BUTTON & SCRIPTS -->
+  <!-- ========================= -->
+  <button id="admin-login-btn" class="admin-login-btn">Admin</button>
+
+  <!-- Firebase & your existing app.js -->
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
   <script src="app.js"></script>
 
-  <!-- Admin Login Button with New Design -->
-<button id="admin-login-btn" class="admin-login-btn">
-   Admin
-</button>
-
   <!-- Admin Login Logic -->
   <script>
-    const ADMIN_PASSWORD = "@smjbolotaulo"; // Change this to your desired admin password
-
-    document.getElementById("admin-login-btn").addEventListener("click", function() {
-      var enteredPassword = prompt("Enter admin password:");
+    const ADMIN_PASSWORD = "@smjbolotaulo";
+    document.getElementById("admin-login-btn").addEventListener("click", () => {
+      const enteredPassword = prompt("Enter admin password:");
       if (enteredPassword === ADMIN_PASSWORD) {
-        // Redirect to the admin page (ensure admin.html exists in your project)
         window.location.href = "admin.html";
       } else {
         alert("Incorrect admin password. Please try again.");

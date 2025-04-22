@@ -1,0 +1,375 @@
+/* ===================== */
+/* VARIABLES & RESET     */
+/* ===================== */
+:root {
+  --bg:        #fafafa;
+  --card-bg:   #ffffff;
+  --primary:   #cc0000;
+  --secondary: #48494b;
+  --text:      #333333;
+  --border:    #dddddd;
+  --shadow:    rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  padding-bottom: 60px; /* space for footer */
+}
+
+/* ===================== */
+/* HEADER                */
+/* ===================== */
+.header {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  box-shadow: 0 2px 4px var(--shadow);
+  z-index: 100;
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+}
+.oracle-image-container {
+  text-align: left;
+  margin: 0;
+}
+.oracle-image {
+  width: 120px;
+  display: block;
+}
+.help-text {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 600;
+  white-space: nowrap;
+  margin: 0 20px;
+}
+
+/* ===================== */
+/* SEARCH BOX            */
+/* ===================== */
+.search-wrapper {
+  position: relative;
+  width: 300px;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 12px 10px 36px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+.form-input:focus {
+  outline: none;           /* remove red ring */
+  border-color: var(--primary);
+}
+
+/* ===================== */
+/* NO RESULTS MESSAGE    */
+/* ===================== */
+.no-results {
+  max-width: 900px;
+  margin: 16px auto;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
+/* ===================== */
+/* MAIN CONTENT          */
+/* ===================== */
+.main-content {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 20px;
+}
+
+/* ===================== */
+/* DROPDOWN CARDS        */
+/* ===================== */
+.dropdown-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 2px 5px var(--shadow);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.dropdown-card:hover {
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.dropdown-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  cursor: pointer;
+}
+.dropdown-btn:focus {
+  outline: 2px solid var(--primary);
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 550;
+}
+.topic-icon {
+  width: 24px;
+  margin-right: 12px;
+}
+.arrow {
+  transition: transform 0.3s ease;
+}
+.dropdown-btn.open .arrow {
+  transform: rotate(180deg);
+}
+.dropdown-body {
+  padding: 0 20px 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* ===================== */
+/* SUBTOPIC BUTTONS      */
+/* ===================== */
+.subtopic-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.subtopic-btn:focus {
+  outline: 2px solid var(--primary);
+}
+.subtopic-body {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+/* ===================== */
+/* PDF LIST              */
+/* ===================== */
+.pdf-list {
+  list-style: disc;
+  padding-left: 20px;
+  margin-left: 20px;
+}
+.pdf-list li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+.pdf-list a {
+  color: #000;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 550;
+}
+.pdf-list a:hover {
+  color: #6495ED;
+}
+
+/* ===================== */
+/* FILE UPLOAD FORM      */
+/* ===================== */
+#file-upload-form {
+  margin-top: 16px;
+}
+.file-upload-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+}
+.choose-file-btn {
+  background-color: #007BFF;
+  color: #fff;
+  padding: 0 15px;
+  height: 40px;
+  line-height: 40px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.choose-file-btn:hover {
+  background-color: #0056b3;
+}
+.file-name {
+  font-size: 14px;
+  color: #555;
+  font-style: italic;
+  max-width:150px;
+  white-space: nowrap;
+  overflow: auto;
+  text-overflow: clip;
+}
+.form-input.small-input,
+.form-select.small-select {
+  width: 140px;
+  border: 1px solid #ccc;
+  padding: 0 6px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+.upload-btn {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 0 14px;
+  height: 44px;
+  line-height: 44px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.upload-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===================== */
+/* MODAL LAYOUT          */
+/* ===================== */
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;
+}
+.modal-content{
+  background:#fff;border-radius:6px;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  padding:24px;max-width:700px;width:50%;position:relative;
+}
+.modal-close{
+  position:absolute;top:15px;right:15px;
+  background:none;border:none;font-size:24px;cursor:pointer;
+}
+.modal[hidden] {            /* <-- NEW */
+  display: none !important;
+}
+/* ===================== */
+/* AUTH CONTAINER        */
+/* ===================== */
+.auth-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 5px;
+}
+.auth-input {
+  padding: 6px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.auth-btn {
+  padding: 6px 12px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.auth-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===================== */
+/* ADD FILE BUTTON       */
+/* ===================== */
+.add-file-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.add-file-btn:hover {
+  background-color: #0056b3;
+}
+
+/* ===================== */
+/* ADMIN BUTTON          */
+/* ===================== */
+.admin-login-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  background-color: var(--secondary);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.25s ease-out;
+}
+.admin-login-btn:hover {
+  transform: translateY(-3px);
+}
+
+/* ===================== */
+/* RESPONSIVE            */
+/* ===================== */
+@media (max-width: 600px) {
+  .header-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .search-wrapper {
+    width: 100%;
+    margin-top: 12px;
+  }
+  .main-content {
+    padding: 0 12px;
+  }
+}
+.archive-btn{
+  margin-left: 12px;
+  padding: 2px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 3px;
+  background:#dc3545;       /* red */
+  color:#fff;
+  cursor:pointer;
+}
+.archive-btn:hover{ background:#b02a37; }
