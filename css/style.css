@@ -33,6 +33,7 @@ body {
   background: var(--card-bg);
   box-shadow: 0 2px 4px var(--shadow);
   z-index: 100;
+  background-color: #003153;
 }
 .header-inner {
   max-width: 900px;
@@ -55,7 +56,9 @@ body {
   font-weight: 600;
   white-space: nowrap;
   margin: 0 20px;
+  color: whitesmoke;
 }
+
 
 /* ===================== */
 /* SEARCH BOX            */
@@ -345,6 +348,26 @@ body {
 .admin-login-btn:hover {
   transform: translateY(-3px);
 }
+
+/* match the Admin button style */
+.view-archived-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;              /* sit to the left of the Admin button */
+  padding: 15px 20px;
+  background-color: var(--secondary);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.25s ease-out;
+  z-index: 100;              /* above other content */
+}
+.view-archived-btn:hover {
+  transform: translateY(-3px);
+}
+
 
 /* ===================== */
 /* RESPONSIVE            */

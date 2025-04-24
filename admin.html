@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Admin Approval</title>
 
@@ -47,6 +46,17 @@
   };
   firebase.initializeApp(firebaseConfig);
 
+  // If both lists are empty, redirect back to helpdesk
+  function checkRedirect() {
+    const pa = document.getElementById("pending-approvals");
+    const ar = document.getElementById("pending-archives");
+    const noPA = pa.querySelector(".no-pending") !== null;
+    const noAR = ar.querySelector(".no-pending") !== null;
+    if (noPA && noAR) {
+      window.location.href = "index.html";
+    }
+  }
+
   function loadApprovals(){
     firebase.database().ref("uploads").orderByChild("approved").equalTo(false)
       .on("value", snap => {
@@ -55,6 +65,7 @@
         const data = snap.val();
         if (!data) {
           box.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
+          checkRedirect();
           return;
         }
         for (let key in data) {
@@ -63,14 +74,8 @@
           const card = buildCard(it, key, "approval");
           box.appendChild(card);
         }
+        checkRedirect();
       });
-  }
-
-  function approveFile(key){
-    firebase.database().ref("uploads/" + key).update({ approved: true });
-  }
-  function rejectFile(key){
-    firebase.database().ref("uploads/" + key).update({ approved: "rejected" });
   }
 
   function loadArchives(){
@@ -81,6 +86,7 @@
         const data = snap.val();
         if (!data) {
           box.innerHTML = "<div class='no-pending'>No archive requests.</div>";
+          checkRedirect();
           return;
         }
         for (let key in data) {
@@ -88,7 +94,15 @@
           const card = buildCard(it, key, "archive");
           box.appendChild(card);
         }
+        checkRedirect();
       });
+  }
+
+  function approveFile(key){
+    firebase.database().ref("uploads/" + key).update({ approved: true });
+  }
+  function rejectFile(key){
+    firebase.database().ref("uploads/" + key).update({ approved: "rejected" });
   }
 
   function approveArchive(key){
