@@ -225,26 +225,20 @@
     </div>
 
     <!-- MAIN CARD: Process/System Flow -->
-    <div class="dropdown-card">
-      <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
-        <div class="card-title">
-          <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
-          <span>Process/System Flow</span>
-        </div>
-        <span id="arrow-pf" class="arrow">▼</span>
-      </div>
-      <div class="dropdown-body" id="pf-card-body" style="display: none;">
-
-        <div class="subtopic-btn" onclick="toggleSubTopics('pf-pdfs','arrow-pf-pdfs')">
-          <span>PDF Files</span>
-          <span id="arrow-pf-pdfs" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="pf-pdfs" style="display: none;">
-          <ul id="approved_pf_pdf" class="pdf-list"></ul>
-        </div>
-
-      </div>
+<div class="dropdown-card">
+  <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
+    <div class="card-title">
+      <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
+      <span>Process/System Flow</span>
     </div>
+    <span id="arrow-pf" class="arrow">▼</span>
+  </div>
+  <div class="dropdown-body" id="pf-card-body" style="display: none;">
+    <!-- Removed the nested “PDF Files” subtopic -->
+    <ul id="approved_pf_pdf" class="pdf-list"></ul>
+  </div>
+</div>
+
   </main>
 
   <!-- ========================= -->
@@ -285,10 +279,10 @@
               <option value="fs_oracle_enhancement">Oracle Enhancements</option>
               <option value="fs_sharepoint_pa">Sharepoint/PowerAutomate</option>
             </optgroup>
-            <optgroup label="Process Flow">
-              <option value="pf-PDF">PDF Files</option>
+            <optgroup label="Process/System Flow">
+              <option value="pf-PDF">Process/System Flow</option>
             </optgroup>
-          </select>
+          </select>          
           <button onclick="uploadFile()" class="upload-btn">Upload</button>
         </div>
       </div>
