@@ -33,7 +33,7 @@ body {
   background: var(--card-bg);
   box-shadow: 0 2px 4px var(--shadow);
   z-index: 100;
-  background-color: #003153;
+  background-color: #1D4A6D;
 }
 .header-inner {
   max-width: 900px;
