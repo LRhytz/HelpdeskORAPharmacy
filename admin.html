@@ -46,7 +46,7 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  // If both lists are empty, redirect back to helpdesk
+  // only redirect after you've just processed something
   function checkRedirect() {
     const pa = document.getElementById("pending-approvals");
     const ar = document.getElementById("pending-archives");
@@ -65,16 +65,13 @@
         const data = snap.val();
         if (!data) {
           box.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
-          checkRedirect();
           return;
         }
         for (let key in data) {
           const it = data[key];
           if (it.archiveRequested) continue;
-          const card = buildCard(it, key, "approval");
-          box.appendChild(card);
+          box.appendChild(buildCard(it, key, "approval"));
         }
-        checkRedirect();
       });
   }
 
@@ -86,35 +83,35 @@
         const data = snap.val();
         if (!data) {
           box.innerHTML = "<div class='no-pending'>No archive requests.</div>";
-          checkRedirect();
           return;
         }
         for (let key in data) {
-          const it = data[key];
-          const card = buildCard(it, key, "archive");
-          box.appendChild(card);
+          box.appendChild(buildCard(data[key], key, "archive"));
         }
-        checkRedirect();
       });
   }
 
   function approveFile(key){
-    firebase.database().ref("uploads/" + key).update({ approved: true });
+    firebase.database().ref("uploads/" + key)
+      .update({ approved: true })
+      .then(() => checkRedirect());
   }
   function rejectFile(key){
-    firebase.database().ref("uploads/" + key).update({ approved: "rejected" });
+    firebase.database().ref("uploads/" + key)
+      .update({ approved: "rejected" })
+      .then(() => checkRedirect());
   }
 
   function approveArchive(key){
-    firebase.database().ref("uploads/" + key).update({
-      archived: true,
-      archiveDate: Date.now(),
-      archiveRequested: null
-    });
+    firebase.database().ref("uploads/" + key)
+      .update({ archived: true, archiveDate: Date.now(), archiveRequested: null })
+      .then(() => checkRedirect());
   }
 
   function rejectArchive(key){
-    firebase.database().ref("uploads/" + key).update({ archiveRequested: null });
+    firebase.database().ref("uploads/" + key)
+      .update({ archiveRequested: null })
+      .then(() => checkRedirect());
   }
 
   function loadArchivedFiles(){
@@ -149,10 +146,8 @@
 
   function restoreFile(key){
     if (!confirm("Restore this file back to its topic?")) return;
-    firebase.database().ref("uploads/" + key).update({
-      archived: false,
-      archiveDate: null
-    });
+    firebase.database().ref("uploads/" + key)
+      .update({ archived: false, archiveDate: null });
   }
 
   function buildCard(it, key, type){
@@ -183,10 +178,11 @@
     return card;
   }
 
-  document.getElementById("toggle-archived-btn").addEventListener("click", () => {
-    document.getElementById("archived-modal").style.display = "flex";
-    loadArchivedFiles();
-  });
+  document.getElementById("toggle-archived-btn")
+    .addEventListener("click", () => {
+      document.getElementById("archived-modal").style.display = "flex";
+      loadArchivedFiles();
+    });
 
   window.onload = function(){
     loadApprovals();
