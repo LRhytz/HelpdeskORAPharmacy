@@ -59,7 +59,6 @@ body {
   color: whitesmoke;
 }
 
-
 /* ===================== */
 /* SEARCH BOX            */
 /* ===================== */
@@ -145,9 +144,6 @@ body {
 .arrow {
   transition: transform 0.3s ease;
 }
-.dropdown-btn.open .arrow {
-  transform: rotate(180deg);
-}
 .dropdown-body {
   padding: 0 20px 16px;
   border-top: 1px solid var(--border);
@@ -177,109 +173,143 @@ body {
 /* PDF LIST              */
 /* ===================== */
 .pdf-list {
-  list-style: disc;
-  padding-left: 20px;
-  margin-left: 20px;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 .pdf-list li {
-  margin-bottom: 10px;
-  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  margin: 0.5em 0;
+  padding: 0.5em;
+  border-radius: 4px;
+  background: #f9f9f9;         /* light background */
+  transition: background .2s;
 }
-.pdf-list a {
-  color: #000;
+.pdf-list li:before {
+  content: "\f15c";             /* FontAwesome file-icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-right: 0.5em;
+  color: #007bff;
+}
+.pdf-list li a {
+  flex: 1;
+  color: #007bff;
   text-decoration: none;
-  font-size: 16px;
-  font-weight: 550;
+  font-weight: 500;
 }
-.pdf-list a:hover {
-  color: #6495ED;
+.pdf-list li:hover {
+  background: #f0f0f0;
+}
+.pdf-list li a:hover {
+  text-decoration: underline;
+}
+.pdf-list li button.archive-btn {
+  margin-left: 1em;
+  padding: 0.25em 0.75em;
+  font-size: 0.875em;
 }
 
 /* ===================== */
 /* FILE UPLOAD FORM      */
 /* ===================== */
 #file-upload-form {
-  margin-top: 16px;
+  width: 100%;
+  max-width: 800px;       /* limit max width */
+  margin: 0 auto;         /* center in modal */
+  padding: 16px 0;        /* breathing room */
 }
 .file-upload-inner {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
-  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 12px;              /* uniform spacing */
 }
-.custom-file-upload {
-  display: flex;
-  align-items: center;
+
+/* make all controls same height & rounded */
+.choose-file-btn,
+.upload-btn,
+.form-input.small-input,
+.form-select.small-select,
+#new-subtitle {
+  height: 44px;
+  line-height: 1;
+  border-radius: 6px;
+  font-size: 14px;
 }
+
+/* flex-grow on inputs/selects */
+.form-input.small-input,
+.form-select.small-select,
+#new-subtitle {
+  flex: 1 1 140px;
+  min-width: 140px;
+}
+
+/* tighten up the Choose button */
 .choose-file-btn {
-  background-color: #007BFF;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* style Upload button accent */
+.upload-btn {
+  padding: 0 20px;
+  background-color: var(--primary);
   color: #fff;
-  padding: 0 15px;
-  height: 40px;
-  line-height: 40px;
   border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
 }
-.choose-file-btn:hover {
-  background-color: #0056b3;
-}
+
+/* ensure file-name spans flex & truncate */
 .file-name {
+  flex: 2 1 160px;
+  min-width: 120px;
   font-size: 14px;
   color: #555;
   font-style: italic;
-  max-width:150px;
   white-space: nowrap;
-  overflow: auto;
-  text-overflow: clip;
-}
-.form-input.small-input,
-.form-select.small-select {
-  width: 140px;
-  border: 1px solid #ccc;
-  padding: 0 6px;
-  height: 44px;
-  line-height: 44px;
-  font-size: 14px;
-  border-radius: 4px;
-}
-.upload-btn {
-  background-color: #007BFF;
-  color: #fff;
-  border: none;
-  padding: 0 14px;
-  height: 44px;
-  line-height: 44px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-.upload-btn:hover {
-  background-color: #0056b3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===================== */
 /* MODAL LAYOUT          */
 /* ===================== */
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.45);
-  display:flex;align-items:center;justify-content:center;
-  z-index:200;
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
 }
-.modal-content{
-  background:#fff;border-radius:6px;
-  box-shadow:0 4px 12px rgba(0,0,0,.15);
-  padding:24px;max-width:700px;width:50%;position:relative;
+.modal-content {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  padding: 24px;
+  max-width: 700px;
+  width: 50%;
+  position: relative;
 }
-.modal-close{
-  position:absolute;top:15px;right:15px;
-  background:none;border:none;font-size:24px;cursor:pointer;
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
 }
-.modal[hidden] {            /* <-- NEW */
+.modal[hidden] {
   display: none !important;
 }
+
 /* ===================== */
 /* AUTH CONTAINER        */
 /* ===================== */
@@ -349,11 +379,13 @@ body {
   transform: translateY(-3px);
 }
 
-/* match the Admin button style */
+/* ===================== */
+/* VIEW ARCHIVED BUTTON  */
+/* ===================== */
 .view-archived-btn {
   position: fixed;
   bottom: 80px;
-  right: 20px;              /* sit to the left of the Admin button */
+  right: 20px;
   padding: 15px 20px;
   background-color: var(--secondary);
   color: #fff;
@@ -362,12 +394,88 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.25s ease-out;
-  z-index: 100;              /* above other content */
+  z-index: 100;
 }
 .view-archived-btn:hover {
   transform: translateY(-3px);
 }
 
+/* ===================== */
+/* ARCHIVE BUTTON        */
+/* ===================== */
+.archive-btn {
+  margin-left: 12px;
+  padding: 2px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 3px;
+  background: #dc3545;
+  color: #fff;
+  cursor: pointer;
+}
+.archive-btn:hover {
+  background: #b02a37;
+}
+
+/* ===================== */
+/* PDF LIST HOVER STATE  */
+/* ===================== */
+.pdf-list li:hover {
+  background-color: #fafafa;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+/* ===================== */
+/* LINK HOVER            */
+/* ===================== */
+.pdf-list li a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* ===================== */
+/* BUTTON HOVER STATES   */
+/* ===================== */
+.dropdown-btn:hover {
+  background-color: #f5f5f5;
+  transition: background 0.2s;
+}
+.subtopic-btn:hover {
+  background-color: #f0f0f0;
+  transition: background 0.2s;
+}
+.approval-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.approve-btn:hover {
+  background-color: #0056b3;
+}
+.reject-btn:hover {
+  background-color: #c82333;
+}
+
+/* ===================== */
+/* PASSWORD TOGGLE ICON  */
+/* ===================== */
+.password-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 1rem;
+}
+.password-toggle:hover {
+  color: #333;
+}
 
 /* ===================== */
 /* RESPONSIVE            */
@@ -384,68 +492,17 @@ body {
   .main-content {
     padding: 0 12px;
   }
+  /* Stack the add-file form vertically on small screens */
+  .file-upload-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .choose-file-btn,
+  .upload-btn,
+  .form-input.small-input,
+  .form-select.small-select,
+  #new-subtitle,
+  .file-name {
+    width: 100%;
+  }
 }
-.archive-btn{
-  margin-left: 12px;
-  padding: 2px 10px;
-  font-size: 12px;
-  border: none;
-  border-radius: 3px;
-  background:#dc3545;       /* red */
-  color:#fff;
-  cursor:pointer;
-}
-.archive-btn:hover{ background:#b02a37; }
-.pdf-list li:hover {
-  background-color: #fafafa;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-/* PDF link color on hover */
-.pdf-list li a:hover {
-  color: var(--primary);
-  text-decoration: underline;
-}
-.dropdown-btn:hover {
-  background-color: #f5f5f5;
-  transition: background 0.2s;
-}
-
-/* Subtopic header hover */
-.subtopic-btn:hover {
-  background-color: #f0f0f0;
-  transition: background 0.2s;
-}
-.approval-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-/* Buttons */
-.approve-btn:hover {
-  background-color: #0056b3;
-}
-.reject-btn:hover {
-  background-color: #c82333;
-}
-.password-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #888;
-  font-size: 1rem;
-}
-
-.password-toggle:hover {
-  color: #333;
-}
-
