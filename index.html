@@ -7,6 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Helpdesk System</title>
 
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
+  <script src="app.js"></script>
+
   <!-- Font Awesome for icons -->
   <link
     rel="stylesheet"
@@ -15,13 +20,29 @@
   <!-- Your existing stylesheet -->
   <link rel="stylesheet" href="css/style.css">
   <!-- Polyfills -->
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=default,fetch,Promise,Object.entries,Array.prototype.includes,Element.prototype.remove,NodeList.prototype.forEach"></script>
   <script src="https://unpkg.com/whatwg-fetch@3.6.2/dist/fetch.umd.js"></script>
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
+      authDomain: "helpdeskrpharmacy.firebaseapp.com",
+      databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+      projectId: "helpdeskrpharmacy",
+      messagingSenderId: "776189919696",
+      appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
+      measurementId: "G-TL0ZQ9L17Q"
+    };
+    
+    // Initialize Firebase only if not already initialized
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig); // Initialize Firebase if not already done
+    } else {
+      firebase.app(); // If already initialized, use that one
+    }
+  </script>
+
 </head>
 <body>
-  <!-- ========================= -->
-  <!-- STICKY HEADER -->
-  <!-- ========================= -->
   <header class="header">
     <div class="header-inner">
       <div class="oracle-image-container">
@@ -37,7 +58,9 @@
           class="form-input"
           onkeyup="searchContent()"
         />
-      </div>
+      </div>  
+      <!-- PROFILE ICON triggers login/profile modal -->
+      <i id="profile-icon" class="fas fa-user-circle"></i>
     </div>
   </header>
 
@@ -46,484 +69,35 @@
   </div>
 
   <main class="main-content">
-    <!-- MAIN CARD: Working Instructions -->
-    <div class="dropdown-card">
-      <div class="dropdown-btn" onclick="toggleDropdown('wi-card-body','arrow-wi')">
-        <div class="card-title">
-          <img src="Icons/information-pamphlet.png" alt="Working Instructions Icon" class="topic-icon">
-          <span>Working Instructions</span>
-        </div>
-        <span id="arrow-wi" class="arrow">▼</span>
-      </div>
-      <div class="dropdown-body" id="wi-card-body" style="display: none;">
-
-        <!-- Receivables -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('receivables-body','arrow-receivables')">
-          <span>Receivables</span>
-          <span id="arrow-receivables" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="receivables-body" style="display: none;">
-          <div class="subtopic-btn" onclick="toggleSubTopics('maintenance-receivables-body','arrow-maintenance-receivables')">
-            <span>Maintenance</span>
-            <span id="arrow-maintenance-receivables" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="maintenance-receivables-body" style="display: none;">
-            <ul>
-            </ul>
-          </div>
-
-          <div class="subtopic-btn" onclick="toggleSubTopics('operational-procedure-receivables-body','arrow-operational-procedure-receivables')">
-            <span>Operational Procedure</span>
-            <span id="arrow-operational-procedure-receivables" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="operational-procedure-receivables-body" style="display: none;">
-            <ul>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Payables -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('payables-body','arrow-payables')">
-          <span>Payables</span>
-          <span id="arrow-payables" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="payables-body" style="display: none;">
-          <div class="subtopic-btn" onclick="toggleSubTopics('maintenance-payables-body','arrow-maintenance-payables')">
-            <span>Maintenance</span>
-            <span id="arrow-maintenance-payables" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="maintenance-payables-body" style="display: none;">
-            <ul>
-            </ul>
-          </div>
-
-          <div class="subtopic-btn" onclick="toggleSubTopics('operational-procedure-payables-body','arrow-operational-procedure-payables')">
-            <span>Operational Procedure</span>
-            <span id="arrow-operational-procedure-payables" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="operational-procedure-payables-body" style="display: none;">
-            <ul>
-              <!-- No PDF links yet -->
-            </ul>
-          </div>
-        </div>
-
-        <!-- Purchasing -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('purchasing-body','arrow-purchasing')">
-          <span>Purchasing</span>
-          <span id="arrow-purchasing" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="purchasing-body" style="display: none;">
-          <div class="subtopic-btn" onclick="toggleSubTopics('maintenance-purchasing-body','arrow-maintenance-purchasing')">
-            <span>Maintenance</span>
-            <span id="arrow-maintenance-purchasing" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="maintenance-purchasing-body" style="display: none;">
-            <ul>
-            </ul>
-          </div>
-
-          <div class="subtopic-btn" onclick="toggleSubTopics('operational-procedure-purchasing-body','arrow-operational-procedure-purchasing')">
-            <span>Operational Procedure</span>
-            <span id="arrow-operational-procedure-purchasing" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="operational-procedure-purchasing-body" style="display: none;">
-            <ul>
-              <!-- No PDF links yet -->
-            </ul>
-          </div>
-        </div>
-
-        <!-- Fixed Asset -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('fixed_asset-body','arrow-fixed_asset')">
-          <span>Fixed Asset</span>
-          <span id="arrow-fixed_asset" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fixed_asset-body" style="display: none;">
-          <div class="subtopic-btn" onclick="toggleSubTopics('maintenance-fixed_asset-body','arrow-maintenance-fixed_asset')">
-            <span>Maintenance</span>
-            <span id="arrow-maintenance-fixed_asset" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="maintenance-fixed_asset-body" style="display: none;">
-            <ul>
-            </ul>
-          </div>
-
-          <div class="subtopic-btn" onclick="toggleSubTopics('operational-procedure-fixed_asset-body','arrow-operational-procedure-fixed_asset')">
-            <span>Operational Procedure</span>
-            <span id="arrow-operational-procedure-fixed_asset" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="operational-procedure-fixed_asset-body" style="display: none;">
-            <ul>
-              <!-- No PDF links yet -->
-            </ul>
-          </div>
-        </div>
-
-        <!-- Inventory -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('inventory-body','arrow-inventory')">
-          <span>Inventory</span>
-          <span id="arrow-inventory" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="inventory-body" style="display: none;">
-          <div class="subtopic-btn" onclick="toggleSubTopics('maintenance-inventory-body','arrow-maintenance-inventory')">
-            <span>Maintenance</span>
-            <span id="arrow-maintenance-inventory" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="maintenance-inventory-body" style="display: none;">
-            <ul>
-            </ul>
-          </div>
-
-          <div class="subtopic-btn" onclick="toggleSubTopics('operational-procedure-inventory-body','arrow-operational-procedure-inventory')">
-            <span>Operational Procedure</span>
-            <span id="arrow-operational-procedure-inventory" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="operational-procedure-inventory-body" style="display: none;">
-            <ul>
-              <!-- No PDF links yet -->
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAIN CARD: Standard Operating Procedures -->
-    <div class="dropdown-card">
-      <div class="dropdown-btn" onclick="toggleDropdown('sop-card-body','arrow-sop')">
-        <div class="card-title">
-          <img src="Icons/standard-operating-procedures.png" alt="SOP Icon" class="topic-icon">
-          <span>Standard Operating Procedures</span>
-        </div>
-        <span id="arrow-sop" class="arrow">▼</span>
-      </div>
-      <div class="dropdown-body" id="sop-card-body" style="display: none;">
-
-        <!-- Finance -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('finance-body','arrow-finance')">
-          <span>Finance</span>
-          <span id="arrow-finance" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="finance-body" style="display: none;">
-          <!-- AR -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('ar-body','arrow-ar')">
-            <span>AR</span>
-            <span id="arrow-ar" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="ar-body" style="display: none;">
-            <ul id="approved_sop_ar" class="pdf-list"></ul>
-            <ul>
-            </ul>
-          </div>
-          <!-- AP -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('ap-body','arrow-ap')">
-            <span>AP</span>
-            <span id="arrow-ap" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="ap-body" style="display: none;">
-            <ul id="approved_sop_ap" class="pdf-list"></ul>
-          </div>
-          <!-- Sales Audit -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('sales-audit-body','arrow-sales-audit')">
-            <span>Sales Audit</span>
-            <span id="arrow-sales-audit" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="sales-audit-body" style="display: none;">
-            <ul id="approved_sop_sales_audit" class="pdf-list"></ul>
-          </div>
-          <!-- General Ledger -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('general-ledger-body','arrow-general-ledger')">
-            <span>General Ledger</span>
-            <span id="arrow-general-ledger" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="general-ledger-body" style="display: none;">
-            <ul id="approved_sop_general_ledger" class="pdf-list"></ul>
-          </div>
-          <!-- Inventory Control -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('inventory-control-body','arrow-inventory-control')">
-            <span>Inventory Control</span>
-            <span id="arrow-inventory-control" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="inventory-control-body" style="display: none;">
-            <ul id="approved_sop_inventory_control" class="pdf-list"></ul>
-          </div>
-          <!-- Tax -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('tax-body','arrow-tax')">
-            <span>Tax</span>
-            <span id="arrow-tax" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="tax-body" style="display: none;">
-            <ul id="approved_sop_tax" class="pdf-list"></ul>
-          </div>
-        </div>
-
-        <!-- Treasury -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('treasury-body','arrow-treasury')">
-          <span>Treasury</span>
-          <span id="arrow-treasury" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="treasury-body" style="display: none;">
-          <!-- Check-run -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('checkrun-body','arrow-checkrun')">
-            <span>Check-run</span>
-            <span id="arrow-checkrun" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="checkrun-body" style="display: none;">
-            <ul id="approved_sop_check_run" class="pdf-list"></ul>
-            <ul>
-            </ul>
-          </div>
-          <!-- Bank Control -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('bank-control-body','arrow-bank-control')">
-            <span>Bank Control</span>
-            <span id="arrow-bank-control" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="bank-control-body" style="display: none;">
-            <ul id="approved_sop_bank_control" class="pdf-list"></ul>
-          </div>
-          <!-- Cash Flow -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('cash-flow-body','arrow-cash-flow')">
-            <span>Cash Flow</span>
-            <span id="arrow-cash-flow" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="cash-flow-body" style="display: none;">
-            <ul id="approved_sop_cash_flow" class="pdf-list"></ul>
-          </div>
-        </div>
-
-        <!-- HR -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('hr-body','arrow-hr')">
-          <span>HR</span>
-          <span id="arrow-hr" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="hr-body" style="display: none;">
-          <!-- Payroll -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('payroll-body','arrow-payroll')">
-            <span>Payroll</span>
-            <span id="arrow-payroll" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="payroll-body" style="display: none;">
-            <ul id="approved_sop_payroll" class="pdf-list"></ul>
-            <ul>
-            </ul>
-          </div>
-          <!-- Timekeeping -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('timekeeping-body','arrow-timekeeping')">
-            <span>Timekeeping</span>
-            <span id="arrow-timekeeping" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="timekeeping-body" style="display: none;">
-            <ul id="approved_sop_timekeeping" class="pdf-list"></ul>
-          </div>
-        </div>
-
-        <!-- IT -->
-        <div class="subtopic-btn" onclick="toggleSubTopics('it-body','arrow-it')">
-          <span>IT</span>
-          <span id="arrow-it" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="it-body" style="display: none;">
-          <!-- Application -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('application-body','arrow-application')">
-            <span>Application</span>
-            <span id="arrow-application" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="application-body" style="display: none;">
-            <ul id="approved_sop_application" class="pdf-list"></ul>
-            <ul>
-            </ul>
-          </div>
-          <!-- Infra -->
-          <div class="subtopic-btn" onclick="toggleSubTopics('infra-body','arrow-infra')">
-            <span>Infra</span>
-            <span id="arrow-infra" class="arrow">▼</span>
-          </div>
-          <div class="subtopic-body" id="infra-body" style="display: none;">
-            <ul id="approved_sop_infra" class="pdf-list"></ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAIN CARD: Functional Design Document -->
-    <div class="dropdown-card">
-      <div class="dropdown-btn" onclick="toggleDropdown('fs-card-body','arrow-fs')">
-        <div class="card-title">
-          <img src="Icons/design-resources.png" alt="FS Icon" class="topic-icon">
-          <span>Functional Design Document</span>
-        </div>
-        <span id="arrow-fs" class="arrow">▼</span>
-      </div>
-      <div class="dropdown-body" id="fs-card-body" style="display: none;">
-        <div class="subtopic-btn" onclick="toggleSubTopics('fs_receivables-body','arrow-fs_receivables')">
-          <span>Receivables</span>
-          <span id="arrow-fs_receivables" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fs_receivables-body" style="display: none;">
-          <ul id="approved_fs_receivables" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('fs_payables-body','arrow-fs_payables')">
-          <span>Payables</span>
-          <span id="arrow-fs_payables" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fs_payables-body" style="display: none;">
-          <ul id="approved_fs_payables" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('fs_cash_management-body','arrow-fs_cash_management')">
-          <span>Cash Management</span>
-          <span id="arrow-fs_cash_management" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fs_cash_management-body" style="display: none;">
-          <ul id="approved_fs_cash_management" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('fs_general_ledger-body','arrow-fs_general_ledger')">
-          <span>General Ledger</span>
-          <span id="arrow-fs_general_ledger" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fs_general_ledger-body" style="display: none;">
-          <ul id="approved_fs_general_ledger" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('fs_related_document-body','arrow-fs_related_document')">
-          <span>Related Document</span>
-          <span id="arrow-fs_related_document" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="fs_related_document-body" style="display: none;">
-          <ul id="approved_fs_related_document" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAIN CARD: Process Flow -->
-    <div class="dropdown-card">
-      <div class="dropdown-btn" onclick="toggleDropdown('pf-card-body','arrow-pf')">
-        <div class="card-title">
-          <img src="Icons/workflow.png" alt="PF Icon" class="topic-icon">
-          <span>Process Flow</span>
-        </div>
-        <span id="arrow-pf" class="arrow">▼</span>
-      </div>
-      <div class="dropdown-body" id="pf-card-body" style="display: none;">
-        <div class="subtopic-btn" onclick="toggleSubTopics('pf_finance-body','arrow-pf_finance')">
-          <span>Finance</span>
-          <span id="arrow-pf_finance" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="pf_finance-body" style="display: none;">
-          <ul id="approved_pf_finance" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('pf_treasury-body','arrow-pf_treasury')">
-          <span>Treasury</span>
-          <span id="arrow-pf_treasury" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="pf_treasury-body" style="display: none;">
-          <ul id="approved_pf_treasury" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('pf_hr-body','arrow-pf_hr')">
-          <span>HR</span>
-          <span id="arrow-pf_hr" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="pf_hr-body" style="display: none;">
-          <ul id="approved_pf_hr" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('pf_it-body','arrow-pf_it')">
-          <span>IT</span>
-          <span id="arrow-pf_it" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="pf_it-body" style="display: none;">
-          <ul id="approved_pf_it" class="pdf-list"></ul>
-          <ul>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAIN CARD: System Flow -->
-    <div class="dropdown-card">
-      <div class="dropdown-btn" onclick="toggleDropdown('sf-card-body','arrow-sf')">
-        <div class="card-title">
-          <img src="Icons/workflow.png" alt="SF Icon" class="topic-icon">
-          <span>System Flow</span>
-        </div>
-        <span id="arrow-sf" class="arrow">▼</span>
-      </div>
-      <div class="dropdown-body" id="sf-card-body" style="display: none;">
-        <div class="subtopic-btn" onclick="toggleSubTopics('sf_receivables-body','arrow-sf_receivables')">
-          <span>Receivables</span>
-          <span id="arrow-sf_receivables" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sf_receivables-body" style="display: none;">
-          <ul id="approved_sf_receivables" class="pdf-list"></ul>
-          <ul class="pdf-list">
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('sf_payables-body','arrow-sf_payables')">
-          <span>Payables</span>
-          <span id="arrow-sf_payables" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sf_payables-body" style="display: none;">
-          <ul id="approved_sf_payables" class="pdf-list"></ul>
-          <ul class="pdf-list">
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('sf_purchasing-body','arrow-sf_purchasing')">
-          <span>Purchasing</span>
-          <span id="arrow-sf_purchasing" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sf_purchasing-body" style="display: none;">
-          <ul id="approved_sf_purchasing" class="pdf-list"></ul>
-          <ul class="pdf-list">
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('sf_fixed_asset-body','arrow-sf_fixed_asset')">
-          <span>Fixed Asset</span>
-          <span id="arrow-sf_fixed_asset" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sf_fixed_asset-body" style="display: none  ;">
-          <ul id="approved_sf_fixed_asset" class="pdf-list"></ul>
-          <ul class="pdf-list">
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('sf_cash_management-body','arrow-sf_cash_management')">
-          <span>Cash Management</span>
-          <span id="arrow-sf_cash_management" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sf_cash_management-body" style="display: none;">
-          <ul id="approved_sf_cash_management" class="pdf-list"></ul>
-          <ul class="pdf-list">
-          </ul>
-        </div>
-        <div class="subtopic-btn" onclick="toggleSubTopics('sf_general_ledger-body','arrow-sf_general_ledger')">
-          <span>General Ledger</span>
-          <span id="arrow-sf_general_ledger" class="arrow">▼</span>
-        </div>
-        <div class="subtopic-body" id="sf_general_ledger-body" style="display: none;">
-          <ul id="approved_sf_general_ledger" class="pdf-list"></ul>
-          <ul class="pdf-list">
-          </ul>
-        </div>
-      </div>
-    </div>
+    <!-- everything here is now built dynamically -->
+    <div id="dynamic-accordion"></div>
   </main>
+  
+<!-- ========================= -->
+<!-- LOGIN / PROFILE MODAL    -->
+<!-- ========================= -->
+<div id="login-modal" class="modal" hidden>
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2 class="modal-title">Login</h2>
 
+    <!-- for auth errors -->
+    <div id="login-error" style="color: #c00; text-align:center; margin: 12px 0;"></div>
+
+    <input type="email"    id="login-email"    placeholder="Email"    class="form-input" />
+    <input type="password" id="login-password" placeholder="Password" class="form-input" />
+
+    <!-- LOGIN → visible by default -->
+    <button id="login-btn" class="login-btn">Login</button>
+    <!-- LOGOUT → hidden until Firebase says you're logged in -->
+    <button id="logout-btn" class="login-btn" hidden>Logout</button>
+    <!-- CHANGE PASSWORD → hidden until you're logged in -->
+    <button id="change-password-btn" class="login-btn" hidden>Change Password</button>
+  </div>
+</div>
   <!-- ========================= -->
   <!-- ADD FILE & ARCHIVED MODALS -->
   <!-- ========================= -->
-  <!-- Add File Modal -->
   <div id="file-upload-modal" class="modal" hidden>
     <div class="modal-content">
       <button class="modal-close" aria-label="Close">&times;</button>
@@ -534,71 +108,95 @@
             <span id="selected-file-name" class="file-name">No file chosen</span>
           </div>
           <input type="file" id="fileInput" accept="application/pdf" hidden />
-          <input type="text" id="fileTitle" placeholder="File Title" class="form-input small-input" />
-          <select id="module-dropdown" class="form-select small-select">
-            <optgroup label="Working Instructions">
-              <option value="Receivables">Receivables</option>
-              <option value="Payables">Payables</option>
-              <option value="Purchasing">Purchasing</option>
-              <option value="Fixed Asset">Fixed Asset</option>
-              <option value="Inventory">Inventory</option>
-              <option value="HRMS Global">HRMS Global</option>
-              <option value="General Ledger">General Ledger</option>
-              <option value="Oracle Guides">Oracle Guides</option>
-            </optgroup>
-            <optgroup label="Standard Operating Procedures">
-              <optgroup label="Finance">
-                <option value="AR">AR</option>
-                <option value="AP">AP</option>
-                <option value="Sales Audit">Sales Audit</option>
-                <option value="General Ledger">General Ledger</option>
-                <option value="Inventory Control">Inventory Control</option>
-                <option value="Tax">Tax</option>
-              </optgroup>
-              <optgroup label="Treasury">
-                <option value="Check-run">Check-run</option>
-                <option value="Bank Control">Bank Control</option>
-                <option value="Cash Flow">Cash Flow</option>
-              </optgroup>
-              <optgroup label="HR">
-                <option value="Payroll">Payroll</option>
-                <option value="Timekeeping">Timekeeping</option>
-              </optgroup>
-              <optgroup label="IT">
-                <option value="Application">Application</option>
-                <option value="Infra">Infra</option>
-              </optgroup>
-            </optgroup>
-            <optgroup label="Functional Design Document">
-              <option value="Receivables">Receivables</option>
-              <option value="Payables">Payables</option>
-              <option value="Cash Management">Cash Management</option>
-              <option value="General Ledger">General Ledger</option>
-              <option value="Related Document">Related Document</option>
-            </optgroup>
-            <optgroup label="Process Flow">
-              <option value="Finance">Finance</option>
-              <option value="Treasury">Treasury</option>
-              <option value="HR">HR</option>
-              <option value="IT">IT</option>
-            </optgroup>
-            <optgroup label="System Flow">
-              <option value="Receivables">Receivables</option>
-              <option value="Payables">Payables</option>
-              <option value="Purchasing">Purchasing</option>
-              <option value="Fixed Asset">Fixed Asset</option>
-              <option value="Cash Management">Cash Management</option>
-              <option value="General Ledger">General Ledger</option>
-            </optgroup>
-          </select>
-          <!-- NEW optional subtitle field -->
+  
+          <!-- Title -->
           <input
             type="text"
-            id="new-subtitle"
-            placeholder="New subtitle (optional)"
+            id="fileTitle"
+            placeholder="File Title"
             class="form-input small-input"
           />
-          <button onclick="uploadFile()" class="upload-btn">Upload</button>
+          <!-- Pick an existing category -->
+          <select id="module-dropdown" class="form-select small-select">
+            <optgroup label="Working Instructions">
+              <optgroup label="Receivables">
+                <option value="Receivables_Maintenance">Maintenance</option>
+                <option value="Receivables_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <optgroup label="Payables">
+                <option value="Payables_Maintenance">Maintenance</option>
+                <option value="Payables_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <optgroup label="Purchasing">
+                <option value="Purchasing_Maintenance">Maintenance</option>
+                <option value="Purchasing_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <optgroup label="Fixed Asset">
+                <option value="Fixed_Asset_Maintenance">Maintenance</option>
+                <option value="Fixed_Asset_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <optgroup label="Cash Management">
+                <option value="Cash_Management_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <optgroup label="Inventory">
+                <option value="Inventory_Maintenance">Maintenance</option>
+                <option value="Inventory_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <optgroup label="HRMS Global">
+                <option value="HRMS_Global_Maintenance">Maintenance</option>
+              </optgroup>
+              <optgroup label="General Ledger">
+                <option value="General_Ledger_Maintenance">Maintenance</option>
+                <option value="General_Ledger_Operational_Procedure">Operational Procedure</option>
+              </optgroup>
+              <option value="Oracle_Guides">Oracle Guides</option>
+            </optgroup>
+              <optgroup label="Standard Operating Procedures">
+                <optgroup label="Finance">
+                  <option value="AR">AR</option>
+                  <option value="AP">AP</option>
+                  <option value="Sales_Audit">Sales Audit</option>
+                  <option value="General_Ledger_SOP">General Ledger</option>
+                  <option value="Inventory_Control">Inventory Control</option>
+                  <option value="Tax">Tax</option>
+                </optgroup>
+                <optgroup label="Treasury">
+                  <option value="Check-run">Check-run</option>
+                  <option value="Bank_Control">Bank Control</option>
+                  <option value="Cash_Flow">Cash Flow</option>
+                </optgroup>
+                <optgroup label="HR">
+                  <option value="Payroll">Payroll</option>
+                  <option value="Timekeeping">Timekeeping</option>
+                </optgroup>
+                <optgroup label="IT">
+                  <option value="Application">Application</option>
+                  <option value="Infra">Infra</option>
+                </optgroup>
+              </optgroup>
+              <optgroup label="Functional Design Document">
+                <option value="FDD_Receivables">Receivables</option>
+                <option value="FDD_Payables">Payables</option>
+                <option value="FDD_Cash_Management">Cash Management</option>
+                <option value="FDD_General_Ledger">General Ledger</option>
+                <option value="FDD_Related_Document">Related Document</option>
+              </optgroup>
+              <optgroup label="Process Flow">
+                <option value="PF_Finance">Finance</option>
+                <option value="PF_Treasury">Treasury</option>
+                <option value="PF_HR">HR</option>
+                <option value="PF_IT">IT</option>
+              </optgroup>
+              <optgroup label="System Flow">
+                <option value="SF_Receivables">Receivables</option>
+                <option value="SF_Payables">Payables</option>
+                <option value="SF_Purchasing">Purchasing</option>
+                <option value="SF_Fixed_Asset">Fixed Asset</option>
+                <option value="SF_Cash_Management">Cash Management</option>
+                <option value="SF_General_Ledger">General Ledger</option>
+              </optgroup>
+          </select>
+          <button id="uploadBtn"          class="upload-btn">Upload</button>
         </div>
       </div>
     </div>
@@ -613,53 +211,20 @@
     </div>
   </div>
 
-  <!-- ========================= -->
-  <!-- AUTH CONTAINER & CONTROLS -->
-  <!-- ========================= -->
-  <div id="auth-container" class="auth-container">
-    <div class="password-wrapper">
-      <input
-        type="password"
-        id="auth-password"
-        placeholder="Enter password"
-        class="auth-input"
-      />
-      <i id="toggle-password" class="fas fa-eye password-toggle"></i>
-    </div>
-    <button id="auth-btn" class="auth-btn">Enter</button>
-  </div>
-
-  <!-- Buttons that appear after auth -->
-  <button id="view-archived-btn" class="view-archived-btn" style="display: none;">
-    View Archived Files
+  <!-- ROLE-BASED ACTION BUTTONS -->
+<div id="left-buttons">
+  <!-- hidden by default, JS will show as appropriate -->
+  <button id="view-archived-btn" class="view-archived-btn" style="display:none">
+    <i class="fas fa-archive"></i> Archived Files
   </button>
-  <button id="add-file-btn" class="add-file-btn" style="display: none;">
-    Add File
+  <button id="add-file-btn" class="add-file-btn" style="display:none">
+    <i class="fas fa-plus"></i> Add
   </button>
+  <button id="admin-login-btn" class="admin-login-btn" style="display:none">
+    <i class="fas fa-user-shield"></i> Admin
+  </button>
+</div>
 
-  <!-- ========================= -->
-  <!-- ADMIN & SCRIPTS -->
-  <!-- ========================= -->
-  <button id="admin-login-btn" class="admin-login-btn">Admin</button>
 
-  <!-- Firebase & your app.js -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-storage-compat.js"></script>
-  <script src="app.js"></script>
-
-  <script>
-    // existing admin‐only redirect
-    const ADMIN_PASSWORD = "@smjbolotaulo";
-    document.getElementById("admin-login-btn").addEventListener("click", () => {
-      const entered = prompt("Enter admin password:");
-      if (entered === ADMIN_PASSWORD) {
-        window.location.href = "admin.html";
-      } else {
-        alert("Incorrect admin password.");
-      }
-    });
-  </script>
 </body>
 </html>

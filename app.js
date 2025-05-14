@@ -1,386 +1,899 @@
-// app.js – full, self-contained source
-// (with DOMContentLoaded guard, “peek” toggle,
-//  wildcard `%` search, dynamic SOP sub-options,
-//  and archived-view)
-document.addEventListener("DOMContentLoaded", () => {
-  /* ---------- Firebase config ---------- */
-  var firebaseConfig = {
-    apiKey:            "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
-    authDomain:        "helpdeskrpharmacy.firebaseapp.com",
-    databaseURL:       "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
-    projectId:         "helpdeskrpharmacy",
-    storageBucket:     "helpdeskrpharmacy.firebasestorage.app",
-    messagingSenderId: "776189919696",
-    appId:             "1:776189919696:web:ab3be5e265dbfff8faf9d5",
-    measurementId:     "G-TL0ZQ9L17Q"
-  };
-  firebase.initializeApp(firebaseConfig);
+// main.js
 
+document.addEventListener("DOMContentLoaded", () => {
+  // --- Firebase Configuration ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
+    authDomain: "helpdeskrpharmacy.firebaseapp.com",
+    databaseURL: "https://helpdeskrpharmacy-default-rtdb.firebaseio.com",
+    projectId: "helpdeskrpharmacy",
+    messagingSenderId: "776189919696",
+    appId: "1:776189919696:web:ab3be5e265dbfff8faf9d5",
+    measurementId: "G-TL0ZQ9L17Q",
+  };
+
+
+  window.uploadFile    = uploadFile;
+  window.searchContent = searchContent;
+  // Initialize Firebase safely
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    } else {
+      firebase.app();
+    }
+    console.log("Firebase initialized successfully");
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    alert("Error initializing the application. Please check your connection and reload.");
+    return;
+  }
+
+  // --- Constants ---
   const CLOUD_NAME    = "dkwkdsnk7";
   const UPLOAD_PRESET = "Helpdesk_Rpharmacy";
 
-  /* ===================================================
-     subOptions: SOP → its valid subtitles
-     =================================================== */
-  const subOptions = {
-    "Standard Operating Procedures": ["Finance","Treasury","HR","IT"],
-    "Finance": [
-      "AR","AP","Sales Audit","General Ledger","Inventory Control","Tax"
-    ],
-    "Treasury": [
-      "Check-run","Bank Control","Cash Flow"
-    ],
-    "HR": [
-      "Payroll","Timekeeping"
-    ],
-    "IT": [
-      "Application","Infra"
-    ]
+  const categoryMappings = {
+    "Working Instructions": {
+      Receivables: {
+        Maintenance: "receivables-maintenance-body",
+        "Operational Procedure": "receivables-operational-procedure-body"
+      },
+      Payables: {
+        Maintenance: "payables-maintenance-body",
+        "Operational Procedure": "payables-operational-procedure-body"
+      },
+      Purchasing: {
+        Maintenance: "purchasing-maintenance-body",
+        "Operational Procedure": "purchasing-operational-procedure-body"
+      },
+      "Fixed Asset": {
+        Maintenance: "fixed-asset-maintenance-body",
+        "Operational Procedure": "fixed-asset-operational-procedure-body"
+      },
+      "Cash Management": {
+        Maintenance: "cash-management-maintenance-body",
+        "Operational Procedure": "cash-management-operational-procedure-body"
+      },
+      Inventory: {
+        Maintenance: "inventory-maintenance-body"
+      },
+      "HRMS Global": {
+        Maintenance: "hrms-global-maintenance-body"
+      },
+      "General Ledger": {
+        Maintenance: "general-ledger-maintenance-body",
+        "Operational Procedure": "general-ledger-operational-procedure-body"
+      },
+      "Oracle Guides": "oracle-guides-body",
+    },
+    "Standard Operating Procedures": {
+      Finance: {
+        AR: "ar-body",
+        AP: "ap-body",
+        "Sales Audit": "sales-audit-body",
+        "General Ledger": "general-ledger-body",
+        "Inventory Control": "inventory-control-body",
+        Tax: "tax-body",
+      },
+      Treasury: {
+        "Check-run": "checkrun-body",
+        "Bank Control": "bank-control-body",
+        "Cash Flow": "cash-flow-body",
+      },
+      HR: {
+        Payroll: "payroll-body",
+        Timekeeping: "timekeeping-body",
+      },
+      IT: {
+        Application: "application-body",
+        Infra: "infra-body",
+      },
+    },
+    "Functional Specifications": {
+      Receivables: "fs_receivables-body",
+      Payables: "fs_payables-body",
+      "Cash Management": "fs_cash_management-body",
+      "General Ledger": "fs_general_ledger-body",
+      "Related Document": "fs_related_document-body",
+    },
+    "Process Flow": {
+      Finance: "pf_finance-body",
+      Treasury: "pf_treasury-body",
+      HR: "pf_hr-body",
+      IT: "pf_it-body",
+    },
+    "System Flow": {
+      Receivables: "sf_receivables-body",
+      Payables: "sf_payables-body",
+      Purchasing: "sf_purchasing-body",
+      "Fixed Asset": "sf_fixed_asset-body",
+      "Cash Management": "sf_cash_management-body",
+      "General Ledger": "sf_general_ledger-body",
+    },
   };
 
-  /* ---- UI elements ---- */
+  const listIdPrefixes = {
+    "Working Instructions": "approved_wi_",
+    "Standard Operating Procedures": "approved_sop_",
+    "Functional Specifications": "approved_fs_",
+    "Process Flow": "approved_pf_",
+    "System Flow": "approved_sf_",
+  };
+
+  const iconMap = {
+    "Working Instructions": "Icons/information-pamphlet.png",
+    "Standard Operating Procedures": "Icons/standard-operating-procedures.png",
+    "Functional Specifications": "Icons/design-resources.png",
+    "Process Flow": "Icons/workflow.png",
+    "System Flow": "Icons/workflow.png",
+  };
+
+  // Alias "Functional Specifications" to "Functional Specifications"
+  categoryMappings["Functional Specifications"] = categoryMappings["Functional Specifications"];
+  listIdPrefixes["Functional Specifications"]    = listIdPrefixes["Functional Specifications"];
+  iconMap["Functional Specifications"]           = iconMap["Functional Specifications"];
+
+  // --- State Variables ---
   let isAuthenticated = false;
-  const authContainer   = document.getElementById("auth-container");
-  const authBtn         = document.getElementById("auth-btn");
-  const authPassword    = document.getElementById("auth-password");
-  const togglePwd       = document.getElementById("toggle-password");
-  const addFileBtn      = document.getElementById("add-file-btn");
-  const viewArchivedBtn = document.getElementById("view-archived-btn");
-  const fileModal       = document.getElementById("file-upload-modal");
-  const modalClose      = fileModal.querySelector(".modal-close");
-  const archivedModal   = document.getElementById("archived-modal");
-  const archivedClose   = archivedModal.querySelector(".modal-close");
-  const archivedList    = document.getElementById("archived-files-list");
-  const fileInput       = document.getElementById("fileInput");
-  const fileNameSpan    = document.getElementById("selected-file-name");
 
-  /* ---------- peek-toggle ---------- */
-  togglePwd.addEventListener("click", () => {
-    const hidden = authPassword.type === "password";
-    authPassword.type = hidden ? "text" : "password";
-    togglePwd.classList.toggle("fa-eye");
-    togglePwd.classList.toggle("fa-eye-slash");
-  });
+  // --- UI Elements ---
+  const getElement = id => document.getElementById(id);
 
-  /* ---------- auth ---------- */
-  authBtn.addEventListener("click", authenticate);
-  authPassword.addEventListener("keydown", e => {
-    if (e.key === "Enter") authenticate();
-  });
-  function authenticate() {
-    if (authPassword.value === "@Helpd3sk") {
-      authContainer.style.display    = "none";
-      addFileBtn.style.display       = "block";
-      viewArchivedBtn.style.display  = "block";
-      authPassword.value             = "";
-      isAuthenticated                = true;
-      displayApprovedUploads();
-    } else {
-      alert("Incorrect password.");
-    }
-  }
+  const profileIcon       = getElement("profile-icon");
+  const loginModal        = getElement("login-modal");
+  const loginCloseBtn     = loginModal?.querySelector(".modal-close");
+  const loginEmail        = getElement("login-email");
+  const loginPassword     = getElement("login-password");
+  const loginErrorDiv     = getElement("login-error");
+  const loginBtn          = getElement("login-btn");
+  const logoutBtn         = getElement("logout-btn");
+  const changePasswordBtn = getElement("change-password-btn");
+  const userDisplay       = getElement("user-display");
 
-  /* ---------- modals ---------- */
-  addFileBtn.addEventListener("click",   () => fileModal.hidden  = false);
-  modalClose.addEventListener("click",   () => fileModal.hidden  = true);
-  fileModal.addEventListener("click", e => {
-    if (e.target === fileModal) fileModal.hidden = true;
-  });
-  viewArchivedBtn.addEventListener("click", () => {
+  const viewArchivedBtn   = getElement("view-archived-btn");
+  const addFileBtn        = getElement("add-file-btn");
+  const adminLoginBtn     = getElement("admin-login-btn");
+
+  const fileUploadModal   = getElement("file-upload-modal");
+  const fileCloseBtn      = fileUploadModal?.querySelector(".modal-close");
+  const fileInputElement  = getElement("fileInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+    // wire the Upload button to your uploadFile() fn
+    uploadBtn.addEventListener("click", uploadFile);
+  const fileTitleInput    = getElement("fileTitle");
+  const fileNameSpan      = getElement("selected-file-name");
+  const archivedModal     = getElement("archived-modal");
+  const archivedCloseBtn  = archivedModal?.querySelector(".modal-close");
+  const archivedList      = getElement("archived-files-list");
+  const moduleDropdown    = getElement("module-dropdown");
+  const searchInput       = getElement("searchInput");
+  const searchBtn         = getElement("searchBtn");
+
+  // --- Safe Event Listener ---
+  const addSafeEventListener = (el, ev, fn) => {
+    if (el) el.addEventListener(ev, fn);
+  };
+
+  // --- Modal toggles ---
+  addSafeEventListener(profileIcon,     "click", () => { loginModal.hidden = false; });
+  addSafeEventListener(loginCloseBtn,   "click", () => { loginModal.hidden = true; });
+  addSafeEventListener(addFileBtn,      "click", () => { fileUploadModal.hidden = false; });
+  addSafeEventListener(fileCloseBtn,    "click", () => { fileUploadModal.hidden = true; });
+  addSafeEventListener(searchBtn, "click", searchContent);
+  addSafeEventListener(viewArchivedBtn, "click", () => {
     archivedModal.hidden = false;
     loadArchivedFiles();
   });
-  archivedClose.addEventListener("click",   () => archivedModal.hidden = true);
-  archivedModal.addEventListener("click", e => {
-    if (e.target === archivedModal) archivedModal.hidden = true;
+  addSafeEventListener(archivedCloseBtn,"click", () => { archivedModal.hidden = true; });
+
+  // --- LOGIN / LOGOUT / RESET PASSWORD ---
+  addSafeEventListener(loginBtn, "click", () => {
+    const email = (loginEmail.value || "").trim();
+    const pw    = loginPassword.value || "";
+    loginErrorDiv.textContent = "";
+    if (!email || !pw) {
+      loginErrorDiv.textContent = "Please enter both email & password.";
+      return;
+    }
+    firebase.auth()
+      .signInWithEmailAndPassword(email, pw)
+      .then(() => {
+        alert("Login successful!");
+        loginModal.hidden = true;
+      })
+      .catch(err => {
+        loginErrorDiv.textContent = err.message;
+      });
   });
 
-  /* ---------- file-input UI ---------- */
-  fileInput.addEventListener("change", () => {
-    fileNameSpan.textContent = fileInput.files.length
-      ? fileInput.files[0].name
-      : "No file chosen";
+  addSafeEventListener(logoutBtn, "click", () => {
+    firebase.auth().signOut().then(() => {
+      alert("You have been logged out.");
+    });
   });
 
-  /* ========= ACCORDIONS (global) ========= */
+  addSafeEventListener(changePasswordBtn, "click", () => {
+    const email = (loginEmail.value || "").trim();
+    if (!email) {
+      alert("Enter your email above, then click Change Password.");
+      return;
+    }
+    firebase.auth().sendPasswordResetEmail(email)
+      .then(() => {
+        alert("Password reset email sent to " + email);
+      })
+      .catch(err => {
+        alert("Error: " + err.message);
+      });
+  });
+
+  // --- ROLE BUTTON HANDLER ---
+  addSafeEventListener(adminLoginBtn, "click", () => {
+    window.location.href = "admin.html";
+  });
+
+  // --- Auth State Listener ---
+  firebase.auth().onAuthStateChanged(user => {
+    isAuthenticated = !!user;
+    loginBtn.hidden          = isAuthenticated;
+    logoutBtn.hidden         = !isAuthenticated;
+    changePasswordBtn.hidden = !isAuthenticated;
+    if (userDisplay) {
+      userDisplay.textContent = isAuthenticated ? user.email : "";
+    }
+    displayApprovedUploads();
+    applyRoleUI(user);
+  });
+
+  function applyRoleUI(user) {
+    if (!user) {
+      viewArchivedBtn.style.display = "none";
+      addFileBtn.style.display      = "none";
+      adminLoginBtn.style.display   = "none";
+      document.querySelectorAll(".admin-only").forEach(el => {
+        el.style.display = "none";
+      });
+      return;
+    }
+    
+    firebase.database().ref(`users/${user.uid}`).once("value")
+      .then(snapshot => {
+        const roles = snapshot.val() || {};
+        viewArchivedBtn.style.display = roles.uploader ? "inline-block" : "none";
+        addFileBtn.style.display      = roles.uploader ? "inline-block" : "none";
+        adminLoginBtn.style.display   = roles.admin    ? "inline-block" : "none";
+        
+        // Toggle admin-only elements based on admin role
+        document.querySelectorAll(".admin-only").forEach(el => {
+          el.style.display = roles.admin ? "inline-block" : "none";
+        });
+      })
+      .catch(err => {
+        console.error("Error fetching user roles:", err);
+        viewArchivedBtn.style.display = addFileBtn.style.display = adminLoginBtn.style.display = "none";
+        document.querySelectorAll(".admin-only").forEach(el => {
+          el.style.display = "none";
+        });
+      });
+  }
+
+  // --- Helpers ---
+  function slugify(text) {
+    return text.toLowerCase()
+               .replace(/\s+/g, '-')
+               .replace(/_/g, '-')
+               .replace(/[^\w\-]+/g, '');
+  }
+
+  // --- Build Accordion ---
+  // Modify the buildDynamicAccordion function to add delete buttons
+
+function buildDynamicAccordion() {
+  const container = getElement("dynamic-accordion");
+  if (!container) {
+    console.error("Dynamic accordion container not found!");
+    return;
+  }
+  container.innerHTML = "";
+
+  Object.entries(categoryMappings).forEach(([topLevel, mids]) => {
+    const topSlug = slugify(topLevel);
+    const card    = document.createElement("div");
+    card.className = "dropdown-card";
+    card.setAttribute("data-category", topLevel);
+
+    // Header
+    const btn = document.createElement("div");
+    btn.className = "dropdown-btn";
+    btn.onclick = () => toggleDropdown(`${topSlug}-body`, `arrow-${topSlug}`);
+
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "card-title";
+    const img = document.createElement("img");
+    img.src = iconMap[topLevel] || "Icons/default.png";
+    img.alt = topLevel;
+    img.className = "topic-icon";
+    titleDiv.appendChild(img);
+    titleDiv.appendChild(Object.assign(document.createElement("span"), { textContent: topLevel }));
+    btn.appendChild(titleDiv);
+
+    // Add delete button for main topic (admin only)
+    const deleteMainBtn = document.createElement("button");
+    deleteMainBtn.className = "delete-btn admin-only";
+    deleteMainBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    deleteMainBtn.style.display = "none"; // Hidden by default, shown only for admins
+    deleteMainBtn.onclick = (e) => {
+      e.stopPropagation(); // Don't trigger the dropdown
+      confirmDelete(topLevel, "main-topic");
+    };
+    btn.appendChild(deleteMainBtn);
+
+    const arrow = document.createElement("span");
+    arrow.id = `arrow-${topSlug}`;
+    arrow.className = "arrow";
+    arrow.textContent = "▼";
+    btn.appendChild(arrow);
+
+    // Body
+    const body = document.createElement("div");
+    body.className = "dropdown-body";
+    body.id = `${topSlug}-body`;
+    body.style.display = "none";
+
+    Object.entries(mids).forEach(([midKey, midVal]) => {
+      const midSlug = slugify(midKey);
+
+      if (typeof midVal === "string") {
+        // Single-level
+        const subBtn = document.createElement("div");
+        subBtn.className = "subtopic-btn";
+        subBtn.onclick = () => toggleSubTopics(midVal, `arrow-${midSlug}`);
+        
+        const subBtnContent = document.createElement("div");
+        subBtnContent.className = "subtopic-btn-content";
+        subBtnContent.appendChild(Object.assign(document.createElement("span"), { textContent: midKey }));
+        
+        // Add delete button for subtopic (admin only)
+        const deleteSubBtn = document.createElement("button");
+        deleteSubBtn.className = "delete-btn admin-only";
+        deleteSubBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteSubBtn.style.display = "none"; // Hidden by default, shown only for admins
+        deleteSubBtn.onclick = (e) => {
+          e.stopPropagation(); // Don't trigger the dropdown
+          confirmDelete(midKey, "subtopic", topLevel);
+        };
+        subBtnContent.appendChild(deleteSubBtn);
+        
+        subBtn.appendChild(subBtnContent);
+        subBtn.appendChild(Object.assign(document.createElement("span"), {
+          id: `arrow-${midSlug}`, className: "arrow", textContent: "▼"
+        }));
+
+        const subBody = document.createElement("div");
+        subBody.className = "subtopic-body";
+        subBody.id = midVal;
+        subBody.style.display = "none";
+
+        const ul = document.createElement("ul");
+        ul.id = listIdPrefixes[topLevel] + midKey.toLowerCase().replace(/\s+/g, "_");
+        ul.className = "pdf-list";
+        subBody.appendChild(ul);
+
+        body.appendChild(subBtn);
+        body.appendChild(subBody);
+
+      } else {
+        // Two-level
+        const subBtn = document.createElement("div");
+        subBtn.className = "subtopic-btn";
+        subBtn.onclick = () => toggleSubTopics(`${midSlug}-body`, `arrow-${midSlug}`);
+        
+        const subBtnContent = document.createElement("div");
+        subBtnContent.className = "subtopic-btn-content";
+        subBtnContent.appendChild(Object.assign(document.createElement("span"), { textContent: midKey }));
+        
+        // Add delete button for subtopic (admin only)
+        const deleteSubBtn = document.createElement("button");
+        deleteSubBtn.className = "delete-btn admin-only";
+        deleteSubBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteSubBtn.style.display = "none"; // Hidden by default, shown only for admins
+        deleteSubBtn.onclick = (e) => {
+          e.stopPropagation(); // Don't trigger the dropdown
+          confirmDelete(midKey, "subtopic", topLevel);
+        };
+        subBtnContent.appendChild(deleteSubBtn);
+        
+        subBtn.appendChild(subBtnContent);
+        subBtn.appendChild(Object.assign(document.createElement("span"), {
+          id: `arrow-${midSlug}`, className: "arrow", textContent: "▼"
+        }));
+
+        const subBody = document.createElement("div");
+        subBody.className = "subtopic-body";
+        subBody.id = `${midSlug}-body`;
+        subBody.style.display = "none";
+
+        Object.entries(midVal).forEach(([leafKey, leafId]) => {
+          const leafSlug = slugify(leafKey);
+          const leafBtn  = document.createElement("div");
+          leafBtn.className = "subtopic-btn";
+          leafBtn.onclick = () => toggleSubTopics(leafId, `arrow-${leafSlug}-${midSlug}`);
+          
+          const leafBtnContent = document.createElement("div");
+          leafBtnContent.className = "subtopic-btn-content";
+          leafBtnContent.appendChild(Object.assign(document.createElement("span"), { textContent: leafKey }));
+          
+          // Add delete button for leaf topic (admin only)
+          const deleteLeafBtn = document.createElement("button");
+          deleteLeafBtn.className = "delete-btn admin-only";
+          deleteLeafBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          deleteLeafBtn.style.display = "none"; // Hidden by default, shown only for admins
+          deleteLeafBtn.onclick = (e) => {
+            e.stopPropagation(); // Don't trigger the dropdown
+            confirmDelete(leafKey, "leaf-topic", topLevel, midKey);
+          };
+          leafBtnContent.appendChild(deleteLeafBtn);
+          
+          leafBtn.appendChild(leafBtnContent);
+          leafBtn.appendChild(Object.assign(document.createElement("span"), {
+            id: `arrow-${leafSlug}-${midSlug}`, className: "arrow", textContent: "▼"
+          }));
+
+          const leafBody = document.createElement("div");
+          leafBody.className = "subtopic-body";
+          leafBody.id = leafId;
+          leafBody.style.display = "none";
+
+          const leafUl = document.createElement("ul");
+          leafUl.id = `${listIdPrefixes[topLevel]}${midSlug}_${leafSlug}`;
+          leafUl.className = "pdf-list";
+          leafBody.appendChild(leafUl);
+
+          subBody.appendChild(leafBtn);
+          subBody.appendChild(leafBody);
+        });
+
+        body.appendChild(subBtn);
+        body.appendChild(subBody);
+      }
+    });
+
+    card.appendChild(btn);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+// Add this function to handle delete confirmations
+function confirmDelete(name, level, parent = null, grandparent = null) {
+  const confirmMsg = `Are you sure you want to delete "${name}"? This will remove all associated content and cannot be undone.`;
+  
+  if (confirm(confirmMsg)) {
+    deleteCategory(name, level, parent, grandparent);
+  }
+}
+
+function deleteCategory(name, level, parent = null, grandparent = null) {
+  // First, get all files in this category to delete them
+  firebase.database().ref("uploads").once("value")
+    .then(snapshot => {
+      const uploads = snapshot.val() || {};
+      const updates = {};
+      let deletedCount = 0;
+      
+      // Find all files that need to be deleted based on the category level
+      Object.entries(uploads).forEach(([key, upload]) => {
+        let shouldDelete = false;
+        
+        if (level === "main-topic" && upload.topLevelTopic === name) {
+          shouldDelete = true;
+        } 
+        else if (level === "subtopic" && upload.topLevelTopic === parent) {
+          if (typeof upload.subTopic === "string" && upload.subTopic === name) {
+            shouldDelete = true;
+          } 
+          else if (typeof upload.subTopic === "object" && upload.subTopic.module === name) {
+            shouldDelete = true;
+          }
+        }
+        else if (level === "leaf-topic" && upload.topLevelTopic === grandparent) {
+          if (typeof upload.subTopic === "object" && 
+              upload.subTopic.module === parent && 
+              upload.subTopic.section === name) {
+            shouldDelete = true;
+          }
+        }
+        
+        if (shouldDelete) {
+          updates[`uploads/${key}`] = null; // Mark for deletion
+          deletedCount++;
+        }
+      });
+      
+      // If we have files to delete, proceed
+      if (Object.keys(updates).length > 0) {
+        return firebase.database().ref().update(updates);
+      } 
+      else {
+        return Promise.resolve();
+      }
+    })
+    .then(() => {
+      // Now update the category mappings in the database
+      if (level === "main-topic") {
+        // For main topics, remove the entire category
+        delete categoryMappings[name];
+        delete listIdPrefixes[name];
+        delete iconMap[name];
+      } 
+      else if (level === "subtopic") {
+        // For subtopics, remove the subtopic from the parent category
+        if (categoryMappings[parent]) {
+          delete categoryMappings[parent][name];
+        }
+      } 
+      else if (level === "leaf-topic") {
+        // For leaf topics, remove the leaf from the subtopic
+        if (categoryMappings[grandparent] && 
+            categoryMappings[grandparent][parent]) {
+          delete categoryMappings[grandparent][parent][name];
+        }
+      }
+      
+      // Save the updated categoryMappings to Firebase if you store them there
+      // (This part would depend on your specific implementation)
+      
+      // Rebuild the accordion to reflect the changes
+      buildDynamicAccordion();
+      
+      // Show success message
+      alert(`Successfully deleted "${name}" and all associated files.`);
+    })
+    .catch(err => {
+      console.error("Error deleting category:", err);
+      alert(`Error deleting "${name}": ${err.message}`);
+    });
+}
+
+  // --- Build Module Dropdown ---
+  function buildModuleDropdown() {
+    if (!moduleDropdown) {
+      console.error("Module dropdown not found!");
+      return;
+    }
+    moduleDropdown.innerHTML = "";
+
+    Object.entries(categoryMappings).forEach(([topLevel, mids]) => {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = topLevel;
+
+      Object.entries(mids).forEach(([midKey, midVal]) => {
+        if (typeof midVal === "string") {
+          const option = document.createElement("option");
+          option.value = midKey;
+          option.textContent = midKey;
+          optgroup.appendChild(option);
+        } else {
+          Object.keys(midVal).forEach(leafKey => {
+            const option = document.createElement("option");
+            option.value = `${midKey}_${leafKey}`;
+            option.textContent = `${midKey} → ${leafKey}`;
+            optgroup.appendChild(option);
+          });
+        }
+      });
+
+      moduleDropdown.appendChild(optgroup);
+    });
+  }
+
+  // --- Accordion toggles ---
   window.toggleDropdown = (bodyId, arrowId) => {
-    const body  = document.getElementById(bodyId);
-    const arrow = document.getElementById(arrowId);
+    const body  = getElement(bodyId);
+    const arrow = getElement(arrowId);
     if (!body) return;
     const open = body.style.display === "block";
     body.style.display = open ? "none" : "block";
-    arrow.textContent  = open ? "▼" : "▲";
+    if (arrow) arrow.textContent = open ? "▼" : "▲";
   };
-  window.toggleSubTopics = (containerId, arrowId) => {
-    const c = document.getElementById(containerId);
-    const a = document.getElementById(arrowId);
+  window.toggleSubTopics = (cId, aId) => {
+    const c = getElement(cId);
+    const a = getElement(aId);
     if (!c) return;
     const open = c.style.display === "block";
     c.style.display = open ? "none" : "block";
-    a.textContent   = open ? "▼" : "▲";
+    if (a) a.textContent = open ? "▼" : "▲";
   };
 
-  /* =========================================================
-     UPLOAD → Cloudinary → Firebase
-     ========================================================= */
-  function uploadFileToCloudinary(file) {
-    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`;
-    const fd  = new FormData();
-    fd.append("file", file);
-    fd.append("resource_type", "raw");
-    const publicId = file.name
-      .replace(/\s+/g,"_")
-      .replace(/\.[^/.]+$/,"")
-      + "_" + Date.now();
-    fd.append("public_id", publicId);
-    fd.append("upload_preset", UPLOAD_PRESET);
-    return fetch(url, { method:"POST", body:fd })
-      .then(r => r.json())
-      .then(d => {
-        if (d.secure_url) return d.secure_url;
-        throw new Error(d.error?.message || "Cloudinary error");
-      });
-  }
-
-  window.uploadFile = () => {
-    const file      = fileInput.files[0];
-    const title     = document.getElementById("fileTitle").value.trim();
-    const moduleSel = document.getElementById("module-dropdown");
-    const newSub    = document.getElementById("new-subtitle").value.trim();
-
-    if (!file || !title) {
-      return alert("Choose a file and title.");
+  // --- Upload File ---
+  function uploadFile() {
+    if (!fileInputElement || !fileTitleInput || !moduleDropdown) {
+      alert("Error: Upload form elements not found.");
+      return;
+    }
+    if (!firebase.auth().currentUser) {
+      alert("Please log in to upload files.");
+      loginModal.hidden = false;
+      return;
     }
 
-    // 1) Detect mainTopic from the <optgroup>
-    const selectedOpt = moduleSel.selectedOptions[0];
-    const og          = selectedOpt.closest("optgroup");
-    const mainTopic   = og?.label || "";
-
-    // 2) Validate/inject newSub under that mainTopic, if any
-    let subTopic = moduleSel.value;
-    if (newSub) {
-      if (!subOptions[mainTopic] || !subOptions[mainTopic].includes(newSub)) {
-        return alert(`"${newSub}" is not valid under "${mainTopic}".`);
-      }
-      // inject into the dropdown if missing
-      if (![...og.querySelectorAll("option")].some(o => o.value===newSub)) {
-        const opt = document.createElement("option");
-        opt.value       = newSub;
-        opt.textContent = newSub;
-        og.appendChild(opt);
-      }
-      subTopic = newSub;
+    const selOpt = moduleDropdown.selectedOptions[0];
+    if (!selOpt) {
+      alert("Please select a module.");
+      return;
+    }
+    const optgroup = selOpt.closest("optgroup");
+    if (!optgroup) {
+      alert("Invalid selection.");
+      return;
     }
 
-    // 3) Upload → save metadata
-    uploadFileToCloudinary(file)
-      .then(url => firebase.database().ref("uploads").push({
-        title,
-        fileName:         file.name,
-        fileUrl:          url,
-        mainTopic,        // optgroup label
-        subTopic,         // chosen or newly injected
-        timestamp:        Date.now(),
-        approved:         false,
-        archiveRequested: false,
-        archived:         false
-      }))
+    let topLevel = optgroup.label;
+    let subTopic = selOpt.value;
+    const section = selOpt.textContent.trim();
+
+    if (topLevel === "Working Instructions" && section.includes("→")) {
+      const parts = section.split("→").map(p => p.trim());
+      if (parts.length === 2) {
+        subTopic = { module: parts[0], section: parts[1] };
+      }
+    }
+
+    const file  = fileInputElement.files[0];
+    const title = fileTitleInput.value.trim();
+    if (!file) {
+      alert("Please choose a file to upload.");
+      return;
+    }
+    if (!title) {
+      alert("Please enter a title for the file.");
+      return;
+    }
+
+    const loader = getElement("upload-loader");
+    if (loader) loader.style.display = "block";
+
+    firebase.database().ref("uploads")
+      .orderByChild("fileName").equalTo(file.name).once("value")
+      .then(snapshot => {
+        if (snapshot.exists()) throw new Error("duplicate-file");
+        return firebase.database().ref("uploads")
+          .orderByChild("title").equalTo(title).once("value");
+      })
+      .then(snapshot => {
+        if (snapshot.exists()) throw new Error("duplicate-title");
+        return uploadFileToCloudinary(file);
+      })
+      .then(url => {
+        if (!url) throw new Error("Failed to get upload URL");
+        return firebase.database().ref("uploads").push({
+          title,
+          fileName: file.name,
+          fileUrl: url,
+          topLevelTopic: topLevel,
+          subTopic,
+          timestamp: Date.now(),
+          approved: false,
+          archiveRequested: false,
+          archived: false,
+          uploaderUid: firebase.auth().currentUser.uid,
+          uploaderEmail: firebase.auth().currentUser.email || "Unknown"
+        });
+      })
       .then(() => {
-        alert("Uploaded! Awaiting approval.");
-        fileModal.hidden                              = true;
-        fileInput.value                               = "";
-        document.getElementById("fileTitle").value    = "";
-        document.getElementById("new-subtitle").value = "";
-        fileNameSpan.textContent                      = "No file chosen";
+        alert("✅ File uploaded successfully! Awaiting approval.");
+        fileInputElement.value = "";
+        fileTitleInput.value = "";
+        if (fileNameSpan) fileNameSpan.textContent = "No file chosen";
+        fileUploadModal.hidden = true;
+        if (loader) loader.style.display = "none";
+        displayApprovedUploads();
       })
       .catch(err => {
-        console.error(err);
-        alert("Upload failed: " + err.message);
+        if (loader) loader.style.display = "none";
+        if (err.message === "duplicate-file") {
+          alert("🚫 That file name already exists in the system.");
+        } else if (err.message === "duplicate-title") {
+          alert(`🚫 A file titled "${title}" already exists. Please choose a different title.`);
+        } else {
+          console.error("Upload error:", err);
+          alert("Upload failed: " + (err.message || "Unknown error"));
+        }
       });
-  };
+  }
 
-  /* =========================================================
-     ARCHIVE REQUEST
-     ========================================================= */
+  function uploadFileToCloudinary(file) {
+    const MAX_SIZE = 10 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return Promise.reject(new Error("File size exceeds 10MB limit."));
+    }
+    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("resource_type", "raw");
+    const timestamp = Date.now();
+    const publicId = file.name.replace(/\s+/g, "_").replace(/\.[^/.]+$/, "") + "_" + timestamp;
+    formData.append("public_id", publicId);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    return fetch(url, { method: "POST", body: formData })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        if (!data.secure_url) throw new Error(data.error?.message || "Error uploading to Cloudinary");
+        return data.secure_url;
+      })
+      .catch(error => {
+        console.error("Cloudinary upload error:", error);
+        throw new Error("File upload service error: " + error.message);
+      });
+  }
+
+  // --- Display Approved Uploads ---
+  function addFileToList(list, upload, key) {
+    if (!list) return;
+    const li = document.createElement("li");
+    const a  = document.createElement("a");
+    a.href        = upload.fileUrl;
+    a.target      = "_blank";
+    a.textContent = upload.title;
+    a.rel         = "noopener noreferrer";
+    li.appendChild(a);
+
+    if (isAuthenticated) {
+      const btn = document.createElement("button");
+      btn.textContent = "Archive";
+      btn.className   = "archive-btn";
+      btn.onclick     = e => {
+        e.preventDefault();
+        requestArchive(key, upload.title);
+      };
+      li.appendChild(btn);
+    }
+
+    list.appendChild(li);
+  }
+
+  function displayApprovedUploads() {
+    firebase.database().ref("uploads")
+      .orderByChild("approved").equalTo(true).once("value")
+      .then(snapshot => {
+        const uploads = snapshot.val() || {};
+        document.querySelectorAll(".pdf-list").forEach(ul => ul.innerHTML = "");
+
+        Object.entries(uploads).forEach(([key, upload]) => {
+          if (upload.archived) return;
+          const prefix = listIdPrefixes[upload.topLevelTopic] ||
+                         listIdPrefixes["Standard Operating Procedures"];
+          let suffix;
+          if (typeof upload.subTopic === "object" && upload.subTopic.module && upload.subTopic.section) {
+            const m = upload.subTopic.module.toLowerCase().replace(/\s+/g, "_");
+            const s = upload.subTopic.section.toLowerCase().replace(/\s+/g, "_");
+            suffix = `${m}_${s}`;
+          } else if (typeof upload.subTopic === "string") {
+            suffix = upload.subTopic.toLowerCase().replace(/\s+/g, "_");
+          } else {
+            console.warn(`Invalid subTopic for ${key}`);
+            suffix = "unknown";
+          }
+          const ul = getElement(prefix + suffix);
+          if (ul) addFileToList(ul, upload, key);
+          else console.warn(`List not found: ${prefix + suffix} for "${upload.title}"`);
+        });
+      })
+      .catch(err => console.error("Error fetching uploads:", err));
+  }
+
+  // --- Archive / Archived List / Search ---
   function requestArchive(key, title) {
     if (!isAuthenticated) {
-      return alert("Please log in first.");
+      alert("Please log in to archive files.");
+      loginModal.hidden = false;
+      return;
     }
     if (!confirm(`Archive "${title}"?`)) return;
-    firebase.database().ref("uploads/" + key)
-      .update({ archiveRequested:true })
-      .then(() => alert("Archive request sent."))
-      .catch(e => {
-        console.error(e);
-        alert("Error requesting archive.");
+    firebase.database().ref(`uploads/${key}`)
+      .update({ archiveRequested: true })
+      .then(() => {
+        alert("Archive request submitted.");
+        displayApprovedUploads();
+      })
+      .catch(err => {
+        console.error("Archive error:", err);
+        alert("Error archiving: " + err.message);
       });
   }
 
-  /* =========================================================
-     DISPLAY APPROVED (and archive-buttons)
-     ========================================================= */
-  function displayApprovedUploads() {
-    // base map for WI / FS / PF / SF
-    const map = {
-      // Working Instructions
-      "Receivables":        "approved_wi_receivables",
-      "Payables":           "approved_wi_payables",
-      "Purchasing":         "approved_wi_purchasing",
-      "General Ledger":     "approved_wi_general_ledger",
-      "Oracle Guides":      "approved_wi_oracle_guides",
-      "Fixed Asset":        "approved_wi_fixed_asset",
-      "Inventory":          "approved_wi_inventory",
-      "HRMS Global":        "approved_wi_hrms_global",
-      // Functional Design Document
-      "Functional Design Document": "approved_fs_oracle_enhancement",
-      // Process Flow
-      "Finance":            "approved_pf_finance",
-      "Treasury":           "approved_pf_treasury",
-      "HR":                 "approved_pf_hr",
-      "IT":                 "approved_pf_it",
-      // System Flow
-      "Receivables":        "approved_sf_receivables",
-      "Payables":           "approved_sf_payables",
-      "Purchasing":         "approved_sf_purchasing",
-      "Fixed Asset":        "approved_sf_fixed_asset",
-      "Cash Management":    "approved_sf_cash_management",
-      "General Ledger":     "approved_sf_general_ledger"
-    };
-
-    // helper to normalize keys → underscore IDs
-    function normalize(s) {
-      return s.toLowerCase().replace(/[\s\-]+/g,"_");
-    }
-
-    // SOP children mapping
-    subOptions["Standard Operating Procedures"].forEach(parent => {
-      (subOptions[parent]||[]).forEach(child => {
-        map[child] = `approved_sop_${normalize(child)}`;
+  function loadArchivedFiles() {
+    archivedList.innerHTML = "<li>Loading archived files...</li>";
+    firebase.database().ref("uploads")
+      .orderByChild("archived").equalTo(true)
+      .once("value")
+      .then(snapshot => {
+        const data = snapshot.val();
+        archivedList.innerHTML = "";
+        if (!data) return archivedList.innerHTML = "<li>No archived files.</li>";
+        const files = Object.values(data).sort((a,b) => (a.title||"").localeCompare(b.title||""));
+        files.forEach(file => {
+          const li = document.createElement("li");
+          const a  = document.createElement("a");
+          a.href        = file.fileUrl;
+          a.target      = "_blank";
+          a.textContent = file.title || "Untitled";
+          const meta = document.createElement("span");
+          meta.className = "file-meta";
+          meta.textContent = ` - ${new Date(file.timestamp||0).toLocaleDateString()}`;
+          li.appendChild(a);
+          li.appendChild(meta);
+          archivedList.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error("Load archived error:", err);
+        archivedList.innerHTML = "<li>Error loading archived files.</li>";
       });
-    });
-
-    // listen & render
-    firebase.database().ref("uploads").on("value", snap => {
-      const data = snap.val()||{};
-      // clear
-      Object.values(map).forEach(ulId => {
-        const ul = document.getElementById(ulId);
-        if (ul) ul.innerHTML = "";
-      });
-      // append entries
-      Object.entries(data).forEach(([key,it]) => {
-        if (!it.approved || it.archived) return;
-        const ulId = map[it.subTopic];
-        if (!ulId) return;
-        const ul = document.getElementById(ulId);
-        if (!ul) return;
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${it.fileUrl}" target="_blank">${it.title}</a>`;
-        if (isAuthenticated) {
-          if (it.archiveRequested) {
-            li.innerHTML += ' <em style="color:#888">(archive pending)</em>';
-          } else {
-            const btn = document.createElement("button");
-            btn.textContent = "Archive";
-            btn.className   = "archive-btn";
-            btn.onclick     = () => requestArchive(key,it.title);
-            li.appendChild(btn);
-          }
-        }
-        ul.appendChild(li);
-      });
-    });
-  }
-  displayApprovedUploads();
-
-  /* =========================================================
-     ORACLE-STYLE % WILDCARD SEARCH SUPPORT
-     ========================================================= */
-  function wildcardMatch(text, pattern) {
-    text    = text.toLowerCase();
-    pattern = pattern.toLowerCase();
-    const startsWithPct = pattern.startsWith('%');
-    const endsWithPct   = pattern.endsWith('%');
-    const core = pattern.replace(/^%+|%+$/g,'');
-    if (startsWithPct && endsWithPct) {
-      return core==='' ? true : text.includes(core);
-    } else if (startsWithPct) {
-      return text.endsWith(core);
-    } else if (endsWithPct) {
-      return text.startsWith(core);
-    } else {
-      return text===core;
-    }
   }
 
-  /* =========================================================
-     SEARCH (global) with % support
-     ========================================================= */
-  window.searchContent = () => {
-    const raw    = document.getElementById("searchInput").value.trim();
-    const term   = raw.toLowerCase();
-    const usePct = raw.includes('%');
-
-    const lis    = document.querySelectorAll(".pdf-list li");
-    const subs   = document.querySelectorAll(".subtopic-body");
-    const dds    = document.querySelectorAll(".dropdown-body");
-    const banner = document.getElementById("no-results");
-    let found = false;
+  function searchContent() {
+    const raw = (searchInput.value || "").trim();
+    const term = raw.toLowerCase();
+    const usePct = raw.includes("%");
+    const lis = document.querySelectorAll(".pdf-list li");
+    const subs = document.querySelectorAll(".subtopic-body");
+    const dds = document.querySelectorAll(".dropdown-body");
+    const banner = getElement("no-results");
 
     if (!raw) {
-      banner.hidden = true;
+      if (banner) banner.hidden = true;
       lis.forEach(li => li.style.display = "");
       subs.forEach(sb => sb.style.display = "none");
       dds.forEach(dd => dd.style.display = "none");
       return;
     }
 
+    let found = false;
     lis.forEach(li => {
-      const title = li.textContent.trim();
-      const match = usePct
-                    ? wildcardMatch(title, raw)
-                    : title.includes(term);
-      li.style.display = match ? "" : "none";
-      if (match) found = true;
+      const txt = li.textContent.trim().toLowerCase();
+      const ok = usePct
+        ? (() => {
+            const p = raw.toLowerCase();
+            if (p.startsWith("%") && p.endsWith("%")) return txt.includes(p.slice(1,-1));
+            if (p.startsWith("%")) return txt.endsWith(p.slice(1));
+            if (p.endsWith("%")) return txt.startsWith(p.slice(0,-1));
+            return txt === p;
+          })()
+        : txt.includes(term);
+      li.style.display = ok ? "" : "none";
+      if (ok) found = true;
     });
-
     subs.forEach(sb => {
-      sb.style.display =
-        Array.from(sb.querySelectorAll("li"))
-             .some(li => li.style.display!=="none")
-          ? "block" : "none";
+      const any = Array.from(sb.querySelectorAll("li")).some(li => li.style.display !== "none");
+      sb.style.display = any ? "block" : "none";
     });
     dds.forEach(dd => {
-      dd.style.display =
-        Array.from(dd.querySelectorAll("li"))
-             .some(li => li.style.display!=="none")
-          ? "block" : "none";
+      const any = Array.from(dd.querySelectorAll("li")).some(li => li.style.display !== "none");
+      dd.style.display = any ? "block" : "none";
     });
-    banner.hidden = found;
-  };
-
-  /* =========================================================
-     LOAD ARCHIVED FILES (read-only)
-     ========================================================= */
-  function loadArchivedFiles() {
-    archivedList.innerHTML = "";
-    firebase.database().ref("uploads")
-      .orderByChild("archived").equalTo(true)
-      .once("value").then(snap => {
-        const data = snap.val();
-        if (!data) {
-          const li = document.createElement("li");
-          li.textContent = "No archived files.";
-          archivedList.appendChild(li);
-          return;
-        }
-        Object.values(data).forEach(it => {
-          const li = document.createElement("li");
-          li.innerHTML = `<a href="${it.fileUrl}" target="_blank">${it.title}</a>`;
-          archivedList.appendChild(li);
-        });
-      })
-      .catch(console.error);
+    if (banner) banner.hidden = found;
   }
+
+  addSafeEventListener(searchInput, "keyup", e => {
+    if (e.key === "Enter") searchContent();
+  });
+  addSafeEventListener(searchBtn, "click", searchContent);
+  addSafeEventListener(uploadBtn, "click", uploadFile);
+  addSafeEventListener(fileInputElement, "change", () => {
+    const f = fileInputElement.files[0];
+    fileNameSpan.textContent = f ? f.name : "No file chosen";
+  });
+
+  // --- Init ---
+  buildDynamicAccordion();
+  buildModuleDropdown();
+  displayApprovedUploads();
+
+  console.log("App initialized successfully");
 });

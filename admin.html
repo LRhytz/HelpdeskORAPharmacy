@@ -8,8 +8,10 @@
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-database-compat.js"></script>
 
+  <!-- Polyfills -->
   <script src="https://polyfill.io/v3/polyfill.min.js?features=default,fetch,Promise,Object.entries,Array.prototype.includes,Element.prototype.remove,NodeList.prototype.forEach"></script>
   <link rel="stylesheet" href="css/Admin.css"/>
 </head>
@@ -34,6 +36,7 @@
   </div>
 
 <script>
+  // --- Initialize Firebase ---
   const firebaseConfig = {
     apiKey: "AIzaSyBaSuFhNUeghfXEznYCHxYnagkjiojfO_M",
     authDomain: "helpdeskrpharmacy.firebaseapp.com",
@@ -46,120 +49,24 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  // only redirect after you've just processed something
-  function checkRedirect() {
-    const pa = document.getElementById("pending-approvals");
-    const ar = document.getElementById("pending-archives");
-    const noPA = pa.querySelector(".no-pending") !== null;
-    const noAR = ar.querySelector(".no-pending") !== null;
-    if (noPA && noAR) {
-      window.location.href = "index.html";
-    }
-  }
+  // --- Helper to build each approval/archive card ---
+  function buildCard(it, key, type) {
+    const modulePath = [ it.topLevelTopic, it.midLevelTopic, it.subTopic ]
+      .filter(Boolean).join(" › ");
 
-  function loadApprovals(){
-    firebase.database().ref("uploads").orderByChild("approved").equalTo(false)
-      .on("value", snap => {
-        const box = document.getElementById("pending-approvals");
-        box.innerHTML = "";
-        const data = snap.val();
-        if (!data) {
-          box.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
-          return;
-        }
-        for (let key in data) {
-          const it = data[key];
-          if (it.archiveRequested) continue;
-          box.appendChild(buildCard(it, key, "approval"));
-        }
-      });
-  }
-
-  function loadArchives(){
-    firebase.database().ref("uploads").orderByChild("archiveRequested").equalTo(true)
-      .on("value", snap => {
-        const box = document.getElementById("pending-archives");
-        box.innerHTML = "";
-        const data = snap.val();
-        if (!data) {
-          box.innerHTML = "<div class='no-pending'>No archive requests.</div>";
-          return;
-        }
-        for (let key in data) {
-          box.appendChild(buildCard(data[key], key, "archive"));
-        }
-      });
-  }
-
-  function approveFile(key){
-    firebase.database().ref("uploads/" + key)
-      .update({ approved: true })
-      .then(() => checkRedirect());
-  }
-  function rejectFile(key){
-    firebase.database().ref("uploads/" + key)
-      .update({ approved: "rejected" })
-      .then(() => checkRedirect());
-  }
-
-  function approveArchive(key){
-    firebase.database().ref("uploads/" + key)
-      .update({ archived: true, archiveDate: Date.now(), archiveRequested: null })
-      .then(() => checkRedirect());
-  }
-
-  function rejectArchive(key){
-    firebase.database().ref("uploads/" + key)
-      .update({ archiveRequested: null })
-      .then(() => checkRedirect());
-  }
-
-  function loadArchivedFiles(){
-    firebase.database().ref("uploads").orderByChild("archived").equalTo(true)
-      .on("value", snap => {
-        const box = document.getElementById("archived-files");
-        box.innerHTML = "";
-        const data = snap.val();
-        if (!data) {
-          box.innerHTML = "<div class='no-pending'>No archived files.</div>";
-          return;
-        }
-        for (let key in data) {
-          const it = data[key];
-          const card = document.createElement("div");
-          card.className = "approval-card fade-in";
-          card.innerHTML = `
-            <div class="approval-title">${it.title}</div>
-            <div class="approval-module">Module: ${it.module}</div>
-            <div class="approval-module">Archived on: ${new Date(it.archiveDate).toLocaleDateString()}</div>
-            <a class="approval-file-link" href="${it.fileUrl}" target="_blank">View File</a>
-          `;
-          const restore = document.createElement("button");
-          restore.textContent = "Restore";
-          restore.className = "approve-btn";
-          restore.onclick = () => restoreFile(key);
-          card.appendChild(restore);
-          box.appendChild(card);
-        }
-      });
-  }
-
-  function restoreFile(key){
-    if (!confirm("Restore this file back to its topic?")) return;
-    firebase.database().ref("uploads/" + key)
-      .update({ archived: false, archiveDate: null });
-  }
-
-  function buildCard(it, key, type){
     const card = document.createElement("div");
     card.className = "approval-card";
     card.innerHTML = `
       <div class="approval-title">${it.title}</div>
-      <div class="approval-module">Module: ${it.module}</div>
+      <div class="approval-module">Module: ${modulePath}</div>
       <a class="approval-file-link" href="${it.fileUrl}" target="_blank">View File</a>
     `;
+
     const yes = document.createElement("button");
     const no  = document.createElement("button");
+    yes.className = "approve-btn";
+    no.className  = "reject-btn";
+
     if (type === "approval") {
       yes.textContent = "Approve";
       yes.onclick     = () => approveFile(key);
@@ -171,23 +78,173 @@
       no.textContent  = "Reject";
       no.onclick      = () => rejectArchive(key);
     }
-    yes.className = "approve-btn";
-    no.className  = "reject-btn";
+
     card.appendChild(yes);
     card.appendChild(no);
     return card;
   }
 
+  // --- Load pending approvals (skip any that were “rejected”) ---
+  function loadApprovals() {
+    firebase.database()
+      .ref("uploads")
+      .orderByChild("approved")
+      .equalTo(false)
+      .once("value", snap => {
+        const box = document.getElementById("pending-approvals");
+        box.innerHTML = "";
+        const data = snap.val();
+        if (!data) {
+          box.innerHTML = "<div class='no-pending'>No pending approvals.</div>";
+          return;
+        }
+        Object.entries(data).forEach(([key, it]) => {
+          if (it.archiveRequested) return;
+          if (it.rejected)        return;  // ← skip rejects
+          box.appendChild(buildCard(it, key, "approval"));
+        });
+      }, err => {
+        console.error("❌ loadApprovals error:", err);
+      });
+  }
+
+  // --- Load pending archive requests ---
+  function loadArchives() {
+    firebase.database()
+      .ref("uploads")
+      .orderByChild("archiveRequested")
+      .equalTo(true)
+      .once("value", snap => {
+        const box = document.getElementById("pending-archives");
+        box.innerHTML = "";
+        const data = snap.val();
+        if (!data) {
+          box.innerHTML = "<div class='no-pending'>No archive requests.</div>";
+          return;
+        }
+        Object.entries(data).forEach(([key, it]) => {
+          box.appendChild(buildCard(it, key, "archive"));
+        });
+      }, err => {
+        console.error("❌ loadArchives error:", err);
+      });
+  }
+
+  // --- Approve / Reject handlers ---
+  function approveFile(key) {
+    firebase.database().ref("uploads/" + key)
+      .update({ approved: true })
+      .then(refreshIfEmpty)
+      .catch(err => console.error("❌ approveFile failed:", err));
+  }
+  function rejectFile(key) {
+    // ← now sets the `rejected` flag
+    firebase.database().ref("uploads/" + key)
+      .update({ rejected: true })
+      .then(refreshIfEmpty)
+      .catch(err => console.error("❌ rejectFile failed:", err));
+  }
+  function approveArchive(key) {
+    firebase.database().ref("uploads/" + key)
+      .update({ archived: true, archiveDate: Date.now(), archiveRequested: null })
+      .then(refreshIfEmpty)
+      .catch(err => console.error("❌ approveArchive failed:", err));
+  }
+  function rejectArchive(key) {
+    firebase.database().ref("uploads/" + key)
+      .update({ archiveRequested: null })
+      .then(refreshIfEmpty)
+      .catch(err => console.error("❌ rejectArchive failed:", err));
+  }
+
+  function refreshIfEmpty() {
+    const paEmpty = document.querySelector("#pending-approvals .no-pending");
+    const arEmpty = document.querySelector("#pending-archives .no-pending");
+    if (paEmpty && arEmpty) {
+      window.location.href = "index.html";
+    } else {
+      loadApprovals();
+      loadArchives();
+    }
+  }
+
+  // --- Archived files modal ---
+  function loadArchivedFiles() {
+    firebase.database().ref("uploads")
+      .orderByChild("archived")
+      .equalTo(true)
+      .once("value", snap => {
+        const box = document.getElementById("archived-files");
+        box.innerHTML = "";
+        const data = snap.val();
+        if (!data) {
+          box.innerHTML = "<div class='no-pending'>No archived files.</div>";
+          return;
+        }
+        Object.entries(data).forEach(([key, it]) => {
+          const card = document.createElement("div");
+          card.className = "approval-card fade-in";
+          card.innerHTML = `
+            <div class="approval-title">${it.title}</div>
+            <div class="approval-module">
+              Module: ${[it.topLevelTopic, it.midLevelTopic, it.subTopic].filter(Boolean).join(" › ")}
+            </div>
+            <div class="approval-module">
+              Archived on: ${new Date(it.archiveDate).toLocaleDateString()}
+            </div>
+            <a class="approval-file-link" href="${it.fileUrl}" target="_blank">View File</a>
+          `;
+          const restore = document.createElement("button");
+          restore.textContent = "Restore";
+          restore.className  = "approve-btn";
+          restore.onclick    = () => restoreFile(key);
+          card.appendChild(restore);
+          box.appendChild(card);
+        });
+      }, err => {
+        console.error("❌ loadArchivedFiles error:", err);
+      });
+  }
+  function restoreFile(key) {
+    if (!confirm("Restore this file back to its topic?")) return;
+    firebase.database().ref("uploads/" + key)
+      .update({ archived: false, archiveDate: null })
+      .then(() => {
+        document.getElementById("archived-modal").style.display = "none";
+        loadApprovals();
+        loadArchives();
+      })
+      .catch(err => console.error("❌ restoreFile failed:", err));
+  }
+
+  // ── Guard everything behind Auth ──
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      return window.location.href = 'index.html';
+    }
+    firebase.database().ref('users/' + user.uid + '/admin')
+      .once('value')
+      .then(snap => {
+        if (!snap.val()) {
+          return window.location.href = 'index.html';
+        }
+        loadApprovals();
+        loadArchives();
+      })
+      .catch(err => {
+        console.error("❌ role check failed:", err);
+        window.location.href = 'index.html';
+      });
+  });
+
+  // wire up "View Archived" button
   document.getElementById("toggle-archived-btn")
     .addEventListener("click", () => {
       document.getElementById("archived-modal").style.display = "flex";
       loadArchivedFiles();
     });
-
-  window.onload = function(){
-    loadApprovals();
-    loadArchives();
-  };
 </script>
+<!-- at the bottom of admin.html, after your Firebase scripts: -->
+<script src="admin.js"></script>
 </body>
 </html>

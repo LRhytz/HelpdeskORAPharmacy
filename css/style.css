@@ -1,14 +1,22 @@
-/* ===================== */
-/* VARIABLES & RESET     */
-/* ===================== */
+/* Base styles and variables */
 :root {
-  --bg:        #fafafa;
-  --card-bg:   #ffffff;
-  --primary:   #cc0000;
+  --bg: #fafafa;
+  --card-bg: #ffffff;
+  --primary: #cc0000;
   --secondary: #48494b;
-  --text:      #333333;
-  --border:    #dddddd;
-  --shadow:    rgba(0, 0, 0, 0.1);
+  --text: #333333;
+  --border: #dddddd;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --accent: #007bff;
+  --danger: #dc3545;
+  --header-bg: #1D4A6D;
+  
+  /* New variables for enhanced design */
+  --card-radius: 10px;
+  --btn-radius: 6px;
+  --transition-speed: 0.3s;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -18,253 +26,336 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  padding-bottom: 60px; /* space for footer */
+  padding-bottom: 60px;
+  line-height: 1.5;
 }
 
-/* ===================== */
-/* HEADER                */
-/* ===================== */
+/* Header */
 .header {
   position: sticky;
   top: 0;
-  background: var(--card-bg);
-  box-shadow: 0 2px 4px var(--shadow);
+  background-color: var(--header-bg);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   z-index: 100;
-  background-color: #1D4A6D;
 }
+
 .header-inner {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  padding: 12px 20px;
-}
-.oracle-image-container {
-  text-align: left;
-  margin: 0;
-}
-.oracle-image {
-  width: 120px;
-  display: block;
-}
-.help-text {
-  flex: 1;
-  font-size: 1.5rem;
-  font-weight: 600;
-  white-space: nowrap;
-  margin: 0 20px;
-  color: whitesmoke;
+  padding: 15px 24px;
 }
 
-/* ===================== */
-/* SEARCH BOX            */
-/* ===================== */
+.oracle-image {
+  width: 130px;
+  transition: transform var(--transition-speed);
+}
+
+.oracle-image:hover {
+  transform: scale(1.05);
+}
+
+.help-text {
+  flex: 1;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0 24px;
+  color: whitesmoke;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+/* Search */
 .search-wrapper {
   position: relative;
   width: 300px;
 }
+
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
   color: #888;
-}
-.form-input {
-  width: 100%;
-  padding: 10px 12px 10px 36px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
   font-size: 0.9rem;
-  transition: border-color 0.2s;
-}
-.form-input:focus {
-  outline: none;           /* remove red ring */
-  border-color: var(--primary);
 }
 
-/* ===================== */
-/* NO RESULTS MESSAGE    */
-/* ===================== */
+.form-input, .form-select, .small-input {
+  width: 100%;
+  padding: 12px 12px 12px 42px;
+  border: 2px solid transparent;
+  border-radius: var(--btn-radius);
+  font-size: 0.95rem;
+  transition: all var(--transition-speed);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 3px 8px rgba(204, 0, 0, 0.15);
+}
+
+/* Layout */
+.main-content {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+
 .no-results {
-  max-width: 900px;
-  margin: 16px auto;
+  max-width: 1100px;
+  margin: 32px auto;
   text-align: center;
   color: #777;
   font-style: italic;
+  font-size: 1.1rem;
+  padding: 40px 0;
 }
 
-/* ===================== */
-/* MAIN CONTENT          */
-/* ===================== */
-.main-content {
-  max-width: 900px;
-  margin: 24px auto;
-  padding: 0 20px;
-}
-
-/* ===================== */
-/* DROPDOWN CARDS        */
-/* ===================== */
+/* Cards & Dropdowns */
 .dropdown-card {
   background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: 0 2px 5px var(--shadow);
-  margin-bottom: 12px;
+  border: none;
+  border-radius: var(--card-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 16px;
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  transition: box-shadow var(--transition-speed), transform var(--transition-speed);
+  position: relative;
+  z-index: 60; /* Higher than fixed buttons by default */
 }
+
+.dropdown-card.active {
+  z-index: 100; /* Even higher when active/open */
+}
+
 .dropdown-card:hover {
-  box-shadow: 0 4px 12px var(--shadow);
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-2px);
 }
-.dropdown-btn {
+
+.dropdown-btn, .subtopic-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
   cursor: pointer;
+  transition: background-color var(--transition-speed);
 }
-.dropdown-btn:focus {
+
+.dropdown-btn {
+  padding: 18px 24px;
+}
+
+.dropdown-btn:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.subtopic-btn {
+  font-weight: 500;
+  font-size: 0.98rem;
+  padding: 10px 0;
+  border-radius: 4px;
+}
+
+.subtopic-btn:hover {
+  color: var(--primary);
+}
+
+.dropdown-btn:focus, .subtopic-btn:focus {
   outline: 2px solid var(--primary);
+  outline-offset: -2px;
 }
+
 .card-title {
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  font-weight: 550;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
+
 .topic-icon {
   width: 24px;
-  margin-right: 12px;
+  margin-right: 16px;
+  transition: transform var(--transition-speed);
 }
+
+.dropdown-btn:hover .topic-icon {
+  transform: scale(1.1);
+}
+
 .arrow {
   transition: transform 0.3s ease;
+  color: var(--secondary);
+  opacity: 0.7;
 }
+
 .dropdown-body {
-  padding: 0 20px 16px;
+  padding: 5px 24px 18px;
   border-top: 1px solid var(--border);
 }
 
-/* ===================== */
-/* SUBTOPIC BUTTONS      */
-/* ===================== */
-.subtopic-btn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 500;
-  font-size: 0.95rem;
-  padding: 8px 0;
-  cursor: pointer;
-}
-.subtopic-btn:focus {
-  outline: 2px solid var(--primary);
-}
 .subtopic-body {
-  padding-left: 20px;
-  margin-bottom: 12px;
+  padding-left: 24px;
+  margin-bottom: 16px;
 }
 
-/* ===================== */
-/* PDF LIST              */
-/* ===================== */
+/* PDF Lists */
 .pdf-list {
   list-style: none;
-  padding-left: 0;
-  margin: 0;
 }
+
 .pdf-list li {
   display: flex;
   align-items: center;
-  margin: 0.5em 0;
-  padding: 0.5em;
-  border-radius: 4px;
-  background: #f9f9f9;         /* light background */
-  transition: background .2s;
-}
-.pdf-list li:before {
-  content: "\f15c";             /* FontAwesome file-icon */
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  margin-right: 0.5em;
-  color: #007bff;
-}
-.pdf-list li a {
-  flex: 1;
-  color: #007bff;
-  text-decoration: none;
-  font-weight: 500;
-}
-.pdf-list li:hover {
-  background: #f0f0f0;
-}
-.pdf-list li a:hover {
-  text-decoration: underline;
-}
-.pdf-list li button.archive-btn {
-  margin-left: 1em;
-  padding: 0.25em 0.75em;
-  font-size: 0.875em;
+  margin: 0.7em 0;
+  padding: 0.8em 1em;
+  border-radius: 6px;
+  background: #f9f9f9;
+  transition: all var(--transition-speed);
+  border-left: 3px solid transparent;
 }
 
-/* ===================== */
-/* FILE UPLOAD FORM      */
-/* ===================== */
+.pdf-list li:before {
+  content: "\f15c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-right: 0.8em;
+  color: var(--accent);
+  font-size: 1.1em;
+  transition: transform var(--transition-speed);
+}
+
+.pdf-list li a {
+  flex: 1;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-speed);
+}
+
+.pdf-list li:hover {
+  background: #f0f0f0;
+  border-left: 3px solid var(--accent);
+  transform: translateX(3px);
+}
+
+.pdf-list li:hover:before {
+  transform: scale(1.15);
+}
+
+.pdf-list li a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.pdf-list li .archive-btn {
+  margin-left: 1em;
+  padding: 0.35em 0.85em;
+  font-size: 0.875em;
+  background-color: var(--danger);
+  border: none;
+  border-radius: var(--btn-radius);
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-weight: 500;
+}
+
+.pdf-list li .archive-btn:hover {
+  background-color: #b02a37;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+}
+
+/* File Upload */
 #file-upload-form {
   width: 100%;
-  max-width: 800px;       /* limit max width */
-  margin: 0 auto;         /* center in modal */
-  padding: 16px 0;        /* breathing room */
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 0;
+  animation: fadeInUp 0.5s ease forwards;
 }
+
 .file-upload-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;              /* uniform spacing */
+  gap: 14px;
+  padding: 20px;
+  background-color: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--box-shadow);
 }
 
-/* make all controls same height & rounded */
 .choose-file-btn,
 .upload-btn,
-.form-input.small-input,
-.form-select.small-select,
+.small-input,
+.small-select,
 #new-subtitle {
-  height: 44px;
-  line-height: 1;
-  border-radius: 6px;
+  height: 48px;
+  border-radius: var(--btn-radius);
   font-size: 14px;
+  transition: all var(--transition-speed);
 }
 
-/* flex-grow on inputs/selects */
-.form-input.small-input,
-.form-select.small-select,
+.small-input,
+.small-select,
 #new-subtitle {
   flex: 1 1 140px;
   min-width: 140px;
+  border: 1px solid var(--border);
+  padding: 0 12px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* tighten up the Choose button */
+.small-input:focus,
+.small-select:focus,
+#new-subtitle:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
 .choose-file-btn {
   padding: 0 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background-color: #f0f0f0;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
 }
 
-/* style Upload button accent */
+.choose-file-btn:hover {
+  background-color: #e6e6e6;
+}
+
 .upload-btn {
-  padding: 0 20px;
+  padding: 0 24px;
   background-color: var(--primary);
-  color: #fff;
+  color: white;
   border: none;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 5px rgba(204, 0, 0, 0.2);
 }
 
-/* ensure file-name spans flex & truncate */
+.upload-btn:hover {
+  background-color: #b00000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(204, 0, 0, 0.3);
+}
+
 .file-name {
   flex: 2 1 160px;
   min-width: 120px;
@@ -274,29 +365,33 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 0 8px;
 }
 
-/* ===================== */
-/* MODAL LAYOUT          */
-/* ===================== */
+/* Modals */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.4s ease-out both;
 }
+
 .modal-content {
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
-  padding: 24px;
+  background: white;
+  border-radius: var(--card-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 30px;
   max-width: 700px;
   width: 50%;
   position: relative;
+  animation: fadeInUp 0.5s ease-out both;
 }
+
 .modal-close {
   position: absolute;
   top: 15px;
@@ -305,204 +400,647 @@ body {
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: #888;
+  transition: color var(--transition-speed);
 }
+
+.modal-close:hover {
+  color: var(--danger);
+}
+
 .modal[hidden] {
   display: none !important;
 }
 
-/* ===================== */
-/* AUTH CONTAINER        */
-/* ===================== */
-.auth-container {
+/* UI Elements */
+#profile-icon {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
-  display: flex;
-  gap: 5px;
-}
-.auth-input {
-  padding: 6px;
-  font-size: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.auth-btn {
-  padding: 6px 12px;
-  background-color: #007BFF;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
+  bottom: 24px;
+  right: 24px;
+  font-size: 24px;
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 12px;
-}
-.auth-btn:hover {
-  background-color: #0056b3;
+  z-index: 1000;
+  transition: all var(--transition-speed);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* ===================== */
-/* ADD FILE BUTTON       */
-/* ===================== */
-.add-file-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background-color: #007BFF;
-  color: #fff;
-  border: none;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+#profile-icon:hover {
+  background: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
 }
+
+/* ENHANCED LEFT BUTTONS - Updated to avoid dropdown overlap */
+#left-buttons {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 50; /* Lower than dropdowns */
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease-out, opacity 0.2s ease;
+}
+
+/* Add hover effect to make buttons more accessible */
+#left-buttons:hover {
+  transform: translateY(-10px);
+  z-index: 150; /* Higher when hovered to ensure accessibility */
+}
+
+/* Optional: Add a class that can be toggled with JavaScript when dropdowns are open */
+#left-buttons.dropdown-open {
+  opacity: 0.6;
+  transform: translateY(20px);
+}
+
+/* Enhanced styling for original button classes */
+.add-file-btn, .admin-login-btn, .view-archived-btn, 
+button[id="Add"], button[id="Admin"], button[id="Archived Files"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  letter-spacing: 0.3px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.add-file-btn::before, .admin-login-btn::before, .view-archived-btn::before,
+button[id="Add"]::before, button[id="Admin"]::before, button[id="Archived Files"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+  transform: translateX(-100%);
+  transition: transform 0.4s ease-out;
+}
+
+.add-file-btn:hover::before, .admin-login-btn:hover::before, .view-archived-btn:hover::before,
+button[id="Add"]:hover::before, button[id="Admin"]:hover::before, button[id="Archived Files"]:hover::before {
+  transform: translateX(0);
+}
+
+.add-file-btn:active, .admin-login-btn:active, .view-archived-btn:active,
+button[id="Add"]:active, button[id="Admin"]:active, button[id="Archived Files"]:active {
+  transform: scale(0.96);
+}
+
+.add-file-btn i, .admin-login-btn i, .view-archived-btn i,
+button[id="Add"] i, button[id="Admin"] i, button[id="Archived Files"] i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+.view-archived-btn {
+  white-space: nowrap;       /* prevent "Archived Files" from wrapping */
+  justify-content: center;   /* make sure the icon+text are centered */
+  text-align: center;
+}
+
+
+/* Button specific styling */
+.view-archived-btn, button[id="Archived Files"] {
+  background: #555;
+  color: white;
+}
+
+.view-archived-btn:hover, button[id="Archived Files"]:hover {
+  background: #444;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.add-file-btn, button[id="Add"] {
+  background: var(--accent);
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.add-file-btn:hover, button[id="Add"]:hover {
+  background: #0069d9;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.25);
+}
+
+.admin-login-btn, button[id="Admin"] {
+  background: var(--secondary);
+  color: white;
+}
+
+.admin-login-btn:hover, button[id="Admin"]:hover {
+  background: #3a3b3c;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(72, 73, 75, 0.25);
+}
+
+/* Buttons */
+.add-file-btn {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.25);
+  letter-spacing: 0.3px;
+}
+
 .add-file-btn:hover {
   background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.35);
 }
 
-/* ===================== */
-/* ADMIN BUTTON          */
-/* ===================== */
-.admin-login-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 15px 20px;
-  background-color: var(--secondary);
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.25s ease-out;
-}
-.admin-login-btn:hover {
-  transform: translateY(-3px);
-}
 
-/* ===================== */
-/* VIEW ARCHIVED BUTTON  */
-/* ===================== */
+
+.admin-login-btn,
 .view-archived-btn {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  padding: 15px 20px;
   background-color: var(--secondary);
-  color: #fff;
+  color: white;
   border: none;
-  border-radius: 7px;
+  padding: 16px 22px;
+  border-radius: var(--btn-radius);
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.25s ease-out;
-  z-index: 100;
+  transition: all var(--transition-speed);
+  box-shadow: 0 3px 8px rgba(72, 73, 75, 0.25);
+  letter-spacing: 0.3px;
 }
+
+.admin-login-btn:hover,
 .view-archived-btn:hover {
   transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(72, 73, 75, 0.35);
+  background-color: #3a3b3c;
 }
 
-/* ===================== */
-/* ARCHIVE BUTTON        */
-/* ===================== */
-.archive-btn {
-  margin-left: 12px;
-  padding: 2px 10px;
-  font-size: 12px;
-  border: none;
-  border-radius: 3px;
-  background: #dc3545;
-  color: #fff;
+/* Enhanced Login UI */
+.login-modal .modal-content {
+  max-width: 450px;
+  padding: 36px;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.login-modal .modal-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-modal .modal-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.login-modal .modal-subtitle {
+  font-size: 0.95rem;
+  color: #777;
+  font-weight: 400;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 42px;
+  color: #aaa;
+  font-size: 16px;
+}
+
+.login-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px 0 42px;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: all var(--transition-speed);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background-color: white;
+}
+
+.login-input::placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.remember-me input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.remember-me label {
+  font-size: 0.85rem;
+  color: #666;
   cursor: pointer;
 }
-.archive-btn:hover {
-  background: #b02a37;
+
+.forgot-password {
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition-speed);
 }
 
-/* ===================== */
-/* PDF LIST HOVER STATE  */
-/* ===================== */
-.pdf-list li:hover {
-  background-color: #fafafa;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-/* ===================== */
-/* LINK HOVER            */
-/* ===================== */
-.pdf-list li a:hover {
-  color: var(--primary);
+.forgot-password:hover {
+  color: #0056b3;
   text-decoration: underline;
 }
 
-/* ===================== */
-/* BUTTON HOVER STATES   */
-/* ===================== */
-.dropdown-btn:hover {
-  background-color: #f5f5f5;
-  transition: background 0.2s;
-}
-.subtopic-btn:hover {
-  background-color: #f0f0f0;
-  transition: background 0.2s;
-}
-.approval-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.approve-btn:hover {
-  background-color: #0056b3;
-}
-.reject-btn:hover {
-  background-color: #c82333;
+.login-btn {
+  display: block;
+  width: 100%;
+  height: 54px;
+  margin-top: 12px;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  box-shadow: 0 4px 12px rgba(204, 0, 0, 0.25);
+  letter-spacing: 0.5px;
 }
 
-/* ===================== */
-/* PASSWORD TOGGLE ICON  */
-/* ===================== */
-.password-wrapper {
-  position: relative;
-  display: inline-block;
+.login-btn:hover {
+  background-color: #b00000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(204, 0, 0, 0.3);
 }
-.password-toggle {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+
+.login-btn:active {
+  transform: scale(0.98);
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.login-divider::before {
+  margin-right: 10px;
+}
+
+.login-divider::after {
+  margin-left: 10px;
+}
+
+.social-login {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  color: #888;
-  font-size: 1rem;
+  transition: all var(--transition-speed);
+  border: 1px solid var(--border);
+  background-color: white;
 }
-.password-toggle:hover {
+
+.google-btn {
+  color: #555;
+}
+
+.github-btn {
   color: #333;
 }
 
-/* ===================== */
-/* RESPONSIVE            */
-/* ===================== */
-@media (max-width: 600px) {
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn i {
+  font-size: 18px;
+}
+
+.signup-prompt {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.signup-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+.signup-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .header-inner {
-    flex-direction: column;
-    text-align: center;
+    flex-wrap: wrap;
   }
+  
+  .help-text {
+    order: -1;
+    margin-bottom: 12px;
+    text-align: center;
+    flex-basis: 100%;
+    font-size: 1.4rem;
+  }
+  
   .search-wrapper {
     width: 100%;
     margin-top: 12px;
   }
-  .main-content {
-    padding: 0 12px;
+  
+  .modal-content {
+    width: 92%;
+    padding: 24px;
   }
-  /* Stack the add-file form vertically on small screens */
+  
+  .login-modal .modal-content {
+    padding: 28px 24px;
+  }
+  
+  .login-modal .modal-title {
+    font-size: 1.6rem;
+  }
+  
+  .social-login {
+    grid-template-columns: 1fr;
+  }
+  
+  #left-buttons {
+    left: 16px;
+    bottom: 16px;
+    gap: 12px;
+  }
+  
+  .add-file-btn, .admin-login-btn, .view-archived-btn, 
+  button[id="Add"], button[id="Admin"], button[id="Archived Files"] {
+    width: 140px;
+    height: 44px;
+    font-size: 14px;
+  }
+  
   .file-upload-inner {
+    padding: 16px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown-btn {
+    padding: 16px 18px;
+  }
+  
+  .dropdown-body {
+    padding: 5px 18px 16px;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+  }
+  
+  .help-text {
+    font-size: 1.2rem;
+  }
+  
+  .add-file-btn, .admin-login-btn, .view-archived-btn, 
+  button[id="Add"], button[id="Admin"], button[id="Archived Files"] {
+    width: 120px;
+    height: 40px;
+    font-size: 13px;
+  }
+  
+  .login-form {
+    gap: 16px;
+  }
+  
+  .login-input {
+    height: 48px;
+  }
+  
+  .remember-forgot {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
+    gap: 12px;
   }
-  .choose-file-btn,
-  .upload-btn,
-  .form-input.small-input,
-  .form-select.small-select,
-  #new-subtitle,
-  .file-name {
-    width: 100%;
+}
+
+/* Animation */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Style for delete buttons */
+.delete-btn {
+  background: none;
+  border: none;
+  color: #c00;
+  cursor: pointer;
+  margin-right: 8px;
+  padding: 5px;
+  display: none; /* Hidden by default, shown via JS for admins */
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: #f00;
+  transform: scale(1.2);
+}
+
+/* Modify subtopic button to include space for the delete button */
+.subtopic-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subtopic-btn-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+/* For main topics */
+.dropdown-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+/* Add "Are you sure?" confirmation styling */
+.confirm-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 400px;
+  width: 90%;
+}
+
+.confirm-dialog h3 {
+  margin-top: 0;
+}
+
+.confirm-dialog .btn-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.confirm-dialog button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirm-dialog .cancel-btn {
+  background-color: #ccc;
+}
+
+.confirm-dialog .delete-confirm-btn {
+  background-color: #c00;
+  color: white;
 }
