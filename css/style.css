@@ -47,11 +47,11 @@ body {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  padding: 15px 24px;
+  padding: 10px 24px; /* Reduced from 15px to 10px */
 }
 
 .oracle-image {
-  width: 130px;
+  width: 110px; /* Reduced from 130px */
   transition: transform var(--transition-speed);
 }
 
@@ -61,7 +61,7 @@ body {
 
 .help-text {
   flex: 1;
-  font-size: 1.6rem;
+  font-size: 1.4rem; /* Reduced from 1.6rem */
   font-weight: 600;
   margin: 0 24px;
   color: whitesmoke;
@@ -69,7 +69,7 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Search */
+/* Search Box */
 .search-wrapper {
   position: relative;
   width: 300px;
@@ -82,6 +82,17 @@ body {
   transform: translateY(-50%);
   color: #888;
   font-size: 0.9rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px 10px 42px; /* Reduced from 12px to 10px */
+  border: 2px solid transparent;
+  border-radius: var(--btn-radius);
+  font-size: 0.95rem;
+  transition: all var(--transition-speed);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .form-input, .form-select, .small-input {
@@ -104,7 +115,7 @@ body {
 /* Layout */
 .main-content {
   max-width: 1100px;
-  margin: 32px auto;
+  margin: 26px auto; /* Reduced from 32px */
   padding: 0 24px;
 }
 
@@ -124,11 +135,11 @@ body {
   border: none;
   border-radius: var(--card-radius);
   box-shadow: var(--box-shadow);
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Reduced from 16px */
   overflow: hidden;
   transition: box-shadow var(--transition-speed), transform var(--transition-speed);
   position: relative;
-  z-index: 60; /* Higher than fixed buttons by default */
+  z-index: 60;
 }
 
 .dropdown-card.active {
@@ -149,8 +160,9 @@ body {
 }
 
 .dropdown-btn {
-  padding: 18px 24px;
+  padding: 14px 20px; /* Reduced from 18px 24px */
 }
+
 
 .dropdown-btn:hover {
   background-color: rgba(0, 0, 0, 0.02);
@@ -175,13 +187,13 @@ body {
 .card-title {
   display: flex;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: 1rem; /* Reduced from 1.1rem */
   font-weight: 600;
 }
 
 .topic-icon {
-  width: 24px;
-  margin-right: 16px;
+  width: 20px; /* Reduced from 24px */
+  margin-right: 14px; /* Reduced from 16px */
   transition: transform var(--transition-speed);
 }
 
@@ -196,13 +208,13 @@ body {
 }
 
 .dropdown-body {
-  padding: 5px 24px 18px;
+  padding: 5px 20px 14px; /* Reduced from 5px 24px 18px */
   border-top: 1px solid var(--border);
 }
 
 .subtopic-body {
-  padding-left: 24px;
-  margin-bottom: 16px;
+  padding-left: 20px; /* Reduced from 24px */
+  margin-bottom: 14px; /* Reduced from 16px */
 }
 
 /* PDF Lists */
@@ -211,24 +223,13 @@ body {
 }
 
 .pdf-list li {
-  display: flex;
-  align-items: center;
-  margin: 0.7em 0;
-  padding: 0.8em 1em;
-  border-radius: 6px;
-  background: #f9f9f9;
-  transition: all var(--transition-speed);
-  border-left: 3px solid transparent;
+  margin: 0.5em 0; /* Reduced from 0.7em */
+  padding: 0.7em 1em; /* Reduced from 0.8em */
 }
 
-.pdf-list li:before {
-  content: "\f15c";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  margin-right: 0.8em;
-  color: var(--accent);
-  font-size: 1.1em;
-  transition: transform var(--transition-speed);
+.pdf-list li {
+  margin: 0.5em 0; /* Reduced from 0.7em */
+  padding: 0.7em 1em; /* Reduced from 0.8em */
 }
 
 .pdf-list li a {
@@ -818,15 +819,12 @@ button[id="Add"] i, button[id="Admin"] i, button[id="Archived Files"] i {
 /* Responsive */
 @media (max-width: 768px) {
   .header-inner {
-    flex-wrap: wrap;
+    padding: 8px 20px; /* Even smaller on mobile */
   }
   
   .help-text {
-    order: -1;
-    margin-bottom: 12px;
-    text-align: center;
-    flex-basis: 100%;
-    font-size: 1.4rem;
+    font-size: 1.3rem; /* Smaller on mobile */
+    margin-bottom: 10px; /* Reduced from 12px */
   }
   
   .search-wrapper {
@@ -872,15 +870,15 @@ button[id="Add"] i, button[id="Admin"] i, button[id="Archived Files"] i {
 
 @media (max-width: 480px) {
   .dropdown-btn {
-    padding: 16px 18px;
-  }
+    padding: 12px 16px; /* Smaller on mobile */
+  } 
   
   .dropdown-body {
     padding: 5px 18px 16px;
   }
   
   .card-title {
-    font-size: 1rem;
+    font-size: 0.95rem; /* Smaller on mobile */
   }
   
   .help-text {
@@ -979,9 +977,10 @@ button[id="Add"] i, button[id="Admin"] i, button[id="Archived Files"] i {
 
 /* Modify subtopic button to include space for the delete button */
 .subtopic-btn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-weight: 500;
+  font-size: 0.92rem; /* Reduced from 0.98rem */
+  padding: 8px 0; /* Reduced from 10px 0 */
+  border-radius: 4px;
 }
 
 .subtopic-btn-content {

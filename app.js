@@ -111,6 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
       "Cash Management": "sf_cash_management-body",
       "General Ledger": "sf_general_ledger-body",
     },
+    "Templates": {
+      Templates: "tl_templates",
+    },
   };
 
   const listIdPrefixes = {
@@ -119,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Functional Specifications": "approved_fs_",
     "Process Flow": "approved_pf_",
     "System Flow": "approved_sf_",
+    "Templates": "approved_tl_",
   };
 
   const iconMap = {
@@ -127,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Functional Specifications": "Icons/design-resources.png",
     "Process Flow": "Icons/workflow.png",
     "System Flow": "Icons/workflow.png",
+    "Templates": "Icons/templates.png",
   };
 
   // Alias "Functional Specifications" to "Functional Specifications"
@@ -186,6 +191,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadArchivedFiles();
   });
   addSafeEventListener(archivedCloseBtn,"click", () => { archivedModal.hidden = true; });
+  addSafeEventListener(loginEmail, "keyup", e => {
+    if (e.key === "Enter") loginBtn.click();
+  });
+  addSafeEventListener(loginPassword, "keyup", e => {
+    if (e.key === "Enter") loginBtn.click();
+  });
 
   // --- LOGIN / LOGOUT / RESET PASSWORD ---
   addSafeEventListener(loginBtn, "click", () => {
@@ -197,14 +208,27 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     firebase.auth()
-      .signInWithEmailAndPassword(email, pw)
-      .then(() => {
-        alert("Login successful!");
-        loginModal.hidden = true;
-      })
-      .catch(err => {
-        loginErrorDiv.textContent = err.message;
-      });
+  .signInWithEmailAndPassword(email, pw)
+  .then(() => {
+    alert("Login successful!");
+    loginModal.hidden = true;
+  })
+  .catch(err => {
+    let msg;
+    switch (err.code) {
+      case "auth/invalid-email":
+      case "auth/user-disabled":
+      case "auth/user-not-found":
+      case "auth/wrong-password":
+      case "auth/invalid-login-credentials":      // ← add this line
+        msg = "Oops—email or password is incorrect. Please try again.";
+        break;
+      default:
+        msg = "Login error: " + err.message;
+    }
+    loginErrorDiv.textContent = msg;
+  });  
+
   });
 
   addSafeEventListener(logoutBtn, "click", () => {
@@ -213,20 +237,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  addSafeEventListener(changePasswordBtn, "click", () => {
-    const email = (loginEmail.value || "").trim();
-    if (!email) {
-      alert("Enter your email above, then click Change Password.");
+  // ===== REPLACE THIS BLOCK =====
+  addSafeEventListener(changePasswordBtn, "click", async () => {
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      alert("You must be logged in to change your password.");
       return;
     }
-    firebase.auth().sendPasswordResetEmail(email)
-      .then(() => {
-        alert("Password reset email sent to " + email);
-      })
-      .catch(err => {
-        alert("Error: " + err.message);
-      });
+  
+    const currentPassword = prompt("Enter your current password:");
+    if (!currentPassword) return;
+  
+    const newPassword = prompt("Enter your new password:");
+    if (!newPassword) return;
+  
+    try {
+      const cred = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
+      await user.reauthenticateWithCredential(cred);
+      await user.updatePassword(newPassword);
+      alert("✅ Password updated successfully!");
+    } catch (err) {
+      console.error("Password change error:", err);
+      alert("Error changing password: " + err.message);
+    }
   });
+  
+
 
   // --- ROLE BUTTON HANDLER ---
   addSafeEventListener(adminLoginBtn, "click", () => {
@@ -318,16 +357,6 @@ function buildDynamicAccordion() {
     titleDiv.appendChild(Object.assign(document.createElement("span"), { textContent: topLevel }));
     btn.appendChild(titleDiv);
 
-    // Add delete button for main topic (admin only)
-    const deleteMainBtn = document.createElement("button");
-    deleteMainBtn.className = "delete-btn admin-only";
-    deleteMainBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    deleteMainBtn.style.display = "none"; // Hidden by default, shown only for admins
-    deleteMainBtn.onclick = (e) => {
-      e.stopPropagation(); // Don't trigger the dropdown
-      confirmDelete(topLevel, "main-topic");
-    };
-    btn.appendChild(deleteMainBtn);
 
     const arrow = document.createElement("span");
     arrow.id = `arrow-${topSlug}`;
@@ -353,17 +382,6 @@ function buildDynamicAccordion() {
         const subBtnContent = document.createElement("div");
         subBtnContent.className = "subtopic-btn-content";
         subBtnContent.appendChild(Object.assign(document.createElement("span"), { textContent: midKey }));
-        
-        // Add delete button for subtopic (admin only)
-        const deleteSubBtn = document.createElement("button");
-        deleteSubBtn.className = "delete-btn admin-only";
-        deleteSubBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteSubBtn.style.display = "none"; // Hidden by default, shown only for admins
-        deleteSubBtn.onclick = (e) => {
-          e.stopPropagation(); // Don't trigger the dropdown
-          confirmDelete(midKey, "subtopic", topLevel);
-        };
-        subBtnContent.appendChild(deleteSubBtn);
         
         subBtn.appendChild(subBtnContent);
         subBtn.appendChild(Object.assign(document.createElement("span"), {
@@ -392,18 +410,6 @@ function buildDynamicAccordion() {
         const subBtnContent = document.createElement("div");
         subBtnContent.className = "subtopic-btn-content";
         subBtnContent.appendChild(Object.assign(document.createElement("span"), { textContent: midKey }));
-        
-        // Add delete button for subtopic (admin only)
-        const deleteSubBtn = document.createElement("button");
-        deleteSubBtn.className = "delete-btn admin-only";
-        deleteSubBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteSubBtn.style.display = "none"; // Hidden by default, shown only for admins
-        deleteSubBtn.onclick = (e) => {
-          e.stopPropagation(); // Don't trigger the dropdown
-          confirmDelete(midKey, "subtopic", topLevel);
-        };
-        subBtnContent.appendChild(deleteSubBtn);
-        
         subBtn.appendChild(subBtnContent);
         subBtn.appendChild(Object.assign(document.createElement("span"), {
           id: `arrow-${midSlug}`, className: "arrow", textContent: "▼"
@@ -423,17 +429,6 @@ function buildDynamicAccordion() {
           const leafBtnContent = document.createElement("div");
           leafBtnContent.className = "subtopic-btn-content";
           leafBtnContent.appendChild(Object.assign(document.createElement("span"), { textContent: leafKey }));
-          
-          // Add delete button for leaf topic (admin only)
-          const deleteLeafBtn = document.createElement("button");
-          deleteLeafBtn.className = "delete-btn admin-only";
-          deleteLeafBtn.innerHTML = '<i class="fas fa-trash"></i>';
-          deleteLeafBtn.style.display = "none"; // Hidden by default, shown only for admins
-          deleteLeafBtn.onclick = (e) => {
-            e.stopPropagation(); // Don't trigger the dropdown
-            confirmDelete(leafKey, "leaf-topic", topLevel, midKey);
-          };
-          leafBtnContent.appendChild(deleteLeafBtn);
           
           leafBtn.appendChild(leafBtnContent);
           leafBtn.appendChild(Object.assign(document.createElement("span"), {
@@ -463,97 +458,6 @@ function buildDynamicAccordion() {
     card.appendChild(body);
     container.appendChild(card);
   });
-}
-
-// Add this function to handle delete confirmations
-function confirmDelete(name, level, parent = null, grandparent = null) {
-  const confirmMsg = `Are you sure you want to delete "${name}"? This will remove all associated content and cannot be undone.`;
-  
-  if (confirm(confirmMsg)) {
-    deleteCategory(name, level, parent, grandparent);
-  }
-}
-
-function deleteCategory(name, level, parent = null, grandparent = null) {
-  // First, get all files in this category to delete them
-  firebase.database().ref("uploads").once("value")
-    .then(snapshot => {
-      const uploads = snapshot.val() || {};
-      const updates = {};
-      let deletedCount = 0;
-      
-      // Find all files that need to be deleted based on the category level
-      Object.entries(uploads).forEach(([key, upload]) => {
-        let shouldDelete = false;
-        
-        if (level === "main-topic" && upload.topLevelTopic === name) {
-          shouldDelete = true;
-        } 
-        else if (level === "subtopic" && upload.topLevelTopic === parent) {
-          if (typeof upload.subTopic === "string" && upload.subTopic === name) {
-            shouldDelete = true;
-          } 
-          else if (typeof upload.subTopic === "object" && upload.subTopic.module === name) {
-            shouldDelete = true;
-          }
-        }
-        else if (level === "leaf-topic" && upload.topLevelTopic === grandparent) {
-          if (typeof upload.subTopic === "object" && 
-              upload.subTopic.module === parent && 
-              upload.subTopic.section === name) {
-            shouldDelete = true;
-          }
-        }
-        
-        if (shouldDelete) {
-          updates[`uploads/${key}`] = null; // Mark for deletion
-          deletedCount++;
-        }
-      });
-      
-      // If we have files to delete, proceed
-      if (Object.keys(updates).length > 0) {
-        return firebase.database().ref().update(updates);
-      } 
-      else {
-        return Promise.resolve();
-      }
-    })
-    .then(() => {
-      // Now update the category mappings in the database
-      if (level === "main-topic") {
-        // For main topics, remove the entire category
-        delete categoryMappings[name];
-        delete listIdPrefixes[name];
-        delete iconMap[name];
-      } 
-      else if (level === "subtopic") {
-        // For subtopics, remove the subtopic from the parent category
-        if (categoryMappings[parent]) {
-          delete categoryMappings[parent][name];
-        }
-      } 
-      else if (level === "leaf-topic") {
-        // For leaf topics, remove the leaf from the subtopic
-        if (categoryMappings[grandparent] && 
-            categoryMappings[grandparent][parent]) {
-          delete categoryMappings[grandparent][parent][name];
-        }
-      }
-      
-      // Save the updated categoryMappings to Firebase if you store them there
-      // (This part would depend on your specific implementation)
-      
-      // Rebuild the accordion to reflect the changes
-      buildDynamicAccordion();
-      
-      // Show success message
-      alert(`Successfully deleted "${name}" and all associated files.`);
-    })
-    .catch(err => {
-      console.error("Error deleting category:", err);
-      alert(`Error deleting "${name}": ${err.message}`);
-    });
 }
 
   // --- Build Module Dropdown ---
