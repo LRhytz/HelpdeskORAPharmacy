@@ -107,7 +107,12 @@
             <label for="fileInput" class="choose-file-btn">Choose File</label>
             <span id="selected-file-name" class="file-name">No file chosen</span>
           </div>
-          <input type="file" id="fileInput" accept="application/pdf" hidden />
+          <input
+  type="file"
+  id="fileInput"
+  accept=".pdf,.xlsx,.xls"
+  hidden
+/>
   
           <!-- Title -->
           <input
@@ -194,9 +199,6 @@
                 <option value="SF_Fixed_Asset">Fixed Asset</option>
                 <option value="SF_Cash_Management">Cash Management</option>
                 <option value="SF_General_Ledger">General Ledger</option>
-              </optgroup>
-              <optgroup label="Templates">
-                <option value="tl_templates">Templates</option>
               </optgroup>
           </select>
           <button id="uploadBtn"          class="upload-btn">Upload</button>

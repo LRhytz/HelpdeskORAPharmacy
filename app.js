@@ -112,7 +112,6 @@
         "General Ledger": "sf_general_ledger-body",
       },
       "Templates": {
-        Templates: "tl_templates",
       },
     };
 
@@ -579,101 +578,115 @@
     };
 
     // --- Upload File ---
-    function uploadFile() {
-      if (!fileInputElement || !fileTitleInput || !moduleDropdown) {
-        alert("Error: Upload form elements not found.");
-        return;
-      }
-      if (!firebase.auth().currentUser) {
-        alert("Please log in to upload files.");
-        loginModal.hidden = false;
-        return;
-      }
+    // --- Upload File ---
+function uploadFile() {
+  if (!fileInputElement || !fileTitleInput || !moduleDropdown) {
+    alert("Error: Upload form elements not found.");
+    return;
+  }
+  if (!firebase.auth().currentUser) {
+    alert("Please log in to upload files.");
+    loginModal.hidden = false;
+    return;
+  }
 
-      const selOpt = moduleDropdown.selectedOptions[0];
-      if (!selOpt) {
-        alert("Please select a module.");
-        return;
-      }
-      const optgroup = selOpt.closest("optgroup");
-      if (!optgroup) {
-        alert("Invalid selection.");
-        return;
-      }
+  const selOpt = moduleDropdown.selectedOptions[0];
+  if (!selOpt) {
+    alert("Please select a module.");
+    return;
+  }
+  const optgroup = selOpt.closest("optgroup");
+  if (!optgroup) {
+    alert("Invalid selection.");
+    return;
+  }
 
-      let topLevel = optgroup.label;
-      let subTopic = selOpt.value;
-      const section = selOpt.textContent.trim();
+  let topLevel = optgroup.label;
+  let subTopic = selOpt.value;
+  const section = selOpt.textContent.trim();
 
-      if (topLevel === "Working Instructions" && section.includes("→")) {
-        const parts = section.split("→").map(p => p.trim());
-        if (parts.length === 2) {
-          subTopic = { module: parts[0], section: parts[1] };
-        }
-      }
-
-      const file  = fileInputElement.files[0];
-      const title = fileTitleInput.value.trim();
-      if (!file) {
-        alert("Please choose a file to upload.");
-        return;
-      }
-      if (!title) {
-        alert("Please enter a title for the file.");
-        return;
-      }
-
-      const loader = getElement("upload-loader");
-      if (loader) loader.style.display = "block";
-
-      firebase.database().ref("uploads")
-        .orderByChild("fileName").equalTo(file.name).once("value")
-        .then(snapshot => {
-          if (snapshot.exists()) throw new Error("duplicate-file");
-          return firebase.database().ref("uploads")
-            .orderByChild("title").equalTo(title).once("value");
-        })
-        .then(snapshot => {
-          if (snapshot.exists()) throw new Error("duplicate-title");
-          return uploadFileToCloudinary(file);
-        })
-        .then(url => {
-          if (!url) throw new Error("Failed to get upload URL");
-          return firebase.database().ref("uploads").push({
-            title,
-            fileName: file.name,
-            fileUrl: url,
-            topLevelTopic: topLevel,
-            subTopic,
-            timestamp: Date.now(),
-            approved: false,
-            archiveRequested: false,
-            archived: false,
-            uploaderUid: firebase.auth().currentUser.uid,
-            uploaderEmail: firebase.auth().currentUser.email || "Unknown"
-          });
-        })
-        .then(() => {
-          alert("✅ File uploaded successfully! Awaiting approval.");
-          fileInputElement.value = "";
-          fileTitleInput.value = "";
-          if (fileNameSpan) fileNameSpan.textContent = "No file chosen";
-          fileUploadModal.hidden = true;
-          if (loader) loader.style.display = "none";
-          displayApprovedUploads();
-        })
-        .catch(err => {
-          if (loader) loader.style.display = "none";
-          if (err.message === "duplicate-file") {
-            alert("🚫 That file name already exists in the system.");
-          } else if (err.message === "duplicate-title") {
-            alert(`🚫 A file titled "${title}" already exists. Please choose a different title.`);
-          } else {
-            console.error("Upload error:", err);
-            alert("Upload failed: " + (err.message || "Unknown error"));
-          }
-        });
+  if (topLevel === "Working Instructions" && section.includes("→")) {
+    const parts = section.split("→").map(p => p.trim());
+    if (parts.length === 2) {
+      subTopic = { module: parts[0], section: parts[1] };
     }
+  }
+
+  const file  = fileInputElement.files[0];
+  const title = fileTitleInput.value.trim();
+  if (!file) {
+    alert("Please choose a file to upload.");
+    return;
+  }
+  if (!title) {
+    alert("Please enter a title for the file.");
+    return;
+  }
+
+  // ── NEW: only allow PDF, XLS, XLSX ──────────────────
+  const allowedTypes = [
+    "application/pdf",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ];
+  if (!allowedTypes.includes(file.type)) {
+    alert("Only PDF or Excel (.xls/.xlsx) files are allowed.");
+    return;
+  }
+  // ────────────────────────────────────────────────────
+
+  const loader = getElement("upload-loader");
+  if (loader) loader.style.display = "block";
+
+  firebase.database().ref("uploads")
+    .orderByChild("fileName").equalTo(file.name).once("value")
+    .then(snapshot => {
+      if (snapshot.exists()) throw new Error("duplicate-file");
+      return firebase.database().ref("uploads")
+        .orderByChild("title").equalTo(title).once("value");
+    })
+    .then(snapshot => {
+      if (snapshot.exists()) throw new Error("duplicate-title");
+      return uploadFileToCloudinary(file);
+    })
+    .then(url => {
+      if (!url) throw new Error("Failed to get upload URL");
+      return firebase.database().ref("uploads").push({
+        title,
+        fileName: file.name,
+        fileUrl: url,
+        topLevelTopic: topLevel,
+        subTopic,
+        timestamp: Date.now(),
+        approved: false,
+        archiveRequested: false,
+        archived: false,
+        uploaderUid: firebase.auth().currentUser.uid,
+        uploaderEmail: firebase.auth().currentUser.email || "Unknown"
+      });
+    })
+    .then(() => {
+      alert("✅ File uploaded successfully! Awaiting approval.");
+      fileInputElement.value = "";
+      fileTitleInput.value = "";
+      if (fileNameSpan) fileNameSpan.textContent = "No file chosen";
+      fileUploadModal.hidden = true;
+      if (loader) loader.style.display = "none";
+      displayApprovedUploads();
+    })
+    .catch(err => {
+      if (loader) loader.style.display = "none";
+      if (err.message === "duplicate-file") {
+        alert("🚫 That file name already exists in the system.");
+      } else if (err.message === "duplicate-title") {
+        alert(`🚫 A file titled "${title}" already exists. Please choose a different title.`);
+      } else {
+        console.error("Upload error:", err);
+        alert("Upload failed: " + (err.message || "Unknown error"));
+      }
+    });
+}
+
 
     function uploadFileToCloudinary(file) {
       const MAX_SIZE = 10 * 1024 * 1024;
