@@ -16,29 +16,18 @@
     window.uploadFile    = uploadFile;
     window.searchContent = searchContent;
     // Initialize Firebase safely
-      // Initialize Firebase safely
-  try {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    } else {
-      firebase.app();
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      } else {
+        firebase.app();
+      }
+      console.log("Firebase initialized successfully");
+    } catch (error) {
+      console.error("Firebase initialization error:", error);
+      alert("Error initializing the application. Please check your connection and reload.");
+      return;
     }
-
-    // ← NEW: force everyone to re-authenticate on each page load
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
-      .then(() => {
-        console.log("🔒 Auth persistence set to NONE — must log in on every load");
-      })
-      .catch(err => {
-        console.error("Auth persistence error:", err);
-      });
-
-    console.log("Firebase initialized successfully");
-  } catch (error) {
-    console.error("Firebase initialization error:", error);
-    alert("Error initializing the application. Please check your connection and reload.");
-    return;
-  }
 
     // --- Constants ---
     const CLOUD_NAME    = "dkwkdsnk7";
