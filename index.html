@@ -214,18 +214,55 @@
     </div>
   </div>
 
-  <!-- ROLE-BASED ACTION BUTTONS -->
-<div id="left-buttons">
-  <!-- hidden by default, JS will show as appropriate -->
-  <button id="view-archived-btn" class="view-archived-btn" style="display:none">
-    <i class="fas fa-archive"></i> Archived Files
-  </button>
-  <button id="add-file-btn" class="add-file-btn" style="display:none">
-    <i class="fas fa-plus"></i> Add
-  </button>
-  <button id="admin-login-btn" class="admin-login-btn" style="display:none">
-    <i class="fas fa-user-shield"></i> Admin
-  </button>
+  <div id="left-buttons">
+    <!-- hidden by default, JS will show as appropriate -->
+    <button id="view-archived-btn" class="view-archived-btn" style="display:none">
+      <i class="fas fa-archive"></i> Archived Files
+    </button>
+    <button id="add-file-btn" class="add-file-btn" style="display:none">
+      <i class="fas fa-plus"></i> Add
+    </button>
+    <button id="admin-login-btn" class="admin-login-btn" style="display:none">
+      <i class="fas fa-user-shield"></i> Admin
+    </button>
+  
+    <!-- Admin-only “Add Section” button -->
+    <button id="add-section-btn" class="admin-only" style="display:none; margin-left:8px;">
+      <i class="fas fa-plus"></i> Add Section
+    </button>
+  </div>
+  
+ <!-- Add Section Modal -->
+<div id="add-section-modal" class="modal" hidden>
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Close">&times;</button>
+    <h2>Add New Section</h2>
+
+    <!-- 1) Main Topic selector -->
+    <label>
+      Main Topic:
+      <select id="add-section-main" class="form-select">
+        <option>Working Instructions</option>
+        <option>Standard Operating Procedures</option>
+        <option>Functional Specifications</option>
+        <option>Process Flow</option>
+        <option>System Flow</option>
+        <option>Templates</option>
+      </select>
+    </label>
+
+    <!-- 2) Section Name input -->
+    <label>
+      Section Name:
+      <input type="text"
+             id="add-section-name"
+             class="form-input"
+             placeholder="e.g. Special Reports" />
+    </label>
+
+    <!-- 3) Save button -->
+    <button id="add-section-save" class="upload-btn">Save</button>
+  </div>
 </div>
 
 

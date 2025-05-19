@@ -1043,3 +1043,27 @@ button[id="Add"] i, button[id="Admin"] i, button[id="Archived Files"] i {
   background-color: #c00;
   color: white;
 }
+
+/* Add Section Button */
+#add-section-btn {
+  background-color: #007bff;      /* Primary blue */
+  color: #fff;                     /* White text */
+  border: none;
+  padding: 0.5rem 1rem;            /* Vertical/horizontal padding */
+  border-radius: 4px;              /* Rounded corners */
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 8px;                /* Spacing from other buttons */
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+#add-section-btn i {
+  margin-right: 0.5rem;            /* Space between icon & text */
+}
+
+#add-section-btn:hover {
+  background-color: #0056b3;       /* Darken on hover */
+}
